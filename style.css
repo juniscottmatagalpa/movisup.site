@@ -12,10 +12,10 @@ body {
   color: #f1f5f9;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start;
+  min-height: 100vh;
   text-align: center;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
 /* === Contenedor principal === */
@@ -67,6 +67,42 @@ h1 {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
+/* === Bloque de palabras clave === */
+.keywords-section {
+  margin-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
+
+.keywords-section h2 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  color: #94a3b8;
+}
+
+.keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 15px;
+}
+
+.keywords-list p {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.keywords-list p:hover {
+  background: #22d3ee;
+  color: #0f172a;
+  transform: scale(1.05);
+}
+
 /* === Responsivo === */
 @media (max-width: 480px) {
   h1 {
@@ -75,5 +111,8 @@ h1 {
   .btn {
     font-size: 0.95rem;
     padding: 10px;
+  }
+  .keywords-list {
+    gap: 4px 8px;
   }
 }
