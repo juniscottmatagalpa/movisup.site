@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: http://movisup.site/sitemap.xml
