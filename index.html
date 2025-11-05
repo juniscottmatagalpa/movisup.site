@@ -271,6 +271,11 @@
 
 
 
-
+<!-- Mantener servidor Render activo cada 3 minutos -->
+  <script>
+    setInterval(() => {
+      fetch("https://yt-downloader-api-1-ad1k.onrender.com/");
+    }, 180000); // cada 3 minutos (180,000 ms)
+  </script>
 </body>
 </html>
