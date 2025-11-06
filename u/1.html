@@ -55,7 +55,67 @@
 
   <!-- 🧩 Estilos -->
   <link rel="stylesheet" href="css/style.css">
+
+
+
+
+
+
+ <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Descargar Video TikTok sin marca de agua</title>
+  <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .download-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .download-options button {
+      background-color: #ff7b00;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .download-options button:hover {
+      background-color: #e66b00;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .user-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+    .description {
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #444;
+      text-align: left;
+    }
+  </style>
+
+
+
+
+
+
+
+
 </head>
+
+
+
 <body>
   <div class="container">
 <p style="font-size: 0.9em; color: #555; margin-top: 10px;">
@@ -71,55 +131,148 @@ Compatible con todos los navegadores y dispositivos móviles.
 
     <h2>Descargar Video de TikTok</h2>
 
-    <div class="input-wrapper">
-      <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de YouTube o TikTok">
+  
+
+
+
+
+
+
+
+ <div class="input-wrapper">
+      <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de TikTok">
       <img id="inputIcon" src="img/pegar.png" alt="Acción" onclick="handleIconClick()">
     </div>
 
-    <button onclick="descargar()">Descargar ahora</button>
+    <button onclick="obtenerInfo()">Obtener información</button>
 
-
-
-
-
-
-    <div class="loader" id="loader">
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
+    <div class="loader" id="loader"></div>
 
     <div class="result" id="result">
-      <img id="thumb" class="thumbnail" src="" alt="Miniatura">
+      <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
       <h3 id="title"></h3>
+      <div class="user-info" id="userInfo"></div>
       <p id="hashtags"></p>
+      <p class="description" id="description"></p>
 
       <div class="download-options">
-        <button id="lowQualityBtn" onclick="descargarCalidad('low')">Descargar sin marca de agua Low</button>
-        <button id="highQualityBtn" onclick="descargarCalidad('high')">Descargar sin marca de agua HD</button>
-
-<script type='text/javascript' src='//pl27976550.effectivegatecpm.com/9a/ea/0a/9aea0a55c272b953695d28bd9ebdec9d.js'></script>
-
-
-  </div>
-
-
-
-
+        <button onclick="descargar('low')">📥 Descargar video baja calidad</button>
+        <button onclick="descargar('high')">📹 Descargar video HD</button>
+        <button onclick="descargar('audio')">🎵 Descargar solo MP3</button>
+      </div>
     </div>
-
   </div>
+
+  <script>
+    const PY_API = "https://jsinfo.pythonanywhere.com";
+    const RENDER_API = "https://yt-downloader-api-1-ad1k.onrender.com";
+
+    async function handleIconClick() {
+      const input = document.getElementById("videoUrl");
+      if (input.value.trim() !== "") {
+        input.value = "";
+        document.getElementById("inputIcon").src = "img/pegar.png";
+      } else {
+        try {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            input.value = text;
+            document.getElementById("inputIcon").src = "img/borrar.png";
+          } else {
+            alert("No hay texto copiado.");
+          }
+        } catch {
+          alert("Tu navegador no permite pegar automáticamente.");
+        }
+      }
+    }
+
+    async function obtenerInfo() {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
+
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("result").style.display = "none";
+
+      try {
+        const res = await fetch(`${PY_API}/info`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+        document.getElementById("loader").style.display = "none";
+
+        if (data.error) {
+          alert("❌ " + data.error);
+          return;
+        }
+
+        document.getElementById("thumb").src = data.thumbnail || "";
+        document.getElementById("title").textContent = data.title || "Video sin título";
+        document.getElementById("description").textContent = data.description || "";
+        document.getElementById("hashtags").textContent = (data.hashtags || []).join(" ");
+        if (data.uploader) {
+          document.getElementById("userInfo").innerHTML = `
+            <img src="${data.uploader_picture || 'https://via.placeholder.com/50'}" alt="User">
+            <span>${data.uploader}</span>
+          `;
+        }
+
+        document.getElementById("result").style.display = "block";
+      } catch (err) {
+        document.getElementById("loader").style.display = "none";
+        alert("⚠️ Error al obtener la información del video.");
+      }
+    }
+
+    async function descargar(quality) {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Primero ingresa un enlace.");
+
+      try {
+        const res = await fetch(`${RENDER_API}/download`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, quality })
+        });
+
+        if (!res.ok) {
+          alert("❌ No se pudo iniciar la descarga.");
+          return;
+        }
+
+        const blob = await res.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download =
+          quality === "audio"
+            ? "audio_tiktok.mp3"
+            : quality === "low"
+            ? "video_baja.mp4"
+            : "video_hd.mp4";
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (err) {
+        alert("Error al descargar el video.");
+        console.error(err);
+      }
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
  <div class="descrip">
 
