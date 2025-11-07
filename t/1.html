@@ -72,51 +72,81 @@
     }
 
     // ✅ Función obtenerInfo restaurada y funcional
-    async function obtenerInfo() {
-      const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
+async function obtenerInfo() {
+  const url = document.getElementById("videoUrl").value.trim();
+  if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
 
-      document.getElementById("loader").style.display = "block";
-      document.getElementById("result").style.display = "none";
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("result").style.display = "none";
 
-      try {
-        const params = new URLSearchParams();
-        params.append("q", url);
+  try {
+    const params = new URLSearchParams();
+    params.append("q", url);
 
-        const res = await fetch(WORKER_API, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-          body: params.toString()
-        });
+    const res = await fetch(WORKER_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+      body: params.toString()
+    });
 
-        const data = await res.json();
-        document.getElementById("loader").style.display = "none";
+    const data = await res.json();
+    document.getElementById("loader").style.display = "none";
 
-        if (data.error) {
-          alert("❌ " + data.error);
-          return;
-        }
-
-        const videoData = data.data || data;
-        document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || "";
-        document.getElementById("title").textContent = videoData.title || "Video sin título";
-        document.getElementById("description").textContent = videoData.desc || videoData.description || "";
-        document.getElementById("hashtags").textContent = (videoData.hashtags || []).join(" ");
-
-        if (videoData.author) {
-          document.getElementById("userInfo").innerHTML = `
-            <img src="${videoData.author.avatar || 'https://via.placeholder.com/50'}" alt="User">
-            <span>${videoData.author.unique_id || videoData.author.nickname}</span>
-          `;
-        }
-
-        document.getElementById("result").style.display = "block";
-      } catch (err) {
-        document.getElementById("loader").style.display = "none";
-        alert("⚠️ Error al obtener la información del video.");
-        console.error(err);
-      }
+    if (data.error) {
+      alert("❌ " + data.error);
+      return;
     }
+
+    const videoData = data.data || data;
+    document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || "";
+    document.getElementById("title").textContent = videoData.title || "Video sin título";
+    document.getElementById("description").textContent = videoData.desc || videoData.description || "";
+    document.getElementById("hashtags").textContent = (videoData.hashtags || []).join(" ");
+
+    if (videoData.author) {
+      document.getElementById("userInfo").innerHTML = `
+        <img src="${videoData.author.avatar || 'https://via.placeholder.com/50'}" alt="User">
+        <span>${videoData.author.unique_id || videoData.author.nickname}</span>
+      `;
+    }
+
+    // ✅ Mostrar estadísticas si existen
+    const stats = videoData.statistics;
+    if (stats) {
+      const statsContainer = document.createElement("div");
+      statsContainer.className = "stats";
+      statsContainer.style.marginTop = "12px";
+      statsContainer.style.fontSize = "0.9em";
+      statsContainer.style.color = "#333";
+      statsContainer.innerHTML = `
+        <strong>📊 Estadísticas:</strong><br>
+        👁️ Reproducciones: ${stats.play_count?.toLocaleString() || 0}<br>
+        ❤️ Me gusta: ${stats.digg_count?.toLocaleString() || 0}<br>
+        💬 Comentarios: ${stats.comment_count?.toLocaleString() || 0}<br>
+        🔄 Compartidos: ${stats.share_count?.toLocaleString() || 0}<br>
+        📌 Guardados: ${stats.collect_count?.toLocaleString() || 0}
+      `;
+
+      // Añadir debajo de la descripción
+      const resultDiv = document.getElementById("result");
+      resultDiv.appendChild(statsContainer);
+    }
+
+    document.getElementById("result").style.display = "block";
+  } catch (err) {
+    document.getElementById("loader").style.display = "none";
+    alert("⚠️ Error al obtener la información del video.");
+    console.error(err);
+  }
+}
+
+
+
+
+
+
+
+    
 
     // ✅ Descarga forzada usando tu Worker
 async function descargar(quality) {
@@ -180,6 +210,7 @@ async function descargar(quality) {
   </footer>
 </body>
 </html>
+
 
 
 
