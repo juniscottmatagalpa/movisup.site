@@ -71,54 +71,32 @@
       }
     }
 
+    // ✅ Función obtenerInfo restaurada y funcional
+    async function obtenerInfo() {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
 
-async function descargar(quality) {
-  const url = document.getElementById("videoUrl").value.trim();
-  if (!url) return alert("Primero ingresa un enlace.");
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("result").style.display = "none";
 
-  try {
-    const params = new URLSearchParams();
-    params.append("q", url);
+      try {
+        const params = new URLSearchParams();
+        params.append("q", url);
 
-    const res = await fetch(WORKER_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-      body: params.toString()
-    });
+        const res = await fetch(WORKER_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+          body: params.toString()
+        });
 
-    const data = await res.json();
+        const data = await res.json();
+        document.getElementById("loader").style.display = "none";
 
-    if (!data || !data.data) {
-      alert("❌ No se encontró un enlace de descarga válido.");
-      return;
-    }
+        if (data.error) {
+          alert("❌ " + data.error);
+          return;
+        }
 
-    let downloadUrl = "";
-    if (quality === "audio") {
-      downloadUrl = data.data.music;
-    } else if (quality === "low") {
-      downloadUrl = data.data.play;
-    } else {
-      downloadUrl = data.data.play;
-    }
-
-    // ✅ Redirige a tu propio Worker que fuerza la descarga
-    window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}`;
-  } catch (err) {
-    alert("Error al descargar el video.");
-    console.error(err);
-  }
-}
-
-
-
-
-    
-
-
-    
-
-        // Mostrar la información obtenida del video
         const videoData = data.data || data;
         document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || "";
         document.getElementById("title").textContent = videoData.title || "Video sin título";
@@ -140,6 +118,7 @@ async function descargar(quality) {
       }
     }
 
+    // ✅ Descarga forzada usando tu Worker
     async function descargar(quality) {
       const url = document.getElementById("videoUrl").value.trim();
       if (!url) return alert("Primero ingresa un enlace.");
@@ -170,13 +149,8 @@ async function descargar(quality) {
           downloadUrl = data.data.play;
         }
 
-        // 💾 Descargar directamente sin abrir nueva pestaña
-        const a = document.createElement("a");
-        a.href = downloadUrl;
-        a.download = `tiktok_video_${quality}.mp4`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        // ✅ Redirige al Worker que fuerza la descarga
+        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}`;
       } catch (err) {
         alert("Error al descargar el video.");
         console.error(err);
