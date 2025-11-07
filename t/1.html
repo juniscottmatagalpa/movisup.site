@@ -2,78 +2,26 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-<meta name='admaven-placement' content=Bqja5pjgG>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<meta name="description" content="Descarga videos de TikTok gratis en HD y sin marca de agua. Rápido, seguro y compatible con cualquier dispositivo.">
-<meta name="keywords" content="descargar tiktok, tiktok downloader, videos tiktok hd, sin marca de agua, guardar tiktok">
-<meta name="robots" content="index, follow">
-<meta name="author" content="TuNombre o Marca">
-<meta name="theme-color" content="#ff6600">
-
-<!-- Open Graph -->
-<meta property="og:title" content="Descargar Videos de TikTok Gratis HD | Sin Marca de Agua">
-<meta property="og:description" content="Descarga videos de TikTok en alta calidad directamente desde tu navegador. 100% gratis y sin registro.">
-<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
-<meta property="og:url" content="http://movisup.site/">
-<meta property="og:type" content="website">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Descargar Videos TikTok HD Gratis">
-<meta name="twitter:description" content="Guarda videos de TikTok sin marca de agua, rápido y gratis.">
-<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
-
+  <meta name='admaven-placement' content=Bqja5pjgG>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Descargar Video TikTok sin marca de agua</title>
   <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    .download-options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
-    }
+    .download-options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
     .download-options button {
-      background-color: #ff7b00;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: 0.3s;
+      background-color: #ff7b00; color: #fff; border: none; border-radius: 8px;
+      padding: 10px; font-size: 1em; cursor: pointer; transition: 0.3s;
     }
-    .download-options button:hover {
-      background-color: #e66b00;
-    }
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .user-info img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-    }
-    .description {
-      margin-top: 8px;
-      font-size: 0.9em;
-      color: #444;
-      text-align: left;
-    }
+    .download-options button:hover { background-color: #e66b00; }
+    .user-info { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+    .user-info img { width: 50px; height: 50px; border-radius: 50%; }
+    .description { margin-top: 8px; font-size: 0.9em; color: #444; text-align: left; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo">
-      <img src="img/icon.png" alt="Logo" />
-    </div>
-
+    <div class="logo"><img src="img/icon.png" alt="Logo" /></div>
     <h2>Descargar Video de TikTok</h2>
 
     <div class="input-wrapper">
@@ -101,6 +49,8 @@
   </div>
 
   <script>
+    const WORKER_API = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
+
     async function handleIconClick() {
       const input = document.getElementById("videoUrl");
       if (input.value.trim() !== "") {
@@ -121,9 +71,6 @@
       }
     }
 
-    // 👉 Actualizado para usar tu Worker de Cloudflare
-    const API_PROXY = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
-
     async function obtenerInfo() {
       const url = document.getElementById("videoUrl").value.trim();
       if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
@@ -134,9 +81,8 @@
       try {
         const params = new URLSearchParams();
         params.append("q", url);
-        params.append("vt", "home");
 
-        const res = await fetch(API_PROXY, {
+        const res = await fetch(WORKER_API, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
           body: params.toString()
@@ -145,16 +91,25 @@
         const data = await res.json();
         document.getElementById("loader").style.display = "none";
 
-        if (!data || !data.data || !data.data.length) {
-          alert("❌ No se encontró información para ese video.");
+        if (data.error) {
+          alert("❌ " + data.error);
           return;
         }
 
-        document.getElementById("thumb").src = data.thumbnail || "";
-        document.getElementById("title").textContent = data.title || "Video sin título";
-        document.getElementById("description").textContent = "Listo para descargar.";
-        document.getElementById("hashtags").textContent = "";
-        document.getElementById("userInfo").innerHTML = "";
+        // Mostrar la información obtenida del video
+        const videoData = data.data || data;
+        document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || "";
+        document.getElementById("title").textContent = videoData.title || "Video sin título";
+        document.getElementById("description").textContent = videoData.desc || videoData.description || "";
+        document.getElementById("hashtags").textContent = (videoData.hashtags || []).join(" ");
+
+        if (videoData.author) {
+          document.getElementById("userInfo").innerHTML = `
+            <img src="${videoData.author.avatar || 'https://via.placeholder.com/50'}" alt="User">
+            <span>${videoData.author.unique_id || videoData.author.nickname}</span>
+          `;
+        }
+
         document.getElementById("result").style.display = "block";
       } catch (err) {
         document.getElementById("loader").style.display = "none";
@@ -168,61 +123,39 @@
       if (!url) return alert("Primero ingresa un enlace.");
 
       try {
-        document.getElementById("loader").style.display = "block";
-        document.getElementById("result").style.display = "none";
-
         const params = new URLSearchParams();
         params.append("q", url);
-        params.append("vt", "home");
 
-        const resp = await fetch(API_PROXY, {
+        const res = await fetch(WORKER_API, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
           body: params.toString()
         });
 
-        if (!resp.ok) throw new Error("Error en la respuesta del servidor.");
+        const data = await res.json();
 
-        const data = await resp.json();
-        if (!data || !data.data || !data.data.length)
-          throw new Error("No se encontraron enlaces de descarga para ese vídeo.");
+        if (!data || !data.data || !data.data.play) {
+          alert("❌ No se encontró un enlace de descarga válido.");
+          return;
+        }
 
-        const formats = data.data;
-        let candidate = formats.find(f => f.quality && (f.quality.includes("1080") || f.quality.includes("720")));
-        if (!candidate) candidate = formats[0];
-
-        const downloadUrl = candidate.url || candidate.downloadUrl || candidate.src || candidate.play;
-        if (!downloadUrl) throw new Error("No se pudo extraer la URL de descarga.");
+        const downloadUrl =
+          quality === "audio"
+            ? data.data.music
+            : quality === "low"
+            ? data.data.play
+            : data.data.play;
 
         window.open(downloadUrl, "_blank");
-
-        document.getElementById("loader").style.display = "none";
-        document.getElementById("result").style.display = "block";
       } catch (err) {
-        document.getElementById("loader").style.display = "none";
+        alert("Error al descargar el video.");
         console.error(err);
-        alert("❌ Error: " + (err.message || err));
       }
     }
   </script>
 
-<footer style="
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #f4f4f4;
-  text-align: center;
-  padding: 10px 0;
-  font-size: 0.8em;
-  color: #777;
-  border-top: 1px solid #ddd;
-">
-  © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
-</footer>
+  <footer style="position: fixed; bottom: 0; left: 0; width: 100%; background: #f4f4f4; text-align: center; padding: 10px 0; font-size: 0.8em; color: #777; border-top: 1px solid #ddd;">
+    © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
+  </footer>
 </body>
 </html>
-
-
