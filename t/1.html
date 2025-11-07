@@ -2,28 +2,51 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name='admaven-placement' content=Bqja5pjgG>
+<meta name='admaven-placement' content=Bqja5pjgG>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <meta name="description" content="Descarga videos de YouTube gratis en HD. Rápido, seguro y compatible con cualquier dispositivo.">
-  <meta name="keywords" content="descargar youtube, descargar videos youtube hd, guardar videos youtube, youtube downloader, bajar youtube hd">
-  <meta name="robots" content="index, follow">
-  <meta name="author" content="TuNombre o Marca">
-  <meta name="theme-color" content="#ff6600">
+<meta name="description" content="Descarga videos de TikTok gratis en HD y sin marca de agua. Rápido, seguro y compatible con cualquier dispositivo.">
+<meta name="keywords" content="descargar tiktok, tiktok downloader, videos tiktok hd, sin marca de agua, guardar tiktok">
+<meta name="robots" content="index, follow">
+<meta name="author" content="TuNombre o Marca">
+<meta name="theme-color" content="#ff6600">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Descargar Videos de YouTube Gratis en HD">
-  <meta property="og:description" content="Descarga videos de YouTube en alta calidad directamente desde tu navegador. 100% gratis y sin registro.">
-  <meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
-  <meta property="og:url" content="http://movisup.site/">
-  <meta property="og:type" content="website">
+<!-- Open Graph (para compartir en redes) -->
+<meta property="og:title" content="Descargar Videos de TikTok Gratis HD | Sin Marca de Agua">
+<meta property="og:description" content="Descarga videos de TikTok en alta calidad directamente desde tu navegador. 100% gratis y sin registro.">
+<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+<meta property="og:url" content="http://movisup.site/">
+<meta property="og:type" content="website">
 
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Descargar Videos de YouTube HD Gratis">
-  <meta name="twitter:description" content="Guarda videos de YouTube en alta calidad, rápido y gratis.">
-  <meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Descargar Videos TikTok HD Gratis">
+<meta name="twitter:description" content="Guarda videos de TikTok sin marca de agua, rápido y gratis.">
+<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
 
-  <title>Descargar Videos de YouTube en HD Gratis</title>
+<meta name="description" content="Download TikTok videos for free in HD and without watermark. Fast, secure, and compatible with any device.">
+<meta name="keywords" content="tiktok downloader, download tiktok, tiktok videos hd, no watermark, save tiktok">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Your Name or Brand">
+<meta name="theme-color" content="#ff6600">
+
+<!-- Open Graph (for social media sharing) -->
+<meta property="og:title" content="Download TikTok Videos Free in HD | No Watermark">
+<meta property="og:description" content="Download TikTok videos in high quality directly from your browser. 100% free and no registration required.">
+<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+<meta property="og:url" content="http://movisup.site/">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Download TikTok Videos in HD for Free">
+<meta name="twitter:description" content="Save TikTok videos without watermark, fast and free.">
+<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Descargar Video TikTok sin marca de agua</title>
+  <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
   <link rel="stylesheet" href="css/style.css" />
   <style>
     .download-options {
@@ -45,6 +68,17 @@
     .download-options button:hover {
       background-color: #e66b00;
     }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .user-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
     .description {
       margin-top: 8px;
       font-size: 0.9em;
@@ -59,26 +93,35 @@
       <img src="img/icon.png" alt="Logo" />
     </div>
 
-    <h2>Descargar Video de YouTube</h2>
+    <h2>Descargar Video de TikTok</h2>
 
     <div class="input-wrapper">
-      <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de YouTube">
+      <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de TikTok">
       <img id="inputIcon" src="img/pegar.png" alt="Acción" onclick="handleIconClick()">
     </div>
 
-    <button onclick="descargarHD()">📹 Descargar video en HD</button>
+    <button onclick="obtenerInfo()">Obtener información</button>
 
     <div class="loader" id="loader"></div>
 
     <div class="result" id="result">
       <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
       <h3 id="title"></h3>
+      <div class="user-info" id="userInfo"></div>
+      <p id="hashtags"></p>
       <p class="description" id="description"></p>
+
+      <div class="download-options">
+        <button onclick="descargar('low')">📥 Descargar video baja calidad</button>
+        <button onclick="descargar('high')">📹 Descargar video HD</button>
+        <button onclick="descargar('audio')">🎵 Descargar solo MP3</button>
+      </div>
     </div>
   </div>
 
   <script>
-    const RENDER_API = "https://yt-downloader-api-youtu.onrender.com";
+    const PY_API = "https://jsinfo.pythonanywhere.com";
+    const RENDER_API = "https://yt-downloader-api-youtu.fly.dev"; // 🔹 Actualizado a Fly.io
 
     async function handleIconClick() {
       const input = document.getElementById("videoUrl");
@@ -100,15 +143,15 @@
       }
     }
 
-    async function descargarHD() {
+    async function obtenerInfo() {
       const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Por favor, ingresa un enlace de YouTube.");
+      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
 
       document.getElementById("loader").style.display = "block";
       document.getElementById("result").style.display = "none";
 
       try {
-        const res = await fetch(`${RENDER_API}/download`, {
+        const res = await fetch(`${PY_API}/info`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url })
@@ -122,46 +165,80 @@
           return;
         }
 
-        document.getElementById("thumb").src = data.thumbnail || "img/icon.png";
+        document.getElementById("thumb").src = data.thumbnail || "";
         document.getElementById("title").textContent = data.title || "Video sin título";
-        document.getElementById("description").textContent = "Haz clic para iniciar la descarga en HD.";
-        document.getElementById("result").style.display = "block";
-
-        if (data.download_url) {
-          const a = document.createElement("a");
-          a.href = data.download_url;
-          a.download = (data.title || "video") + ".mp4";
-          a.click();
-        } else {
-          alert("No se encontró enlace de descarga.");
+        document.getElementById("description").textContent = data.description || "";
+        document.getElementById("hashtags").textContent = (data.hashtags || []).join(" ");
+        if (data.uploader) {
+          document.getElementById("userInfo").innerHTML = `
+            <img src="${data.uploader_picture || 'https://via.placeholder.com/50'}" alt="User">
+            <span>${data.uploader}</span>
+          `;
         }
+
+        document.getElementById("result").style.display = "block";
       } catch (err) {
         document.getElementById("loader").style.display = "none";
-        alert("⚠️ Error al procesar el video.");
+        alert("⚠️ Error al obtener la información del video.");
+      }
+    }
+
+    async function descargar(quality) {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Primero ingresa un enlace.");
+
+      try {
+        const res = await fetch(`${RENDER_API}/download`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, quality })
+        });
+
+        if (!res.ok) {
+          alert("❌ No se pudo iniciar la descarga.");
+          return;
+        }
+
+        const blob = await res.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download =
+          quality === "audio"
+            ? "audio_tiktok.mp3"
+            : quality === "low"
+            ? "video_baja.mp4"
+            : "video_hd.mp4";
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (err) {
+        alert("Error al descargar el video.");
         console.error(err);
       }
     }
   </script>
 
-  <!-- Mantener servidor activo -->
+<!-- Mantener servidor activo cada 3 minutos -->
   <script>
     setInterval(() => {
-      fetch("https://yt-downloader-api-youtu.onrender.com");
+      fetch("https://yt-downloader-api-youtu.fly.dev"); // 🔹 Actualizado a Fly.io
     }, 180000);
   </script>
 
-  <footer style="
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #f4f4f4;
-    text-align: center;
-    padding: 10px 0;
-    font-size: 0.8em;
-    color: #777;
-    border-top: 1px solid #ddd;">
-    © 2025 movisup.site — Descargador de videos de YouTube gratis en HD.
-  </footer>
+<footer style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #f4f4f4;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.8em;
+  color: #777;
+  border-top: 1px solid #ddd;
+">
+  © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
+</footer>
 </body>
 </html>
+
