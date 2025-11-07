@@ -16,7 +16,35 @@
     .download-options button:hover { background-color: #e66b00; }
     .user-info { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
     .user-info img { width: 50px; height: 50px; border-radius: 50%; }
-    .description { margin-top: 8px; font-size: 0.9em; color: #444; text-align: left; }
+    .description {
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #333;
+      background: #f1f1f1;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: justify;
+    }
+    .stats-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #fff3e0;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95em;
+      color: #444;
+    }
+    .stat-item span {
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -34,12 +62,23 @@
     <div class="loader" id="loader"></div>
 
     <div class="result" id="result">
+      <!-- Fila de estadísticas -->
+      <div id="statsRow" class="stats-row" style="display: none;">
+        <div class="stat-item">👁️ <span id="views">0</span></div>
+        <div class="stat-item">❤️ <span id="likes">0</span></div>
+        <div class="stat-item">💬 <span id="comments">0</span></div>
+        <div class="stat-item">🔄 <span id="shares">0</span></div>
+        <div class="stat-item">📌 <span id="saves">0</span></div>
+      </div>
+
+      <!-- Miniatura y datos -->
       <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
       <h3 id="title"></h3>
       <div class="user-info" id="userInfo"></div>
       <p id="hashtags"></p>
       <p class="description" id="description"></p>
 
+      <!-- Botones de descarga -->
       <div class="download-options">
         <button onclick="descargar('low')">📥 Descargar video baja calidad</button>
         <button onclick="descargar('high')">📹 Descargar video HD</button>
@@ -71,138 +110,115 @@
       }
     }
 
-    // ✅ Función obtenerInfo restaurada y funcional
-async function obtenerInfo() {
-  const url = document.getElementById("videoUrl").value.trim();
-  if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
+    // ✅ Obtener información y mostrar estadísticas + datos
+    async function obtenerInfo() {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
 
-  document.getElementById("loader").style.display = "block";
-  document.getElementById("result").style.display = "none";
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("result").style.display = "none";
 
-  try {
-    const params = new URLSearchParams();
-    params.append("q", url);
+      try {
+        const params = new URLSearchParams();
+        params.append("q", url);
 
-    const res = await fetch(WORKER_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-      body: params.toString()
-    });
+        const res = await fetch(WORKER_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+          body: params.toString()
+        });
 
-    const data = await res.json();
-    document.getElementById("loader").style.display = "none";
+        const data = await res.json();
+        document.getElementById("loader").style.display = "none";
 
-    if (data.error) {
-      alert("❌ " + data.error);
-      return;
+        if (data.error) {
+          alert("❌ " + data.error);
+          return;
+        }
+
+        const videoData = data.data || data;
+
+        // Miniatura, título y descripción
+        document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || "";
+        document.getElementById("title").textContent = videoData.title || "Video sin título";
+        document.getElementById("description").textContent = videoData.desc || videoData.description || "";
+        document.getElementById("hashtags").textContent = (videoData.hashtags || []).join(" ");
+
+        // Usuario
+        if (videoData.author) {
+          document.getElementById("userInfo").innerHTML = `
+            <img src="${videoData.author.avatar || 'https://via.placeholder.com/50'}" alt="User">
+            <span>${videoData.author.unique_id || videoData.author.nickname}</span>
+          `;
+        }
+
+        // ✅ Mostrar estadísticas
+        const stats = videoData.statistics;
+        if (stats) {
+          document.getElementById("views").textContent = stats.play_count?.toLocaleString() || 0;
+          document.getElementById("likes").textContent = stats.digg_count?.toLocaleString() || 0;
+          document.getElementById("comments").textContent = stats.comment_count?.toLocaleString() || 0;
+          document.getElementById("shares").textContent = stats.share_count?.toLocaleString() || 0;
+          document.getElementById("saves").textContent = stats.collect_count?.toLocaleString() || 0;
+          document.getElementById("statsRow").style.display = "flex";
+        } else {
+          document.getElementById("statsRow").style.display = "none";
+        }
+
+        document.getElementById("result").style.display = "block";
+      } catch (err) {
+        document.getElementById("loader").style.display = "none";
+        alert("⚠️ Error al obtener la información del video.");
+        console.error(err);
+      }
     }
-
-    const videoData = data.data || data;
-    document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || "";
-    document.getElementById("title").textContent = videoData.title || "Video sin título";
-    document.getElementById("description").textContent = videoData.desc || videoData.description || "";
-    document.getElementById("hashtags").textContent = (videoData.hashtags || []).join(" ");
-
-    if (videoData.author) {
-      document.getElementById("userInfo").innerHTML = `
-        <img src="${videoData.author.avatar || 'https://via.placeholder.com/50'}" alt="User">
-        <span>${videoData.author.unique_id || videoData.author.nickname}</span>
-      `;
-    }
-
-    // ✅ Mostrar estadísticas si existen
-    const stats = videoData.statistics;
-    if (stats) {
-      const statsContainer = document.createElement("div");
-      statsContainer.className = "stats";
-      statsContainer.style.marginTop = "12px";
-      statsContainer.style.fontSize = "0.9em";
-      statsContainer.style.color = "#333";
-      statsContainer.innerHTML = `
-        <strong>📊 Estadísticas:</strong><br>
-        👁️ Reproducciones: ${stats.play_count?.toLocaleString() || 0}<br>
-        ❤️ Me gusta: ${stats.digg_count?.toLocaleString() || 0}<br>
-        💬 Comentarios: ${stats.comment_count?.toLocaleString() || 0}<br>
-        🔄 Compartidos: ${stats.share_count?.toLocaleString() || 0}<br>
-        📌 Guardados: ${stats.collect_count?.toLocaleString() || 0}
-      `;
-
-      // Añadir debajo de la descripción
-      const resultDiv = document.getElementById("result");
-      resultDiv.appendChild(statsContainer);
-    }
-
-    document.getElementById("result").style.display = "block";
-  } catch (err) {
-    document.getElementById("loader").style.display = "none";
-    alert("⚠️ Error al obtener la información del video.");
-    console.error(err);
-  }
-}
-
-
-
-
-
-
-
-    
 
     // ✅ Descarga forzada usando tu Worker
-async function descargar(quality) {
-  const url = document.getElementById("videoUrl").value.trim();
-  if (!url) return alert("Primero ingresa un enlace.");
+    async function descargar(quality) {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Primero ingresa un enlace.");
 
-  try {
-    const params = new URLSearchParams();
-    params.append("q", url);
+      try {
+        const params = new URLSearchParams();
+        params.append("q", url);
 
-    const res = await fetch(WORKER_API, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-      body: params.toString()
-    });
+        const res = await fetch(WORKER_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+          body: params.toString()
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    if (!data || !data.data) {
-      alert("❌ No se encontró un enlace de descarga válido.");
-      return;
+        if (!data || !data.data) {
+          alert("❌ No se encontró un enlace de descarga válido.");
+          return;
+        }
+
+        const videoData = data.data;
+        let downloadUrl = "";
+        let ext = "mp4";
+
+        if (quality === "audio") {
+          downloadUrl = videoData.music || videoData.music_info?.play || videoData.play;
+          ext = "mp3";
+        } else if (quality === "low") {
+          downloadUrl = videoData.wmplay || videoData.play;
+        } else if (quality === "high") {
+          downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay;
+        }
+
+        if (!downloadUrl) {
+          alert("⚠️ No se encontró un enlace válido para esta opción.");
+          return;
+        }
+
+        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
+      } catch (err) {
+        alert("Error al descargar el video.");
+        console.error(err);
+      }
     }
-
-    const videoData = data.data;
-    let downloadUrl = "";
-    let ext = "mp4";
-
-    // 🎯 Selecciona la fuente según el botón
-    if (quality === "audio") {
-      downloadUrl = videoData.music || videoData.music_info?.play || videoData.play;
-      ext = "mp3"; // o m4a según la fuente, pero lo forzamos como mp3
-    } else if (quality === "low") {
-      downloadUrl = videoData.wmplay || videoData.play;
-    } else if (quality === "high") {
-      downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay;
-    }
-
-    if (!downloadUrl) {
-      alert("⚠️ No se encontró un enlace válido para esta opción.");
-      return;
-    }
-
-    // 🔗 Redirigir al Worker que fuerza la descarga
-    window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
-  } catch (err) {
-    alert("Error al descargar el video.");
-    console.error(err);
-  }
-}
-
-
-
-
-
-
-    
   </script>
 
   <footer style="position: fixed; bottom: 0; left: 0; width: 100%; background: #f4f4f4; text-align: center; padding: 10px 0; font-size: 0.8em; color: #777; border-top: 1px solid #ddd;">
@@ -210,7 +226,6 @@ async function descargar(quality) {
   </footer>
 </body>
 </html>
-
 
 
 
