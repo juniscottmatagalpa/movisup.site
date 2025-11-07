@@ -71,6 +71,7 @@
       }
     }
 
+
 async function descargar(quality) {
   const url = document.getElementById("videoUrl").value.trim();
   if (!url) return alert("Primero ingresa un enlace.");
@@ -101,20 +102,18 @@ async function descargar(quality) {
       downloadUrl = data.data.play;
     }
 
-    // ✅ Descargar desde el Worker (fuerza Content-Disposition)
-    const finalUrl = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}`;
-    const a = document.createElement("a");
-    a.href = finalUrl;
-    a.download = `tiktok_video_${quality}.mp4`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    // ✅ Redirige a tu propio Worker que fuerza la descarga
+    window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}`;
   } catch (err) {
     alert("Error al descargar el video.");
     console.error(err);
   }
 }
 
+
+
+
+    
 
 
     
@@ -190,4 +189,5 @@ async function descargar(quality) {
   </footer>
 </body>
 </html>
+
 
