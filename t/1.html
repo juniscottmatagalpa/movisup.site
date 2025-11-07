@@ -8,87 +8,108 @@
   <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
   <link rel="stylesheet" href="css/style.css" />
   <style>
-    .download-options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-    .download-options button {
-      background-color: #ff7b00; color: #fff; border: none; border-radius: 8px;
-      padding: 10px; font-size: 1em; cursor: pointer; transition: 0.3s;
-    }
-    .download-options button:hover { background-color: #e66b00; }
-    .user-info { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-    .user-info img { width: 50px; height: 50px; border-radius: 50%; }
-    .description {
-      margin-top: 8px;
-      font-size: 0.9em;
-      color: #333;
-      background: #f1f1f1;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: justify;
-    }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 16px; color:#222; }
+    .container { max-width: 780px; margin: 0 auto; }
+    h2 { margin: 8px 0 18px; color: #ff7b00; }
+    .input-wrapper { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+    .input-wrapper input { flex:1; padding:10px; border-radius:8px; border:1px solid #ddd; }
+    .input-wrapper img { width:34px; height:34px; cursor:pointer; }
+    button { cursor:pointer; }
+    .loader { display:none; margin: 12px 0; }
+    .result { display:none; margin-top: 16px; }
     .stats-row {
       display: flex;
       justify-content: space-around;
       align-items: center;
-      background: #fff3e0;
+      background: #fff7ed;
       border-radius: 10px;
       padding: 10px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .stat-item { display:flex; align-items:center; gap:6px; font-size:0.95em; color:#333; }
+    .stat-item span { font-weight:700; color:#111; }
+    .thumbnail { width:100%; max-height:420px; object-fit:cover; border-radius:8px; display:block; margin-bottom:10px; background:#eee; }
+    #title { margin: 6px 0 4px; font-size:1.1em; color:#111; }
+    .user-info { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .user-info img { width:48px; height:48px; border-radius:50%; object-fit:cover; }
+    #hashtags { color:#666; margin-bottom:8px; }
+    .description {
+      margin-top: 8px;
       font-size: 0.95em;
-      color: #444;
+      color: #333;
+      background: #f1f1f1;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: left;
+      line-height:1.4;
+      white-space: pre-wrap;
+      margin-bottom: 12px;
     }
-    .stat-item span {
-      font-weight: 600;
+    .download-options { display: flex; gap:10px; flex-wrap:wrap; margin-top: 8px; }
+    .download-options button {
+      background-color: #ff7b00; color: #fff; border: none; border-radius: 8px;
+      padding: 10px 14px; font-size: 0.95em; cursor: pointer; transition: 0.18s;
     }
+    .download-options button:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+    footer { margin-top:34px; text-align:center; color:#777; font-size:0.85em; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo"><img src="img/icon.png" alt="Logo" /></div>
+    <div class="logo"><img src="img/icon.png" alt="Logo" style="width:56px;height:56px"></div>
     <h2>Descargar Video de TikTok</h2>
 
     <div class="input-wrapper">
       <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de TikTok">
       <img id="inputIcon" src="img/pegar.png" alt="Acción" onclick="handleIconClick()">
+      <button onclick="obtenerInfo()" style="padding:10px 14px; border-radius:8px; border:1px solid #ff7b00; background:#fff; color:#ff7b00;">Obtener información</button>
     </div>
 
-    <button onclick="obtenerInfo()">Obtener información</button>
-
-    <div class="loader" id="loader"></div>
+    <div class="loader" id="loader">Cargando...</div>
 
     <div class="result" id="result">
-      <!-- Fila de estadísticas -->
-      <div id="statsRow" class="stats-row" style="display: none;">
-        <div class="stat-item">👁️ <span id="views">0</span></div>
-        <div class="stat-item">❤️ <span id="likes">0</span></div>
-        <div class="stat-item">💬 <span id="comments">0</span></div>
-        <div class="stat-item">🔄 <span id="shares">0</span></div>
-        <div class="stat-item">📌 <span id="saves">0</span></div>
+      <!-- Estadísticas: fila superior -->
+      <div id="statsRow" class="stats-row" style="display:none;">
+        <div class="stat-item" title="Reproducciones">👁️ <span id="views">0</span></div>
+        <div class="stat-item" title="Me gusta">❤️ <span id="likes">0</span></div>
+        <div class="stat-item" title="Comentarios">💬 <span id="comments">0</span></div>
+        <div class="stat-item" title="Compartidos">🔄 <span id="shares">0</span></div>
+        <div class="stat-item" title="Guardados">📌 <span id="saves">0</span></div>
       </div>
 
-      <!-- Miniatura y datos -->
+      <!-- Miniatura -->
       <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
+
+      <!-- Titulo y usuario -->
       <h3 id="title"></h3>
       <div class="user-info" id="userInfo"></div>
+
+      <!-- Hashtags -->
       <p id="hashtags"></p>
-      <p class="description" id="description"></p>
+
+      <!-- Descripción con fondo gris -->
+      <div class="description" id="description"></div>
 
       <!-- Botones de descarga -->
       <div class="download-options">
-        <button onclick="descargar('low')">📥 Descargar video baja calidad</button>
-        <button onclick="descargar('high')">📹 Descargar video HD</button>
-        <button onclick="descargar('audio')">🎵 Descargar solo MP3</button>
+        <button onclick="descargar('low')">📥 Baja calidad</button>
+        <button onclick="descargar('high')">📹 Alta calidad</button>
+        <button onclick="descargar('audio')">🎵 Solo MP3</button>
       </div>
     </div>
+
+    <footer>
+      © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
+    </footer>
   </div>
 
   <script>
     const WORKER_API = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
+
+    function showLoader(show) {
+      document.getElementById('loader').style.display = show ? 'block' : 'none';
+    }
 
     async function handleIconClick() {
       const input = document.getElementById("videoUrl");
@@ -110,17 +131,17 @@
       }
     }
 
-    // ✅ Obtener información y mostrar estadísticas + datos
+    // Función robusta para obtener info y mostrar estadísticas + descripción
     async function obtenerInfo() {
-      const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
+      const urlInput = document.getElementById("videoUrl").value.trim();
+      if (!urlInput) return alert("Por favor, ingresa un enlace de TikTok.");
 
-      document.getElementById("loader").style.display = "block";
+      showLoader(true);
       document.getElementById("result").style.display = "none";
 
       try {
         const params = new URLSearchParams();
-        params.append("q", url);
+        params.append("q", urlInput);
 
         const res = await fetch(WORKER_API, {
           method: "POST",
@@ -128,52 +149,103 @@
           body: params.toString()
         });
 
+        // intentar parsear JSON
         const data = await res.json();
-        document.getElementById("loader").style.display = "none";
+        console.log("Respuesta Worker:", data);
+
+        showLoader(false);
 
         if (data.error) {
           alert("❌ " + data.error);
           return;
         }
 
-        const videoData = data.data || data;
+        // Normalizar la estructura: buscar el objeto con los datos del video
+        let videoData = null;
+        if (data.data) videoData = data.data;
+        else if (data.item) videoData = data.item;
+        else if (Array.isArray(data.items) && data.items.length) videoData = data.items[0];
+        else videoData = data; // fallback
 
-        // Miniatura, título y descripción
-        document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || "";
-        document.getElementById("title").textContent = videoData.title || "Video sin título";
-        document.getElementById("description").textContent = videoData.desc || videoData.description || "";
-        document.getElementById("hashtags").textContent = (videoData.hashtags || []).join(" ");
+        console.log("videoData detectado:", videoData);
 
-        // Usuario
-        if (videoData.author) {
-          document.getElementById("userInfo").innerHTML = `
-            <img src="${videoData.author.avatar || 'https://via.placeholder.com/50'}" alt="User">
-            <span>${videoData.author.unique_id || videoData.author.nickname}</span>
-          `;
+        // Título
+        const title = videoData.title || videoData.desc || videoData.description || (videoData.aweme && videoData.aweme.desc) || "";
+        document.getElementById("title").textContent = title || "Video sin título";
+
+        // Miniatura/caratula (varios posibles campos)
+        const thumb = videoData.cover || videoData.thumbnail || videoData.video?.cover || videoData.aweme?.video?.cover || "";
+        document.getElementById("thumb").src = thumb || "";
+
+        // Hashtags (puede venir como array o string)
+        let hashtagsText = "";
+        if (Array.isArray(videoData.hashtags)) {
+          hashtagsText = videoData.hashtags.map(h => (h.name || h)).join(" ");
+        } else if (videoData.hashtag) {
+          hashtagsText = videoData.hashtag;
+        } else if (videoData.tags) {
+          hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(" ") : (videoData.tags || "");
+        }
+        document.getElementById("hashtags").textContent = hashtagsText;
+
+        // Descripción (usar desc/description/aweme.desc)
+        const description = videoData.desc || videoData.description || (videoData.aweme && videoData.aweme.desc) || "";
+        const descriptionEl = document.getElementById("description");
+        if (description && description.trim().length) {
+          descriptionEl.textContent = description;
+          descriptionEl.style.display = "block";
+        } else {
+          descriptionEl.textContent = "";
+          descriptionEl.style.display = "none";
         }
 
-        // ✅ Mostrar estadísticas
-        const stats = videoData.statistics;
+        // Usuario / autor
+        let authorHtml = "";
+        const author = videoData.author || videoData.owner || videoData.user || videoData.aweme?.author;
+        if (author) {
+          const avatar = author.avatar || author.cover || author.avatar_thumb || author.profile_image || '';
+          const name = author.unique_id || author.nickname || author.name || author.displayName || '';
+          authorHtml = `<img src="${avatar || 'https://via.placeholder.com/48'}" alt="User"><div><strong>${name}</strong></div>`;
+        } else {
+          authorHtml = '';
+        }
+        document.getElementById("userInfo").innerHTML = authorHtml;
+
+        // Estadísticas: buscar en varios posibles campos
+        let stats = videoData.statistics || videoData.stat || videoData.stats || videoData.aweme?.statistics;
+        // a veces tikwm devuelve directamente keys en data (play_count, digg_count, ...)
+        if (!stats) {
+          const candidate = {};
+          if (videoData.play_count) candidate.play_count = videoData.play_count;
+          if (videoData.digg_count) candidate.digg_count = videoData.digg_count;
+          if (videoData.comment_count) candidate.comment_count = videoData.comment_count;
+          if (videoData.share_count) candidate.share_count = videoData.share_count;
+          if (videoData.collect_count) candidate.collect_count = videoData.collect_count;
+          stats = Object.keys(candidate).length ? candidate : null;
+        }
+
         if (stats) {
-          document.getElementById("views").textContent = stats.play_count?.toLocaleString() || 0;
-          document.getElementById("likes").textContent = stats.digg_count?.toLocaleString() || 0;
-          document.getElementById("comments").textContent = stats.comment_count?.toLocaleString() || 0;
-          document.getElementById("shares").textContent = stats.share_count?.toLocaleString() || 0;
-          document.getElementById("saves").textContent = stats.collect_count?.toLocaleString() || 0;
+          document.getElementById("views").textContent = (stats.play_count || stats.playCount || stats.views || 0).toLocaleString();
+          document.getElementById("likes").textContent = (stats.digg_count || stats.likeCount || stats.likes || 0).toLocaleString();
+          document.getElementById("comments").textContent = (stats.comment_count || stats.commentCount || 0).toLocaleString();
+          document.getElementById("shares").textContent = (stats.share_count || stats.shareCount || 0).toLocaleString();
+          document.getElementById("saves").textContent = (stats.collect_count || stats.collection_count || stats.collectCount || 0).toLocaleString();
           document.getElementById("statsRow").style.display = "flex";
         } else {
+          // Ocultar si no hay stats
           document.getElementById("statsRow").style.display = "none";
         }
 
+        // Mostrar resultados
         document.getElementById("result").style.display = "block";
       } catch (err) {
-        document.getElementById("loader").style.display = "none";
-        alert("⚠️ Error al obtener la información del video.");
-        console.error(err);
+        showLoader(false);
+        console.error("Error en obtenerInfo:", err);
+        alert("⚠️ Error al obtener la información del video. Revisa la consola para más detalles.");
       }
     }
 
-    // ✅ Descarga forzada usando tu Worker
+    // Descarga (usa tu Worker ?download=...&ext=...)
     async function descargar(quality) {
       const url = document.getElementById("videoUrl").value.trim();
       if (!url) return alert("Primero ingresa un enlace.");
@@ -189,6 +261,7 @@
         });
 
         const data = await res.json();
+        console.log("Descarga - respuesta info:", data);
 
         if (!data || !data.data) {
           alert("❌ No se encontró un enlace de descarga válido.");
@@ -200,7 +273,8 @@
         let ext = "mp4";
 
         if (quality === "audio") {
-          downloadUrl = videoData.music || videoData.music_info?.play || videoData.play;
+          // intentar music, si no existe fallback a play
+          downloadUrl = videoData.music || videoData.music_url || videoData.music_info?.play || videoData.play;
           ext = "mp3";
         } else if (quality === "low") {
           downloadUrl = videoData.wmplay || videoData.play;
@@ -213,20 +287,18 @@
           return;
         }
 
-        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
+        // Redirigir al Worker que fuerza la descarga y proporciona el encabezado Content-Disposition
+        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${encodeURIComponent(ext)}`;
       } catch (err) {
+        console.error("Error en descargar():", err);
         alert("Error al descargar el video.");
-        console.error(err);
       }
     }
-  </script>
 
-  <footer style="position: fixed; bottom: 0; left: 0; width: 100%; background: #f4f4f4; text-align: center; padding: 10px 0; font-size: 0.8em; color: #777; border-top: 1px solid #ddd;">
-    © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
-  </footer>
+    // Para debugging rápido: si quieres auto-test con un ejemplo (descomenta)
+    // document.addEventListener('DOMContentLoaded', () => { /* document.getElementById('videoUrl').value = 'https://www.tiktok.com/t/ZTM49N2UD/'; obtenerInfo(); */ });
+  </script>
 </body>
 </html>
-
-
 
 
