@@ -134,19 +134,27 @@
 
         const data = await res.json();
 
-        if (!data || !data.data || !data.data.play) {
+        if (!data || !data.data) {
           alert("❌ No se encontró un enlace de descarga válido.");
           return;
         }
 
-        const downloadUrl =
-          quality === "audio"
-            ? data.data.music
-            : quality === "low"
-            ? data.data.play
-            : data.data.play;
+        let downloadUrl = "";
+        if (quality === "audio") {
+          downloadUrl = data.data.music;
+        } else if (quality === "low") {
+          downloadUrl = data.data.play;
+        } else {
+          downloadUrl = data.data.play;
+        }
 
-        window.open(downloadUrl, "_blank");
+        // 💾 Descargar directamente sin abrir nueva pestaña
+        const a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = `tiktok_video_${quality}.mp4`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
       } catch (err) {
         alert("Error al descargar el video.");
         console.error(err);
