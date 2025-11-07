@@ -142,31 +142,30 @@ async function descargar(quality) {
 
     const videoData = data.data;
     let downloadUrl = "";
+    let ext = "mp4";
 
-    // 🧠 Elegimos la URL según la calidad solicitada
+    // 🎯 Selecciona la fuente según el botón
     if (quality === "audio") {
-      downloadUrl = videoData.music || videoData.play; // Fallback
+      downloadUrl = videoData.music || videoData.music_info?.play || videoData.play;
+      ext = "mp3"; // o m4a según la fuente, pero lo forzamos como mp3
     } else if (quality === "low") {
-      downloadUrl = videoData.wmplay || videoData.play; // Marca de agua = baja calidad
+      downloadUrl = videoData.wmplay || videoData.play;
     } else if (quality === "high") {
       downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay;
     }
 
     if (!downloadUrl) {
-      alert("No se encontró un enlace válido para esta opción.");
+      alert("⚠️ No se encontró un enlace válido para esta opción.");
       return;
     }
 
-    // ✅ Redirige al Worker que fuerza la descarga
-    const fileExt = quality === "audio" ? "mp3" : "mp4";
-    window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${fileExt}`;
+    // 🔗 Redirigir al Worker que fuerza la descarga
+    window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
   } catch (err) {
     alert("Error al descargar el video.");
     console.error(err);
   }
 }
-
-
 
 
 
@@ -181,6 +180,7 @@ async function descargar(quality) {
   </footer>
 </body>
 </html>
+
 
 
 
