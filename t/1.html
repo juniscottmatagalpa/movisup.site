@@ -119,43 +119,61 @@
     }
 
     // ✅ Descarga forzada usando tu Worker
-    async function descargar(quality) {
-      const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Primero ingresa un enlace.");
+async function descargar(quality) {
+  const url = document.getElementById("videoUrl").value.trim();
+  if (!url) return alert("Primero ingresa un enlace.");
 
-      try {
-        const params = new URLSearchParams();
-        params.append("q", url);
+  try {
+    const params = new URLSearchParams();
+    params.append("q", url);
 
-        const res = await fetch(WORKER_API, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-          body: params.toString()
-        });
+    const res = await fetch(WORKER_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+      body: params.toString()
+    });
 
-        const data = await res.json();
+    const data = await res.json();
 
-        if (!data || !data.data) {
-          alert("❌ No se encontró un enlace de descarga válido.");
-          return;
-        }
-
-        let downloadUrl = "";
-        if (quality === "audio") {
-          downloadUrl = data.data.music;
-        } else if (quality === "low") {
-          downloadUrl = data.data.play;
-        } else {
-          downloadUrl = data.data.play;
-        }
-
-        // ✅ Redirige al Worker que fuerza la descarga
-        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}`;
-      } catch (err) {
-        alert("Error al descargar el video.");
-        console.error(err);
-      }
+    if (!data || !data.data) {
+      alert("❌ No se encontró un enlace de descarga válido.");
+      return;
     }
+
+    const videoData = data.data;
+    let downloadUrl = "";
+
+    // 🧠 Elegimos la URL según la calidad solicitada
+    if (quality === "audio") {
+      downloadUrl = videoData.music || videoData.play; // Fallback
+    } else if (quality === "low") {
+      downloadUrl = videoData.wmplay || videoData.play; // Marca de agua = baja calidad
+    } else if (quality === "high") {
+      downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay;
+    }
+
+    if (!downloadUrl) {
+      alert("No se encontró un enlace válido para esta opción.");
+      return;
+    }
+
+    // ✅ Redirige al Worker que fuerza la descarga
+    const fileExt = quality === "audio" ? "mp3" : "mp4";
+    window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${fileExt}`;
+  } catch (err) {
+    alert("Error al descargar el video.");
+    console.error(err);
+  }
+}
+
+
+
+
+
+
+
+
+    
   </script>
 
   <footer style="position: fixed; bottom: 0; left: 0; width: 100%; background: #f4f4f4; text-align: center; padding: 10px 0; font-size: 0.8em; color: #777; border-top: 1px solid #ddd;">
@@ -163,5 +181,6 @@
   </footer>
 </body>
 </html>
+
 
 
