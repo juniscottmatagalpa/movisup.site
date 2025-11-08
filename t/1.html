@@ -1,275 +1,262 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name='admaven-placement' content=Bqja5pjgG>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Descargar Video TikTok sin marca de agua</title>
-  <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
-  <link rel="stylesheet" href="css/style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Debug - Descargar TikTok</title>
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin: 16px; color: #222; }
-    .container { max-width: 780px; margin: 0 auto; }
-    .logo img { width: 60px; height: 60px; display: block; margin: 0 auto; }
-    h2 { text-align: center; color: #ff7b00; margin: 10px 0 20px; }
-
-    .input-wrapper { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 12px; }
-    .input-wrapper input {
-      flex: 1;
-      max-width: 500px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1em;
-    }
-    .input-wrapper img { width: 36px; height: 36px; cursor: pointer; }
-    .input-wrapper button {
-      background-color: #ff7b00; border: none; color: #fff; padding: 10px 16px;
-      border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s;
-    }
-    .input-wrapper button:hover { background-color: #e66b00; }
-
-    .loader { display: none; text-align: center; margin: 12px 0; color: #555; }
-
-    .result { display: none; margin-top: 16px; }
-
-    /* 🔸 Fila de estadísticas */
-    .stats-row {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      background: #fff3e0;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.95em;
-      color: #444;
-    }
-    .stat-item span { font-weight: 600; }
-
-    /* 🔸 Imagen y descripción */
-    .thumbnail { width: 100%; max-height: 420px; object-fit: cover; border-radius: 8px; display: block; margin-bottom: 10px; background: #eee; }
-    #title { font-size: 1.1em; color: #111; margin-bottom: 5px; }
-    .user-info { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .user-info img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-    #hashtags { color: #666; margin-bottom: 8px; }
-    .description {
-      margin-top: 8px;
-      font-size: 0.95em;
-      color: #333;
-      background: #f1f1f1;
-      padding: 12px;
-      border-radius: 8px;
-      text-align: left;
-      line-height: 1.4;
-      white-space: pre-wrap;
-      margin-bottom: 12px;
-    }
-
-    /* 🔸 Botones de descarga */
-    .download-options { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-    .download-options button {
-      background-color: #ff7b00; color: #fff; border: none; border-radius: 8px;
-      padding: 10px; font-size: 1em; cursor: pointer; transition: 0.3s;
-    }
-    .download-options button:hover { background-color: #e66b00; }
-
-    footer {
-      margin-top: 30px;
-      text-align: center;
-      color: #777;
-      font-size: 0.85em;
-      border-top: 1px solid #eee;
-      padding-top: 10px;
-    }
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:18px;color:#111}
+    .container{max-width:920px;margin:0 auto}
+    input[type="text"]{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
+    .row{display:flex;gap:8px;align-items:center;margin-top:10px}
+    button{padding:8px 12px;border-radius:8px;border:0;background:#ff7b00;color:#fff;cursor:pointer}
+    #loader{display:none;margin-top:8px}
+    .result{display:none;margin-top:14px;padding:12px;border-radius:10px;background:#fafafa;border:1px solid #eee}
+    .stats-row{display:flex;gap:14px;justify-content:space-around;padding:10px;background:#fff7ed;border-radius:8px;margin-bottom:10px}
+    .thumbnail{width:100%;max-height:420px;object-fit:cover;border-radius:8px;background:#eee}
+    .description{background:#f1f1f1;padding:12px;border-radius:8px;white-space:pre-wrap;margin-top:10px}
+    .debug{margin-top:12px;padding:10px;background:#fff;border-radius:8px;border:1px dashed #ccc;max-height:320px;overflow:auto;font-size:13px}
+    .hidden{display:none}
+    .download-buttons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .small{font-size:13px;color:#666}
+    footer{margin-top:26px;color:#666;font-size:13px;text-align:center}
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="logo"><img src="img/icon.png" alt="Logo"></div>
-    <h2>Descargar Video de TikTok</h2>
+    <h2>Diagnóstico - Obtener info TikTok</h2>
 
-    <div class="input-wrapper">
-      <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de TikTok">
-      <img id="inputIcon" src="img/pegar.png" alt="Acción" onclick="handleIconClick()">
-      <button onclick="obtenerInfo()">Obtener información</button>
+    <div class="row">
+      <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de TikTok (ej: https://www.tiktok.com/t/...)">
+      <button id="btnGet">Obtener información</button>
     </div>
 
-    <div class="loader" id="loader">Cargando...</div>
+    <div id="loader">Cargando... (si tarda más de 10s, la petición puede estar siendo bloqueada)</div>
 
-    <div class="result" id="result">
-      <div id="statsRow" class="stats-row" style="display:none;">
-        <div class="stat-item">👁️ <span id="views">0</span></div>
-        <div class="stat-item">❤️ <span id="likes">0</span></div>
-        <div class="stat-item">💬 <span id="comments">0</span></div>
-        <div class="stat-item">🔄 <span id="shares">0</span></div>
-        <div class="stat-item">📌 <span id="saves">0</span></div>
+    <div id="result" class="result">
+      <div id="statsRow" class="stats-row hidden">
+        <div>👁️ <b id="views">0</b></div>
+        <div>❤️ <b id="likes">0</b></div>
+        <div>💬 <b id="comments">0</b></div>
+        <div>🔄 <b id="shares">0</b></div>
+        <div>📌 <b id="saves">0</b></div>
       </div>
 
-      <img id="thumb" class="thumbnail" src="" alt="Miniatura">
+      <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
       <h3 id="title"></h3>
-      <div class="user-info" id="userInfo"></div>
-      <p id="hashtags"></p>
-      <div class="description" id="description"></div>
+      <div id="userInfo" class="small"></div>
+      <div id="hashtags" class="small" style="margin-top:8px;color:#666"></div>
+      <div id="description" class="description"></div>
 
-      <div class="download-options">
-        <button onclick="descargar('low')">📥 Descargar video baja calidad</button>
-        <button onclick="descargar('high')">📹 Descargar video HD</button>
-        <button onclick="descargar('audio')">🎵 Descargar solo MP3</button>
+      <div class="download-buttons">
+        <button onclick="descargar('low')">📥 Baja calidad</button>
+        <button onclick="descargar('high')">📹 Alta calidad</button>
+        <button onclick="descargar('audio')">🎵 Solo MP3</button>
       </div>
     </div>
+
+    <h3 style="margin-top:18px">Panel debug</h3>
+    <div id="debug" class="debug">Aquí verás la respuesta cruda del Worker y errores.</div>
 
     <footer>
-      © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
+      Si no aparece nada en el panel debug: comprueba que la URL del Worker (<code id="workerUrl"></code>) es correcta y accesible desde tu hosting.
     </footer>
   </div>
 
   <script>
     const WORKER_API = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
+    document.getElementById('workerUrl').textContent = WORKER_API;
 
-    function showLoader(show) {
-      document.getElementById("loader").style.display = show ? "block" : "none";
+    const btn = document.getElementById('btnGet');
+    const loader = document.getElementById('loader');
+    const debugEl = document.getElementById('debug');
+
+    function showLoader(show){
+      loader.style.display = show ? 'block' : 'none';
     }
 
-    async function handleIconClick() {
-      const input = document.getElementById("videoUrl");
-      if (input.value.trim() !== "") {
-        input.value = "";
-        document.getElementById("inputIcon").src = "img/pegar.png";
-      } else {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            input.value = text;
-            document.getElementById("inputIcon").src = "img/borrar.png";
-          } else {
-            alert("No hay texto copiado.");
-          }
-        } catch {
-          alert("Tu navegador no permite pegar automáticamente.");
-        }
-      }
+    function showDebug(text){
+      debugEl.textContent = text;
     }
 
-    async function obtenerInfo() {
-      const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
+    function appendDebug(text){
+      debugEl.textContent = debugEl.textContent + "\n\n" + text;
+      debugEl.scrollTop = debugEl.scrollHeight;
+    }
+
+    btn.addEventListener('click', obtenerInfo);
+
+    async function obtenerInfo(){
+      const urlInput = document.getElementById('videoUrl').value.trim();
+      if(!urlInput) return alert('Ingresa un enlace de TikTok');
+
+      // limpiar UI
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('thumb').src = '';
+      document.getElementById('title').textContent = '';
+      document.getElementById('userInfo').innerHTML = '';
+      document.getElementById('description').textContent = '';
+      document.getElementById('hashtags').textContent = '';
+      document.getElementById('statsRow').classList.add('hidden');
 
       showLoader(true);
-      document.getElementById("result").style.display = "none";
+      showDebug('Iniciando petición al Worker...');
+
+      // timeout con AbortController (10s)
+      const controller = new AbortController();
+      const timeout = setTimeout(()=> controller.abort(), 10000);
 
       try {
         const params = new URLSearchParams();
-        params.append("q", url);
+        params.append('q', urlInput);
 
         const res = await fetch(WORKER_API, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-          body: params.toString()
+          method: 'POST',
+          headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString(),
+          signal: controller.signal,
         });
 
-        const data = await res.json();
-        showLoader(false);
+        clearTimeout(timeout);
 
-        if (data.error) {
-          alert("❌ " + data.error);
+        appendDebug(`HTTP ${res.status} ${res.statusText}`);
+        // mostrar cabeceras más relevantes
+        const hdrs = {};
+        res.headers.forEach((v,k)=> hdrs[k]=v);
+        appendDebug('Headers recibidos: ' + JSON.stringify(hdrs, null, 2));
+
+        const text = await res.text();
+        appendDebug('Body (texto):\n' + text.slice(0, 2000));
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (err) {
+          appendDebug('ERROR: respuesta no es JSON o parse failed: ' + err.message);
+          showLoader(false);
+          alert('La respuesta del Worker no es JSON. Revisa el panel debug. (Puede ser que el Worker devuelva HTML/error)');
           return;
         }
 
-        let videoData = data.data || data.item || (data.items && data.items[0]) || data;
-
-        document.getElementById("title").textContent = videoData.title || videoData.desc || videoData.description || "Video sin título";
-        document.getElementById("thumb").src = videoData.cover || videoData.thumbnail || videoData.video?.cover || "";
-
-        let hashtagsText = "";
-        if (Array.isArray(videoData.hashtags)) hashtagsText = videoData.hashtags.map(h => h.name || h).join(" ");
-        else if (videoData.tags) hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(" ") : videoData.tags;
-        document.getElementById("hashtags").textContent = hashtagsText;
-
-        const desc = videoData.desc || videoData.description || "";
-        const descEl = document.getElementById("description");
-        if (desc.trim().length) {
-          descEl.textContent = desc;
-          descEl.style.display = "block";
-        } else {
-          descEl.style.display = "none";
-        }
-
-        const author = videoData.author || videoData.owner || videoData.user;
-        if (author) {
-          const avatar = author.avatar || author.cover || author.avatar_thumb || author.profile_image || "";
-          const name = author.unique_id || author.nickname || author.name || author.displayName || "";
-          document.getElementById("userInfo").innerHTML = `<img src="${avatar || 'https://via.placeholder.com/50'}" alt="User"><span>${name}</span>`;
-        } else {
-          document.getElementById("userInfo").innerHTML = "";
-        }
-
-        const stats = videoData.statistics || videoData.stat || videoData.stats;
-        if (stats) {
-          document.getElementById("views").textContent = (stats.play_count || 0).toLocaleString();
-          document.getElementById("likes").textContent = (stats.digg_count || 0).toLocaleString();
-          document.getElementById("comments").textContent = (stats.comment_count || 0).toLocaleString();
-          document.getElementById("shares").textContent = (stats.share_count || 0).toLocaleString();
-          document.getElementById("saves").textContent = (stats.collect_count || 0).toLocaleString();
-          document.getElementById("statsRow").style.display = "flex";
-        } else {
-          document.getElementById("statsRow").style.display = "none";
-        }
-
-        document.getElementById("result").style.display = "block";
-      } catch (err) {
+        appendDebug('JSON parseado. Estructura raíz keys: ' + Object.keys(data).join(', '));
         showLoader(false);
-        alert("⚠️ Error al obtener la información del video.");
+
+        if(data.error){
+          appendDebug('Error en JSON: ' + (data.error));
+          alert('❌ Error desde el Worker: ' + data.error);
+          return;
+        }
+
+        // Normalizar objeto con datos de video (varios esquemas)
+        let videoData = null;
+        if (data.data) videoData = data.data;
+        else if (data.item) videoData = data.item;
+        else if (data.items && Array.isArray(data.items) && data.items.length) videoData = data.items[0];
+        else videoData = data; // fallback
+
+        appendDebug('videoData seleccionado keys: ' + (videoData ? Object.keys(videoData).join(', ') : 'null'));
+
+        // title/desc
+        const title = videoData.title || videoData.desc || videoData.description || (videoData.aweme && videoData.aweme.desc) || '';
+        document.getElementById('title').textContent = title || 'Video sin título';
+
+        // thumb
+        const thumb = videoData.cover || videoData.thumbnail || videoData.video?.cover || (videoData.aweme && videoData.aweme.video && videoData.aweme.video.cover) || '';
+        document.getElementById('thumb').src = thumb || '';
+
+        // hashtags
+        let hashtagsText = '';
+        if(Array.isArray(videoData.hashtags)) hashtagsText = videoData.hashtags.map(h=>h.name||h).join(' ');
+        else if(videoData.hashtag) hashtagsText = videoData.hashtag;
+        else if(videoData.tags) hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(' ') : (videoData.tags || '');
+        document.getElementById('hashtags').textContent = hashtagsText;
+
+        // description
+        const description = videoData.desc || videoData.description || (videoData.aweme && videoData.aweme.desc) || '';
+        if(description && description.trim().length){
+          document.getElementById('description').textContent = description;
+        } else {
+          document.getElementById('description').textContent = '';
+        }
+
+        // author
+        const author = videoData.author || videoData.owner || videoData.user || (videoData.aweme && videoData.aweme.author);
+        if(author){
+          const avatar = author.avatar || author.cover || author.avatar_thumb || author.profile_image || '';
+          const name = author.unique_id || author.nickname || author.name || author.displayName || '';
+          document.getElementById('userInfo').innerHTML = `<img src="${avatar||''}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;margin-right:8px;vertical-align:middle"> <strong>${name || ''}</strong>`;
+        }
+
+        // stats: buscar en varios campos
+        let stats = videoData.statistics || videoData.stat || videoData.stats || (videoData.aweme && videoData.aweme.statistics);
+        if(!stats){
+          const candidate = {};
+          if(videoData.play_count) candidate.play_count = videoData.play_count;
+          if(videoData.digg_count) candidate.digg_count = videoData.digg_count;
+          if(videoData.comment_count) candidate.comment_count = videoData.comment_count;
+          if(videoData.share_count) candidate.share_count = videoData.share_count;
+          if(videoData.collect_count) candidate.collect_count = videoData.collect_count;
+          stats = Object.keys(candidate).length ? candidate : null;
+        }
+
+        if(stats){
+          document.getElementById('views').textContent = (stats.play_count || stats.playCount || stats.views || 0).toLocaleString();
+          document.getElementById('likes').textContent = (stats.digg_count || stats.likeCount || stats.likes || 0).toLocaleString();
+          document.getElementById('comments').textContent = (stats.comment_count || stats.commentCount || 0).toLocaleString();
+          document.getElementById('shares').textContent = (stats.share_count || stats.shareCount || 0).toLocaleString();
+          document.getElementById('saves').textContent = (stats.collect_count || stats.collection_count || stats.collectCount || 0).toLocaleString();
+          document.getElementById('statsRow').classList.remove('hidden');
+        } else {
+          document.getElementById('statsRow').classList.add('hidden');
+        }
+
+        // show result
+        document.getElementById('result').style.display = 'block';
+        appendDebug('UI actualizada correctamente.');
+      } catch (err){
+        clearTimeout(timeout);
+        showLoader(false);
+        console.error('Error en fetch:', err);
+        appendDebug('ERROR en fetch: ' + err.message);
+        if(err.name === 'AbortError') alert('La petición tardó demasiado y fue abortada (timeout). Puede haber bloqueo o latencia en el Worker.');
+        else alert('Error al obtener la información. Revisa el panel debug.');
       }
     }
 
-    async function descargar(quality) {
-      const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Primero ingresa un enlace.");
+    // descargar: mantiene la lógica de redirigir al worker ?download=...&ext=...
+    async function descargar(quality){
+      const urlInput = document.getElementById('videoUrl').value.trim();
+      if(!urlInput) return alert('Primero ingresa un enlace.');
 
+      showDebug('Obteniendo URLs para descarga...');
       try {
-        const params = new URLSearchParams();
-        params.append("q", url);
-
+        const params = new URLSearchParams(); params.append('q', urlInput);
         const res = await fetch(WORKER_API, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
           body: params.toString()
         });
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch(e) { showDebug('Respuesta no JSON: ' + text); alert('No se pudo obtener enlaces de descarga. Revisa debug.'); return; }
 
-        const data = await res.json();
-        if (!data || !data.data) {
-          alert("❌ No se encontró un enlace de descarga válido.");
-          return;
-        }
+        if(!data || !data.data) { alert('No se encontró un enlace de descarga válido.'); showDebug(JSON.stringify(data)); return; }
 
         const videoData = data.data;
-        let downloadUrl = "";
-        let ext = "mp4";
+        let downloadUrl = '';
+        let ext = 'mp4';
+        if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url || videoData.music_info?.play || videoData.play; ext='mp3'; }
+        else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
+        else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
 
-        if (quality === "audio") {
-          downloadUrl = videoData.music || videoData.music_url || videoData.music_info?.play || videoData.play;
-          ext = "mp3";
-        } else if (quality === "low") {
-          downloadUrl = videoData.wmplay || videoData.play;
-        } else {
-          downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay;
-        }
+        if(!downloadUrl){ alert('No se encontró URL para esta calidad'); showDebug(JSON.stringify(videoData)); return; }
 
-        if (!downloadUrl) {
-          alert("⚠️ No se encontró un enlace válido para esta opción.");
-          return;
-        }
-
+        // redirigir al worker para forzar descarga
         window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${encodeURIComponent(ext)}`;
-      } catch {
-        alert("Error al descargar el video.");
+      } catch(err){
+        console.error('Error en descargar():', err);
+        showDebug('Error en descargar(): ' + err.message);
+        alert('Error al preparar la descarga. Revisa panel debug.');
       }
     }
   </script>
