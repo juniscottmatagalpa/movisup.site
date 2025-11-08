@@ -2,39 +2,37 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Descargar videos de TikTok sin marca de agua HD</title>
   <style>
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       margin: 0;
+      padding: 20px;
       background: #ffefd5; /* naranja claro */
       color: #111;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 20px;
     }
     .container {
       width: 100%;
       max-width: 480px;
       background: #fff;
-      padding: 24px;
+      padding: 22px;
       border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
     h2 {
       text-align: center;
-      color: #222;
-      margin-bottom: 20px;
       font-size: 1.4rem;
+      color: #222;
       font-weight: 600;
+      margin-bottom: 20px;
     }
     .input-group {
       display: flex;
       align-items: center;
-      border: 2px solid #32cd32; /* verde */
+      border: 2px solid #32cd32;
       border-radius: 10px;
       overflow: hidden;
       background: #fff;
@@ -71,7 +69,7 @@
       cursor: pointer;
     }
     #btnGet:active {
-      transform: scale(0.98);
+      transform: scale(0.97);
     }
     #loader {
       display: none;
@@ -128,19 +126,10 @@
     .download-buttons button:active {
       transform: scale(0.98);
     }
-    footer {
-      text-align: center;
-      font-size: 13px;
-      color: #888;
-      margin-top: 18px;
-    }
+    .hidden { display:none }
     @media (max-width: 480px) {
-      .container {
-        padding: 16px;
-      }
-      h2 {
-        font-size: 1.2rem;
-      }
+      .container { padding: 16px; }
+      h2 { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -149,7 +138,7 @@
     <h2>Descargar videos de TikTok sin marca de agua HD</h2>
 
     <div class="input-group">
-      <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de TikTok (https://www.tiktok.com/...)" />
+      <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de TikTok">
       <button id="pasteClearBtn"><img src="img/pegar.png" alt="pegar"></button>
     </div>
 
@@ -178,59 +167,166 @@
         <button onclick="descargar('audio')">🎵 Solo MP3</button>
       </div>
     </div>
-
-    <footer>© 2025 - Herramienta TikTok Downloader</footer>
   </div>
 
   <script>
     const WORKER_API = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
-    const btnGet = document.getElementById('btnGet');
-    const pasteClearBtn = document.getElementById('pasteClearBtn');
+    const btn = document.getElementById('btnGet');
+    const loader = document.getElementById('loader');
     const videoUrlInput = document.getElementById('videoUrl');
+    const pasteClearBtn = document.getElementById('pasteClearBtn');
 
+    // Validar solo enlaces TikTok
     function validarTikTok(url) {
       return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
     }
 
-    btnGet.addEventListener('click', () => {
-      const url = videoUrlInput.value.trim();
-      if (!validarTikTok(url)) {
-        alert('Por favor, ingresa un enlace válido de TikTok.');
-        return;
-      }
-      obtenerInfo();
-    });
-
-    videoUrlInput.addEventListener('input', () => {
-      if (videoUrlInput.value.trim().length > 0) {
-        pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
-      } else {
-        pasteClearBtn.innerHTML = '<img src="img/pegar.png" alt="pegar">';
-      }
-    });
-
+    // Pegar o borrar
     pasteClearBtn.addEventListener('click', async () => {
-      if (videoUrlInput.value.trim().length > 0) {
-        videoUrlInput.value = '';
+      if (videoUrlInput.value.trim() !== "") {
+        videoUrlInput.value = "";
         pasteClearBtn.innerHTML = '<img src="img/pegar.png" alt="pegar">';
         return;
       }
       try {
         const text = await navigator.clipboard.readText();
-        if (text && validarTikTok(text)) {
+        if (validarTikTok(text)) {
           videoUrlInput.value = text;
           pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
-          obtenerInfo();
+          obtenerInfo(); // auto ejecutar
         } else {
-          alert('El contenido copiado no es un enlace válido de TikTok.');
+          alert("El texto copiado no es un enlace válido de TikTok.");
         }
-      } catch (err) {
-        alert('No se pudo acceder al portapapeles. Permite el acceso o pega manualmente el enlace.');
+      } catch {
+        alert("No se pudo acceder al portapapeles. Pega manualmente el enlace.");
       }
     });
+
+    // Cambiar icono según input
+    videoUrlInput.addEventListener("input", () => {
+      pasteClearBtn.innerHTML = videoUrlInput.value.trim()
+        ? '<img src="img/borrar.png" alt="borrar">'
+        : '<img src="img/pegar.png" alt="pegar">';
+    });
+
+    // Mostrar loader
+    function showLoader(show){ loader.style.display = show ? 'block' : 'none'; }
+
+    btn.addEventListener('click', () => {
+      const url = videoUrlInput.value.trim();
+      if (!url || !validarTikTok(url)) return alert('Ingresa un enlace válido de TikTok');
+      obtenerInfo();
+    });
+
+    async function obtenerInfo(){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Ingresa un enlace de TikTok');
+
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('thumb').src = '';
+      document.getElementById('title').textContent = '';
+      document.getElementById('userInfo').innerHTML = '';
+      document.getElementById('description').textContent = '';
+      document.getElementById('hashtags').textContent = '';
+      document.getElementById('statsRow').classList.add('hidden');
+
+      showLoader(true);
+
+      const controller = new AbortController();
+      const timeout = setTimeout(()=> controller.abort(), 10000);
+
+      try {
+        const params = new URLSearchParams();
+        params.append('q', urlInput);
+
+        const res = await fetch(WORKER_API, {
+          method: 'POST',
+          headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString(),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch { showLoader(false); alert('Error: respuesta no válida.'); return; }
+
+        showLoader(false);
+        if(data.error){ alert('❌ Error: ' + data.error); return; }
+
+        let videoData = data.data || data.item || (data.items && data.items[0]) || data;
+
+        const title = videoData.title || videoData.desc || videoData.description || '';
+        document.getElementById('title').textContent = title || 'Video sin título';
+
+        const thumb = videoData.cover || videoData.thumbnail || videoData.video?.cover || '';
+        document.getElementById('thumb').src = thumb || '';
+
+        let hashtagsText = '';
+        if(Array.isArray(videoData.hashtags)) hashtagsText = videoData.hashtags.map(h=>h.name||h).join(' ');
+        else if(videoData.tags) hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(' ') : (videoData.tags || '');
+        document.getElementById('hashtags').textContent = hashtagsText;
+
+        const description = videoData.desc || videoData.description || '';
+        document.getElementById('description').textContent = description;
+
+        const author = videoData.author || videoData.user;
+        if(author){
+          const avatar = author.avatar || author.avatar_thumb || '';
+          const name = author.unique_id || author.nickname || '';
+          document.getElementById('userInfo').innerHTML = `<img src="${avatar}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;margin-right:8px;vertical-align:middle"> <strong>${name}</strong>`;
+        }
+
+        const stats = videoData.statistics || {};
+        document.getElementById('views').textContent = (stats.play_count || 0).toLocaleString();
+        document.getElementById('likes').textContent = (stats.digg_count || 0).toLocaleString();
+        document.getElementById('comments').textContent = (stats.comment_count || 0).toLocaleString();
+        document.getElementById('shares').textContent = (stats.share_count || 0).toLocaleString();
+        document.getElementById('saves').textContent = (stats.collect_count || 0).toLocaleString();
+        document.getElementById('statsRow').classList.remove('hidden');
+
+        document.getElementById('result').style.display = 'block';
+      } catch (err){
+        clearTimeout(timeout);
+        showLoader(false);
+        alert('Error al obtener la información.');
+      }
+    }
+
+    async function descargar(quality){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Primero ingresa un enlace.');
+
+      try {
+        const params = new URLSearchParams(); params.append('q', urlInput);
+        const res = await fetch(WORKER_API, {
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString()
+        });
+        const text = await res.text();
+        const data = JSON.parse(text);
+        if(!data || !data.data){ alert('No se encontró enlace de descarga.'); return; }
+
+        const videoData = data.data;
+        let downloadUrl = '';
+        let ext = 'mp4';
+        if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
+        else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
+        else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
+
+        if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
+
+        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${encodeURIComponent(ext)}`;
+      } catch(err){
+        alert('Error al preparar la descarga.');
+      }
+    }
   </script>
 </body>
 </html>
+
+
 
 
 
