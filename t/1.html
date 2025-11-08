@@ -176,6 +176,12 @@
   </style>
 </head>
 <body>
+
+
+
+
+
+	
   <div class="container">
     <h2>Descargar videos de TikTok sin marca de agua HD</h2>
 
@@ -220,176 +226,8 @@
         <button onclick="descargar('audio')">🎵 Solo MP3</button>
       </div>
     </div>
-  </div>
 
-  <script>
-    const WORKER_API = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
-    const btn = document.getElementById('btnGet');
-    const loader = document.getElementById('loader');
-    const videoUrlInput = document.getElementById('videoUrl');
-    const pasteClearBtn = document.getElementById('pasteClearBtn');
 
-    function validarTikTok(url) {
-      return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
-    }
-
-    pasteClearBtn.addEventListener('click', async () => {
-      if (videoUrlInput.value.trim() !== "") {
-        videoUrlInput.value = "";
-        pasteClearBtn.innerHTML = '<img src="img/pegar.png" alt="pegar">';
-        return;
-      }
-      try {
-        const text = await navigator.clipboard.readText();
-        if (validarTikTok(text)) {
-          videoUrlInput.value = text;
-          pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
-          obtenerInfo();
-        } else {
-          alert("El texto copiado no es un enlace válido de TikTok.");
-        }
-      } catch {
-        alert("No se pudo acceder al portapapeles.");
-      }
-    });
-
-    videoUrlInput.addEventListener("input", () => {
-      pasteClearBtn.innerHTML = videoUrlInput.value.trim()
-        ? '<img src="img/borrar.png" alt="borrar">'
-        : '<img src="img/pegar.png" alt="pegar">';
-    });
-
-    function showLoader(show){ loader.style.display = show ? 'block' : 'none'; }
-
-    btn.addEventListener('click', () => {
-      const url = videoUrlInput.value.trim();
-      if (!url || !validarTikTok(url)) return alert('Ingresa un enlace válido de TikTok');
-      obtenerInfo();
-    });
-
-    async function obtenerInfo(){
-      const urlInput = videoUrlInput.value.trim();
-      if(!urlInput) return alert('Ingresa un enlace de TikTok');
-
-      document.getElementById('result').style.display = 'none';
-      document.getElementById('thumb').src = '';
-      document.getElementById('title').textContent = '';
-      document.getElementById('userInfo').innerHTML = '';
-      document.getElementById('description').textContent = '';
-      document.getElementById('hashtags').textContent = '';
-      document.getElementById('statsRow').classList.add('hidden');
-
-      showLoader(true);
-
-      const controller = new AbortController();
-      const timeout = setTimeout(()=> controller.abort(), 10000);
-
-      try {
-        const params = new URLSearchParams();
-        params.append('q', urlInput);
-
-        const res = await fetch(WORKER_API, {
-          method: 'POST',
-          headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
-          body: params.toString(),
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeout);
-        const text = await res.text();
-        let data;
-        try { data = JSON.parse(text); } catch { showLoader(false); alert('Error: respuesta no válida.'); return; }
-
-        showLoader(false);
-        if(data.error){ alert('❌ Error: ' + data.error); return; }
-
-        // --- LÓGICA ORIGINAL DE DATOS ---
-        let videoData = null;
-        if (data.data) videoData = data.data;
-        else if (data.item) videoData = data.item;
-        else if (data.items && Array.isArray(data.items) && data.items.length) videoData = data.items[0];
-        else videoData = data;
-
-        const title = videoData.title || videoData.desc || videoData.description || '';
-        document.getElementById('title').textContent = title || 'Video sin título';
-
-        const thumb = videoData.cover || videoData.thumbnail || videoData.video?.cover || '';
-        document.getElementById('thumb').src = thumb || '';
-
-        let hashtagsText = '';
-        if(Array.isArray(videoData.hashtags)) hashtagsText = videoData.hashtags.map(h=>h.name||h).join(' ');
-        else if(videoData.hashtag) hashtagsText = videoData.hashtag;
-        else if(videoData.tags) hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(' ') : (videoData.tags || '');
-        document.getElementById('hashtags').textContent = hashtagsText;
-
-        const description = videoData.desc || videoData.description || '';
-        document.getElementById('description').textContent = description;
-
-        const author = videoData.author || videoData.owner || videoData.user;
-        if(author){
-          const avatar = author.avatar || author.cover || author.avatar_thumb || author.profile_image || '';
-          const name = author.unique_id || author.nickname || author.name || author.displayName || '';
-          document.getElementById('userInfo').innerHTML = `<img src="${avatar||''}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;margin-right:8px;vertical-align:middle"> <strong>${name || ''}</strong>`;
-        }
-
-        // ✅ Recupera correctamente las estadísticas
-        let stats = videoData.statistics || videoData.stat || videoData.stats || (videoData.aweme && videoData.aweme.statistics);
-        if(!stats){
-          const candidate = {};
-          if(videoData.play_count) candidate.play_count = videoData.play_count;
-          if(videoData.digg_count) candidate.digg_count = videoData.digg_count;
-          if(videoData.comment_count) candidate.comment_count = videoData.comment_count;
-          if(videoData.share_count) candidate.share_count = videoData.share_count;
-          if(videoData.collect_count) candidate.collect_count = videoData.collect_count;
-          stats = Object.keys(candidate).length ? candidate : null;
-        }
-
-        if(stats){
-          document.getElementById('views').textContent = (stats.play_count || stats.playCount || stats.views || 0).toLocaleString();
-          document.getElementById('likes').textContent = (stats.digg_count || stats.likeCount || stats.likes || 0).toLocaleString();
-          document.getElementById('comments').textContent = (stats.comment_count || stats.commentCount || 0).toLocaleString();
-          document.getElementById('shares').textContent = (stats.share_count || stats.shareCount || 0).toLocaleString();
-          document.getElementById('saves').textContent = (stats.collect_count || stats.collection_count || stats.collectCount || 0).toLocaleString();
-          document.getElementById('statsRow').classList.remove('hidden');
-        }
-
-        document.getElementById('result').style.display = 'block';
-      } catch (err){
-        clearTimeout(timeout);
-        showLoader(false);
-        alert('Error al obtener la información.');
-      }
-    }
-
-    async function descargar(quality){
-      const urlInput = videoUrlInput.value.trim();
-      if(!urlInput) return alert('Primero ingresa un enlace.');
-      try {
-        const params = new URLSearchParams(); params.append('q', urlInput);
-        const res = await fetch(WORKER_API, {
-          method:'POST',
-          headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
-          body: params.toString()
-        });
-        const text = await res.text();
-        const data = JSON.parse(text);
-        if(!data || !data.data){ alert('No se encontró enlace de descarga.'); return; }
-
-        const videoData = data.data;
-        let downloadUrl = '';
-        let ext = 'mp4';
-        if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
-        else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
-        else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
-
-        if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
-
-        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${encodeURIComponent(ext)}`;
-      } catch(err){
-        alert('Error al preparar la descarga.');
-      }
-    }
-  </script>
 
 
 
@@ -655,6 +493,196 @@ download long tiktok videos no watermark<br>
 
 </p>
 </section>
+</div>
+
+
+
+
+
+
+
+
+
+
+	  
+  </div>
+
+
+
+
+
+	
+  <script>
+    const WORKER_API = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
+    const btn = document.getElementById('btnGet');
+    const loader = document.getElementById('loader');
+    const videoUrlInput = document.getElementById('videoUrl');
+    const pasteClearBtn = document.getElementById('pasteClearBtn');
+
+    function validarTikTok(url) {
+      return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
+    }
+
+    pasteClearBtn.addEventListener('click', async () => {
+      if (videoUrlInput.value.trim() !== "") {
+        videoUrlInput.value = "";
+        pasteClearBtn.innerHTML = '<img src="img/pegar.png" alt="pegar">';
+        return;
+      }
+      try {
+        const text = await navigator.clipboard.readText();
+        if (validarTikTok(text)) {
+          videoUrlInput.value = text;
+          pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
+          obtenerInfo();
+        } else {
+          alert("El texto copiado no es un enlace válido de TikTok.");
+        }
+      } catch {
+        alert("No se pudo acceder al portapapeles.");
+      }
+    });
+
+    videoUrlInput.addEventListener("input", () => {
+      pasteClearBtn.innerHTML = videoUrlInput.value.trim()
+        ? '<img src="img/borrar.png" alt="borrar">'
+        : '<img src="img/pegar.png" alt="pegar">';
+    });
+
+    function showLoader(show){ loader.style.display = show ? 'block' : 'none'; }
+
+    btn.addEventListener('click', () => {
+      const url = videoUrlInput.value.trim();
+      if (!url || !validarTikTok(url)) return alert('Ingresa un enlace válido de TikTok');
+      obtenerInfo();
+    });
+
+    async function obtenerInfo(){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Ingresa un enlace de TikTok');
+
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('thumb').src = '';
+      document.getElementById('title').textContent = '';
+      document.getElementById('userInfo').innerHTML = '';
+      document.getElementById('description').textContent = '';
+      document.getElementById('hashtags').textContent = '';
+      document.getElementById('statsRow').classList.add('hidden');
+
+      showLoader(true);
+
+      const controller = new AbortController();
+      const timeout = setTimeout(()=> controller.abort(), 10000);
+
+      try {
+        const params = new URLSearchParams();
+        params.append('q', urlInput);
+
+        const res = await fetch(WORKER_API, {
+          method: 'POST',
+          headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString(),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch { showLoader(false); alert('Error: respuesta no válida.'); return; }
+
+        showLoader(false);
+        if(data.error){ alert('❌ Error: ' + data.error); return; }
+
+        // --- LÓGICA ORIGINAL DE DATOS ---
+        let videoData = null;
+        if (data.data) videoData = data.data;
+        else if (data.item) videoData = data.item;
+        else if (data.items && Array.isArray(data.items) && data.items.length) videoData = data.items[0];
+        else videoData = data;
+
+        const title = videoData.title || videoData.desc || videoData.description || '';
+        document.getElementById('title').textContent = title || 'Video sin título';
+
+        const thumb = videoData.cover || videoData.thumbnail || videoData.video?.cover || '';
+        document.getElementById('thumb').src = thumb || '';
+
+        let hashtagsText = '';
+        if(Array.isArray(videoData.hashtags)) hashtagsText = videoData.hashtags.map(h=>h.name||h).join(' ');
+        else if(videoData.hashtag) hashtagsText = videoData.hashtag;
+        else if(videoData.tags) hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(' ') : (videoData.tags || '');
+        document.getElementById('hashtags').textContent = hashtagsText;
+
+        const description = videoData.desc || videoData.description || '';
+        document.getElementById('description').textContent = description;
+
+        const author = videoData.author || videoData.owner || videoData.user;
+        if(author){
+          const avatar = author.avatar || author.cover || author.avatar_thumb || author.profile_image || '';
+          const name = author.unique_id || author.nickname || author.name || author.displayName || '';
+          document.getElementById('userInfo').innerHTML = `<img src="${avatar||''}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;margin-right:8px;vertical-align:middle"> <strong>${name || ''}</strong>`;
+        }
+
+        // ✅ Recupera correctamente las estadísticas
+        let stats = videoData.statistics || videoData.stat || videoData.stats || (videoData.aweme && videoData.aweme.statistics);
+        if(!stats){
+          const candidate = {};
+          if(videoData.play_count) candidate.play_count = videoData.play_count;
+          if(videoData.digg_count) candidate.digg_count = videoData.digg_count;
+          if(videoData.comment_count) candidate.comment_count = videoData.comment_count;
+          if(videoData.share_count) candidate.share_count = videoData.share_count;
+          if(videoData.collect_count) candidate.collect_count = videoData.collect_count;
+          stats = Object.keys(candidate).length ? candidate : null;
+        }
+
+        if(stats){
+          document.getElementById('views').textContent = (stats.play_count || stats.playCount || stats.views || 0).toLocaleString();
+          document.getElementById('likes').textContent = (stats.digg_count || stats.likeCount || stats.likes || 0).toLocaleString();
+          document.getElementById('comments').textContent = (stats.comment_count || stats.commentCount || 0).toLocaleString();
+          document.getElementById('shares').textContent = (stats.share_count || stats.shareCount || 0).toLocaleString();
+          document.getElementById('saves').textContent = (stats.collect_count || stats.collection_count || stats.collectCount || 0).toLocaleString();
+          document.getElementById('statsRow').classList.remove('hidden');
+        }
+
+        document.getElementById('result').style.display = 'block';
+      } catch (err){
+        clearTimeout(timeout);
+        showLoader(false);
+        alert('Error al obtener la información.');
+      }
+    }
+
+    async function descargar(quality){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Primero ingresa un enlace.');
+      try {
+        const params = new URLSearchParams(); params.append('q', urlInput);
+        const res = await fetch(WORKER_API, {
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString()
+        });
+        const text = await res.text();
+        const data = JSON.parse(text);
+        if(!data || !data.data){ alert('No se encontró enlace de descarga.'); return; }
+
+        const videoData = data.data;
+        let downloadUrl = '';
+        let ext = 'mp4';
+        if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
+        else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
+        else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
+
+        if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
+
+        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${encodeURIComponent(ext)}`;
+      } catch(err){
+        alert('Error al preparar la descarga.');
+      }
+    }
+  </script>
+
+
+
 
 
 
@@ -685,6 +713,7 @@ download long tiktok videos no watermark<br>
 </footer>
 </body>
 </html>
+
 
 
 
