@@ -253,29 +253,7 @@
     </div>
 
 
-<script>
-document.getElementById("high").addEventListener("click", function() {
-  // 🪟 Abre la pestaña inmediatamente en el clic (permitido)
-  const adWindow = window.open("about:blank", "_blank");
 
-  // ⏳ Espera 6 segundos y redirige a Adsterra
-  setTimeout(() => {
-    if (adWindow && !adWindow.closed) {
-      adWindow.location.href = "https://www.effectivegatecpm.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a";
-    }
-  }, 3000);
-
-  console.log("Botón HD presionado. Esperando 6 s para abrir Adsterra...");
-});
-
-// (Opcional) otros botones
-document.getElementById("btn-low").addEventListener("click", () => {
-  console.log("Descargando en baja calidad...");
-});
-document.getElementById("btn-audio").addEventListener("click", () => {
-  console.log("Descargando solo audio...");
-});
-</script>
 
 
  <div class="descrip">
@@ -741,6 +719,17 @@ download long tiktok videos no watermark<br>
         const videoData = data.data;
         let downloadUrl = '';
         let ext = 'mp4';
+
+
+		 if (quality === 'high') {
+  setTimeout(() => {
+    window.open("https://www.effectivegatecpm.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a", "_blank");
+  }, 3000); // 3 segundos
+}
+
+
+
+		  
         if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
         else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
         else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
@@ -786,6 +775,7 @@ download long tiktok videos no watermark<br>
 </footer>
 </body>
 </html>
+
 
 
 
