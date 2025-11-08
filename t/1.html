@@ -256,13 +256,17 @@
 <script>
 function descargar(calidad) {
   if (calidad === 'high') {
-    // ✅ Espera 6 segundos y abre la ventana Adsterra
+    // 🪟 Abre una ventana vacía inmediatamente (permitido por el clic)
+    let adWindow = window.open("", "_blank");
+
+    // ⏳ Espera 6 segundos y redirige esa ventana al enlace Adsterra
     setTimeout(function() {
-      window.open("https://www.effectivegatecpm.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a", "_blank");
-    }, 6000);
+      if (adWindow) {
+        adWindow.location.href = "https://www.effectivegatecpm.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a";
+      }
+    }, 4000);
   }
 
-  
 }
 </script>
 
@@ -775,6 +779,7 @@ download long tiktok videos no watermark<br>
 </footer>
 </body>
 </html>
+
 
 
 
