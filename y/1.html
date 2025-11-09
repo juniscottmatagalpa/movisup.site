@@ -215,13 +215,7 @@
       }
       try {
         const text = await navigator.clipboard.readText();
-        if (validarTikTok(text)) {
-          videoUrlInput.value = text;
-          pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
-          obtenerInfo();
-        } else {
-          alert("El texto copiado no es un enlace válido de TikTok.");
-        }
+       
       } catch {
         alert("No se pudo acceder al portapapeles.");
       }
@@ -397,3 +391,4 @@
 </footer>
 </body>
 </html>
+
