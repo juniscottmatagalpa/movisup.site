@@ -570,9 +570,10 @@ download long tiktok videos no watermark<br>
     const videoUrlInput = document.getElementById('videoUrl');
     const pasteClearBtn = document.getElementById('pasteClearBtn');
 
-    function validarTikTok(url) {
-      return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
-    }
+   
+	  function validarYoutube(url) {
+  return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com|youtube\.com|youtu\.be/i.test(url);
+}
 
     pasteClearBtn.addEventListener('click', async () => {
       if (videoUrlInput.value.trim() !== "") {
@@ -582,7 +583,7 @@ download long tiktok videos no watermark<br>
       }
       try {
         const text = await navigator.clipboard.readText();
-        if (validarTikTok(text)) {
+        if (validarYoutube(text)) {
           videoUrlInput.value = text;
           pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
           obtenerInfo();
@@ -604,7 +605,7 @@ download long tiktok videos no watermark<br>
 
     btn.addEventListener('click', () => {
       const url = videoUrlInput.value.trim();
-      if (!url || !validarTikTok(url)) return alert('Ingresa un enlace válido de TikTok');
+      if (!url || !validarYoutube(url)) return alert('Ingresa un enlace válido de TikTok');
       obtenerInfo();
     });
 
@@ -775,6 +776,7 @@ download long tiktok videos no watermark<br>
 </footer>
 </body>
 </html>
+
 
 
 
