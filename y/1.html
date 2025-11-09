@@ -1,262 +1,299 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-<meta name='admaven-placement' content=Bqja5pjgG>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="google-site-verification" content="HxQfgEYjM_HY3SQiEgDGgEyL8ND6MeSQkO1V0kqGPOE" />
+	
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="description" content="Descarga videos de TikTok gratis en HD y sin marca de agua. Rápido, seguro y compatible con cualquier dispositivo.">
+<meta name="keywords" content="descargar tiktok, tiktok downloader, videos tiktok hd, sin marca de agua, guardar tiktok">
+<meta name="robots" content="index, follow">
+<meta name="author" content="TuNombre o Marca">
+<meta name="theme-color" content="#ff6600">
+
+<!-- Open Graph (para compartir en redes) -->
+<meta property="og:title" content="Descargar Videos de TikTok Gratis HD | Sin Marca de Agua">
+<meta property="og:description" content="Descarga videos de TikTok en alta calidad directamente desde tu navegador. 100% gratis y sin registro.">
+<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+<meta property="og:url" content="http://movisup.site/">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Descargar Videos TikTok HD Gratis">
+<meta name="twitter:description" content="Guarda videos de TikTok sin marca de agua, rápido y gratis.">
+<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
+<meta name="description" content="Download TikTok videos for free in HD and without watermark. Fast, secure, and compatible with any device.">
+<meta name="keywords" content="tiktok downloader, download tiktok, tiktok videos hd, no watermark, save tiktok">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Your Name or Brand">
+<meta name="theme-color" content="#ff6600">
+
+<!-- Open Graph (for social media sharing) -->
+<meta property="og:title" content="Download TikTok Videos Free in HD | No Watermark">
+<meta property="og:description" content="Download TikTok videos in high quality directly from your browser. 100% free and no registration required.">
+<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+<meta property="og:url" content="http://movisup.site/">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Download TikTok Videos in HD for Free">
+<meta name="twitter:description" content="Save TikTok videos without watermark, fast and free.">
+<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
+  <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
+
+ <!-- 🧩 Icono -->
+  <link rel="icon" type="image/png" href="img/icon.png">
+
+	
+
+
+
+	
+  <title>Descargar videos de TikTok sin marca de agua HD</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      margin: 0;
+      padding: 20px;
+      background: #ffefd5; /* naranja claro */
+      color: #111;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #222;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .input-group {
+      display: flex;
+      align-items: center;
+      border: 2px solid #32cd32;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    #videoUrl {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      outline: none;
+    }
+    #pasteClearBtn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      width: 42px;
+      height: 42px;
+    }
+    #pasteClearBtn img {
+      width: 24px;
+      height: 24px;
+    }
+    #btnGet {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      background: #ff7b00;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #btnGet:active {
+      transform: scale(0.97);
+    }
+    #loader {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+      color: #666;
+    }
+    .result {
+      display: none;
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fafafa;
+      border: 1px solid #eee;
+    }
+    .stats-row {
+      display: flex;
+      gap: 14px;
+      justify-content: space-around;
+      padding: 10px;
+      background: #fff7ed;
+      border-radius: 8px;
+      margin-bottom: 10px;
+	  font-size: 9px;
+    }
+    .thumbnail {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+    .description {
+      background: #f1f1f1;
+      padding: 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      margin-top: 10px;
+    }
+    .download-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .download-buttons button {
+      flex: 1;
+      background: #ff7b00;
+      border: none;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .hidden { display:none }
+    @media (max-width: 480px) {
+      .container { padding: 16px; }
+      h2 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+
+
+
+
+
+	
+	
+  <div class="container">
+
+ <!-- anuncio de adsterra -->
 <script type="text/javascript">
 	atOptions = {
-		'key' : '9ca91d93beb307173656f60518c354e5',
+		'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
 		'format' : 'iframe',
-		'height' : 300,
-		'width' : 160,
+		'height' : 60,
+		'width' : 448,
 		'params' : {}
 	};
 </script>
-<script type="text/javascript" src="//www.highperformanceformat.com/9ca91d93beb307173656f60518c354e5/invoke.js"></script>
+<script type="text/javascript" src="//www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
+ <!-- fin anuncio -->
 
 
-
-  <title>Descargar videos de Tiktok HD sin marca de agua, YouTube, Instagram, Facebook y más</title>
-<meta property="og:title" content="Descargar videos de TikTok HD sin marca de agua gratis">
-<meta property="og:title" content="Descarga tus videos de TikTok en HD sin logo ni marca de agua">
-<meta property="og:title" content="Descargar videos de TikTok sin marca de agua online gratis">
-<meta property="og:title" content="Bajar videos de TikTok en calidad HD sin marca ni logo">
-<meta property="og:title" content="TikTok Downloader HD sin marca de agua y sin app">
-<meta property="og:title" content="Descargar videos TikTok HD rápido y sin marca de agua">
-<meta property="og:title" content="Descarga videos de TikTok sin marca de agua 2025">
-<meta property="og:title" content="Descargar TikTok sin logo en HD desde cualquier dispositivo">
-<meta property="og:title" content="Descargar videos TikTok sin marca de agua y gratis en línea">
-<meta property="og:title" content="Bajar videos TikTok sin marca de agua y en alta calidad">
-<meta property="og:title" content="Descargar videos TikTok en HD sin usar aplicaciones">
-<meta property="og:title" content="Descargar TikTok HD sin marca de agua ni publicidad">
-<meta property="og:title" content="Descargar videos TikTok sin marca de agua fácilmente">
-<meta property="og:title" content="Descargar videos TikTok sin logo y en formato MP4 HD">
-<meta property="og:title" content="Descargar TikTok sin marca de agua directo desde el enlace">
-<meta property="og:title" content="Descargar videos TikTok HD gratis, rápido y sin logo">
-<meta property="og:title" content="Descargar TikTok sin marca de agua en segundos">
-<meta property="og:title" content="Descargar TikTok videos HD sin marca desde navegador">
-<meta property="og:title" content="Descargar videos de TikTok sin marca de agua gratis y rápido">
-<meta property="og:title" content="Descarga videos TikTok en HD sin marca de agua en línea">
+	  
+    <h2>Descargar videos de TikTok sin marca de agua HD</h2>
 
 
-<meta property="og:title" content="Descargar videos de Facebook en HD sin marca de agua">
-<meta property="og:title" content="Descarga videos de Facebook gratis y en alta calidad HD">
-<meta property="og:title" content="Bajar videos de Facebook HD sin marca ni logo">
-<meta property="og:title" content="Descargar videos de Facebook fácilmente sin apps ni marca de agua">
-<meta property="og:title" content="Descargar Facebook videos HD gratis desde cualquier dispositivo">
-<meta property="og:title" content="Descargar videos de Facebook sin marca de agua online y rápido">
-<meta property="og:title" content="Facebook Downloader HD sin marca de agua ni publicidad">
-<meta property="og:title" content="Descargar videos de Facebook HD sin instalar programas">
-<meta property="og:title" content="Descargar videos Facebook sin logo y gratis en formato MP4">
-<meta property="og:title" content="Descargar Facebook videos HD en segundos y sin marca de agua">
-<meta property="og:title" content="Descargar Facebook sin marca de agua y en calidad Full HD">
-<meta property="og:title" content="Descargar videos privados de Facebook sin marca de agua">
-<meta property="og:title" content="Descargar videos públicos de Facebook en calidad HD">
-<meta property="og:title" content="Descargar Facebook HD sin marca de agua gratis online">
-<meta property="og:title" content="Descargar videos de Facebook fácilmente en alta definición">
-<meta property="og:title" content="Facebook HD Downloader gratis sin marca de agua ni registro">
-<meta property="og:title" content="Descargar videos de Facebook sin logo ni texto superpuesto">
-<meta property="og:title" content="Descargar videos Facebook HD gratis para guardar en tu galería">
-<meta property="og:title" content="Descargar videos Facebook sin marca en segundos">
-<meta property="og:title" content="Descargar videos Facebook Full HD sin marca de agua ni apps">
+<!-- 🖼️ Logo centrado -->
+ <div class="logo" style="text-align:center; margin-bottom:15px;">
+  <img src="img/icon.png" alt="Logo ssstik" style="width:100px; margin-bottom:10px; height:auto; border-radius:10px;">
+</div>
+	  
+    <div class="input-group">
+      <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de TikTok">
+      <button id="pasteClearBtn"><img src="img/pegar.png" alt="pegar"></button>
+    </div>
 
-<meta property="og:title" content="Descargar videos de Instagram en HD sin marca de agua">
-<meta property="og:title" content="Descarga reels y videos de Instagram gratis en alta calidad">
-<meta property="og:title" content="Bajar videos de Instagram sin logo ni marca de agua">
-<meta property="og:title" content="Descargar reels de Instagram HD sin marca de agua gratis">
-<meta property="og:title" content="Descargar videos de Instagram fácilmente sin apps">
-<meta property="og:title" content="Instagram Downloader HD sin marca de agua y gratuito">
-<meta property="og:title" content="Descargar reels de Instagram sin logo en calidad HD">
-<meta property="og:title" content="Descargar videos y stories de Instagram sin marca de agua">
-<meta property="og:title" content="Descargar reels de Instagram en formato MP4 HD">
-<meta property="og:title" content="Descargar videos Instagram HD sin instalar aplicaciones">
-<meta property="og:title" content="Descargar reels de Instagram sin marca ni texto superpuesto">
-<meta property="og:title" content="Descargar videos Instagram gratis y en alta definición">
-<meta property="og:title" content="Descargar videos de Instagram sin marca de agua y sin publicidad">
-<meta property="og:title" content="Bajar reels de Instagram sin logo directamente online">
-<meta property="og:title" content="Descargar videos de Instagram HD gratis en segundos">
-<meta property="og:title" content="Instagram reels downloader HD sin marca de agua">
-<meta property="og:title" content="Descargar reels y videos de Instagram rápido y sin marca">
-<meta property="og:title" content="Descargar videos Instagram HD gratis desde navegador">
-<meta property="og:title" content="Descargar reels Instagram Full HD sin marca ni logo">
-<meta property="og:title" content="Descargar videos de Instagram fácilmente y sin marca de agua">
+    <button id="btnGet">Obtener información</button>
 
-<meta property="og:title" content="Descargar videos de YouTube en HD gratis y sin marca de agua">
-<meta property="og:title" content="Descarga videos de YouTube en MP4 HD sin programas">
-<meta property="og:title" content="Bajar videos de YouTube Full HD y 4K fácilmente">
-<meta property="og:title" content="Descargar YouTube videos gratis y rápido en formato MP4">
-<meta property="og:title" content="Descargar videos de YouTube en alta calidad sin apps">
-<meta property="og:title" content="Descargar videos YouTube 1080p y 4K gratis online">
-<meta property="og:title" content="Descargar videos YouTube HD sin marca ni publicidad">
-<meta property="og:title" content="YouTube Downloader HD gratis sin instalar programas">
-<meta property="og:title" content="Descargar YouTube videos en calidad HD y formato MP4">
-<meta property="og:title" content="Descargar videos de YouTube sin límites y gratis en línea">
-<meta property="og:title" content="Descargar YouTube Full HD y sin marca de agua gratis">
-<meta property="og:title" content="Descargar videos musicales de YouTube en HD">
-<meta property="og:title" content="Descargar videos YouTube en segundos sin aplicaciones">
-<meta property="og:title" content="Descargar videos YouTube HD rápido y sin registro">
-<meta property="og:title" content="Descargar videos de YouTube en formato MP4 Full HD">
-<meta property="og:title" content="Descargar videos YouTube HD sin marca de agua 2025">
-<meta property="og:title" content="Descargar videos de YouTube gratis desde cualquier dispositivo">
-<meta property="og:title" content="Descargar videos YouTube en calidad HD sin límites">
-<meta property="og:title" content="Descargar videos de YouTube fácilmente sin apps ni marcas">
-<meta property="og:title" content="YouTube HD Downloader gratis y rápido sin marca de agua">
+    <div id="loader">Cargando...</div>
 
-<meta property="og:title" content="Descargar videos de Threads en HD sin marca de agua gratis">
-<meta property="og:title" content="Descarga videos de Threads fácilmente y sin logo">
-<meta property="og:title" content="Bajar videos de Threads en alta calidad sin marca de agua">
-<meta property="og:title" content="Descargar videos Threads HD sin apps ni registro">
-<meta property="og:title" content="Threads Downloader gratis en HD sin marca de agua">
-<meta property="og:title" content="Descargar videos de Threads HD desde cualquier dispositivo">
-<meta property="og:title" content="Descargar videos de Threads sin marca de agua online y rápido">
-<meta property="og:title" content="Descargar videos Threads HD sin publicidad ni aplicaciones">
-<meta property="og:title" content="Bajar videos Threads sin logo y en formato MP4 HD">
-<meta property="og:title" content="Descargar videos Threads gratis y sin marca de agua 2025">
-<meta property="og:title" content="Descargar Threads videos HD gratis y fácil">
-<meta property="og:title" content="Descargar videos Threads Full HD sin marca de agua">
-<meta property="og:title" content="Threads video downloader gratis sin marca ni texto">
-<meta property="og:title" content="Descargar videos Threads HD en segundos sin apps">
-<meta property="og:title" content="Descargar videos de Threads gratis y en alta definición">
-<meta property="og:title" content="Descargar videos Threads sin marca de agua directamente online">
-<meta property="og:title" content="Descargar videos Threads HD sin instalar programas">
-<meta property="og:title" content="Descargar videos Threads gratis desde navegador">
-<meta property="og:title" content="Descargar videos Threads en HD sin logo ni marca">
-<meta property="og:title" content="Descargar videos Threads rápido, gratis y sin marca de agua">
+    <div id="result" class="result">
+      <div id="statsRow" class="stats-row hidden">
+        <div>👁️ <b id="views">0</b></div>
+        <div>❤️ <b id="likes">0</b></div>
+        <div>💬 <b id="comments">0</b></div>
+        <div>🔄 <b id="shares">0</b></div>
+        <div>📌 <b id="saves">0</b></div>
+      </div>
+
+      <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
+      <h3 id="title"></h3>
+      <div id="userInfo" class="small"></div>
+      <div id="hashtags" class="small" style="margin-top:8px;color:#666"></div>
+      <div id="description" class="description"></div>
+
+
+<p style="margin-top:16px; font-weight:600; text-align:center; color:#222;">
+  Descargar Video de TikTok sin Marca de Agua en:
+</p>
+      
+      <div class="download-buttons">
+        <button onclick="descargar('low')">📥 Baja calidad</button>
+        <button onclick="descargar('high')">📹 Alta calidad HD</button>
+        <button onclick="descargar('audio')">🎵 Solo MP3</button>
+      </div>
+    </div>
 
 
 
 
 
-  <meta name="description" content="Descarga videos en HD sin marca de agua de TikTok, YouTube, Instagram, Facebook, X (Twitter) y más. Gratis, rápido y compatible con todos los dispositivos.">
-  <meta name="keywords" content="descargar videos, tiktok sin marca de agua, descargar tiktok hd, bajar videos instagram, descargar videos facebook, descargar videos youtube, descargar videos de x, downloader gratis, save video hd, tiktok downloader, facebook downloader, instagram downloader, descargar reels, sin logo, sin marca, hd videos download, online video downloader, movisup, descargar shorts, download video hd, video saver, descargar tiktok sin logo, descargar videos sin marca, bajar videos tiktok, bajar videos youtube, descargar videos twitter, bajar videos threads, tiktok no watermark, descargar tiktok rápido, descargar tiktok gratis, descargar reels sin marca, descargar de todas las plataformas, universal downloader, video downloader español, best video downloader, descargar videos hd gratis, tiktok saver, tiktok hd 2025, sin marca de agua tiktok, movisup.site, bajar videos hd, descargar videos 4k, guardar videos online, downloader web, download mp4 video, descarga rápida videos, descarga videos full hd, sitio descargar videos, web descargar tiktok, tiktok saver pro, descargar contenido social, descarga hd instantánea, video downloader 2025">
-  
-  <!-- Open Graph (para Facebook, WhatsApp, etc.) -->
-  <meta property="og:title" content="Descargar videos HD sin marca de agua - TikTok, YouTube y más">
-  <meta property="og:description" content="Descarga videos en HD de todas las plataformas sin marca de agua. TikTok, Instagram, Facebook, YouTube, X y más. Rápido, gratuito y fácil.">
-  <meta property="og:image" content="https://movisup.site/img/icon.png">
-  <meta property="og:url" content="https://movisup.site">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="es_ES">
+ <div class="descrip">
+
+<!-- =========================
+     Descripción y pasos
+     Pegar este bloque debajo del cuadro de descarga
+     ========================= -->
+<section id="how-it-works" class="info-section" style="margin-top:24px; text-align:left; color:#333;">
+  <h3 style="margin-bottom:8px;">¿Qué hace esta página?</h3>
 
 
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Descargar videos HD sin marca de agua">
-  <meta name="twitter:description" content="Descarga videos HD de TikTok, YouTube, Instagram y más sin marca de agua. Gratis y rápido.">
-  <meta name="twitter:image" content="https://movisup.site/img/icon.png">
-
-  <!-- SEO técnico -->
-  <meta name="robots" content="index, follow">
-  <meta name="revisit-after" content="7 days">
-  <meta name="author" content="movisup.site">
-  <meta name="copyright" content="movisup.site">
-  <meta name="distribution" content="global">
-  <meta name="rating" content="general">
-  <meta name="generator" content="movisup.site downloader engine">
-  <link rel="canonical" href="https://movisup.site/">
-
-  <!-- Schema.org JSON-LD -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Movisup",
-    "url": "https://movisup.site",
-    "description": "Descarga videos HD sin marca de agua de TikTok, YouTube, Instagram, Facebook y más.",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://movisup.site/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
+<script type="text/javascript">
+	atOptions = {
+		'key' : '21adbeb2a12ad3d68baa439db8b91886',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/21adbeb2a12ad3d68baa439db8b91886/invoke.js"></script>
 
 
+  <p style="margin:0 0 12px 0; line-height:1.5;">
+    Esta herramienta te permite <strong>descargar videos de TikTok en HD</strong> directamente desde tu navegador, 
+    sin necesidad de registrarte. Los archivos se procesan temporalmente en el servidor y se entregan como descarga directa (archivo .mp4), 
+    sin quedar almacenados permanentemente en el servidor.
+  </p>
 
-  <!-- Ícono del sitio -->
-  <link rel="icon" type="image/png" href="img/icon.png">
+  <h4 style="margin-top:12px; margin-bottom:8px;">Pasos para descargar un video de TikTok (HD sin marca de agua)</h4>
+  <ol style="margin:0 0 12px 20px; line-height:1.6;">
+    <li><strong>Copia el enlace</strong> del video de TikTok (puede ser un enlace completo o acortado: <code>vm.tiktok.com</code>, <code>vt.tiktok.com</code>, etc.).</li>
+    <li>Pega el enlace en el campo de arriba o pulsa el icono de <em>pegar</em> para pegar desde el portapapeles. Al pegar se iniciará automáticamente la comprobación.</li>
+    <li>Esperar a que aparezca la <strong>miniatura</strong>, el <strong>título</strong> y los <strong>hashtags</strong> del video.</li>
+    <li>Elegir <strong>"Descargar en baja calidad"</strong> o <strong>"Descargar en alta calidad"</strong> según prefieras. La descarga se iniciará inmediatamente y el archivo se guardará en tu dispositivo.</li>
+  </ol>
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="style.css">
-
-<style>
-    body {
-      background-color: #FFF9E6; /* crema claro */
-      font-family: Arial, sans-serif;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 50px auto;
-      background-color: #FFF3CC; /* crema un poco más oscuro */
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      color: #333;
-    }
-
-    .subtitle {
-      color: #555;
-      margin-bottom: 25px;
-      font-size: 15px;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: stretch;
-    }
-
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      text-decoration: none;
-      background: #ffffff;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 16px;
-      color: #222;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-      background-color: #FFEFA8;
-      transform: scale(1.03);
-    }
-
-    .btn img {
-      width: 28px;
-      height: 28px;
-    }
-
-    .keywords-section {
-      margin-top: 40px;
-      text-align: left;
-    }
-  </style>
-
-	
-</head>
-<body>
-  <div class="container">
-    <h1>Descargar videos de Tiktok sin marca de agua HD</h1>
-
-
-<!--anuncio de adsterra-->
-	  <script type="text/javascript">
+	 <!-- anuncio de adsterra -->
+<script type="text/javascript">
 	atOptions = {
 		'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
 		'format' : 'iframe',
@@ -266,108 +303,500 @@
 	};
 </script>
 <script type="text/javascript" src="//www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
-<!--fin anuncio de adsterra-->
+ <!-- fin anuncio -->
+	
+
+  <h4 style="margin-top:8px; margin-bottom:8px;">Consejos útiles</h4>
+  <ul style="margin:0 0 12px 20px; line-height:1.6;">
+    <li>Para videos largos, la descarga puede tardar más: espera a que el navegador complete la transferencia.</li>
+    <li>Si el video no se reproduce en tu PC pero sí en el móvil, prueba la opción de <em>alta</em> o cambia de navegador (Chrome/Edge/Firefox recomiendan usar la última versión).</li>
+    <li>Si tu navegador bloquea el pegado automático, pega manualmente el enlace y pulsa <strong>Descargar ahora</strong>.</li>
+  </ul>
+
+  <h4 style="margin-top:8px; margin-bottom:8px;">Nota legal y uso responsable</h4>
+  <p style="margin:0 0 12px 0; line-height:1.5; font-size:0.95em; color:#666;">
+    Esta herramienta está pensada para uso personal y respetuoso con los derechos de autor. No fomentamos la distribución de contenido protegido sin permiso del titular. 
+    Asegúrate de tener los derechos o el permiso necesario antes de descargar y compartir videos que no te pertenezcan.
+  </p>
+
+	 <!-- anuncio de adsterra -->
+<script type="text/javascript">
+	atOptions = {
+		'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
+ <!-- fin anuncio -->
+
+  <p style="margin:0; font-size:0.9em; color:#444;">
+    ¿Necesitas ayuda o quieres más funciones (p. ej. extraer audio MP3)? <a href="#" style="color:#ff6600; text-decoration:none;">Contáctanos</a>.
+  </p>
+<p style="margin:20; font-size:0.9em; color:#444;">
+<meta name="keywords" content="descargar tiktok sin marca de agua">
+<meta name="keywords" content="descargar videos de tiktok hd">
+<meta name="keywords" content="bajar videos de tiktok sin logo">
+<meta name="keywords" content="descargar videos tiktok online">
+<meta name="keywords" content="descargar tiktok mp4">
+<meta name="keywords" content="guardar videos de tiktok gratis">
+<meta name="keywords" content="descargar videos tiktok alta calidad">
+<meta name="keywords" content="descargar videos tiktok sin marca">
+<meta name="keywords" content="descargar tiktok sin registro">
+<meta name="keywords" content="descargar videos tiktok 1080p">
+<meta name="keywords" content="convertidor tiktok sin marca de agua">
+<meta name="keywords" content="descargar videos virales tiktok">
+<meta name="keywords" content="tiktok downloader español">
+<meta name="keywords" content="descargar videos tiktok rápido">
+<meta name="keywords" content="descargar videos tiktok gratis">
+<meta name="keywords" content="descargar videos sin logo">
+<meta name="keywords" content="guardar videos de tiktok hd">
+<meta name="keywords" content="bajar videos tiktok sin marca de agua">
+<meta name="keywords" content="programa para descargar tiktok">
+<meta name="keywords" content="descargar videos de tiktok sin app">
+<meta name="keywords" content="descargar videos tiktok pc">
+<meta name="keywords" content="descargar videos tiktok móvil">
+<meta name="keywords" content="descargar contenido tiktok">
+<meta name="keywords" content="bajar tiktok hd online">
+<meta name="keywords" content="descargar videos tiktok sin enlace corto">
+<meta name="keywords" content="descargar videos tiktok sin marca de agua android">
+<meta name="keywords" content="descargar videos tiktok sin marca de agua iphone">
+<meta name="keywords" content="descargar videos tiktok sin marca web">
+<meta name="keywords" content="descargar tiktok sin marca y audio">
+<meta name="keywords" content="guardar tiktok sin marca de agua">
+
+<meta name="keywords" content="download tiktok without watermark">
+<meta name="keywords" content="download tiktok videos hd">
+<meta name="keywords" content="save tiktok videos without logo">
+<meta name="keywords" content="download tiktok videos online">
+<meta name="keywords" content="download tiktok mp4">
+<meta name="keywords" content="save tiktok videos free">
+<meta name="keywords" content="download high quality tiktok videos">
+<meta name="keywords" content="download tiktok videos no watermark">
+<meta name="keywords" content="download tiktok without registration">
+<meta name="keywords" content="download tiktok videos 1080p">
+<meta name="keywords" content="tiktok converter without watermark">
+<meta name="keywords" content="download viral tiktok videos">
+<meta name="keywords" content="tiktok downloader english">
+<meta name="keywords" content="download tiktok videos fast">
+<meta name="keywords" content="download tiktok videos free">
+<meta name="keywords" content="download videos without logo">
+<meta name="keywords" content="save tiktok videos hd">
+<meta name="keywords" content="download tiktok videos without watermark">
+<meta name="keywords" content="tiktok download software">
+<meta name="keywords" content="download tiktok videos without app">
+<meta name="keywords" content="download tiktok videos pc">
+<meta name="keywords" content="download tiktok videos mobile">
+<meta name="keywords" content="download tiktok content">
+<meta name="keywords" content="download tiktok hd online">
+<meta name="keywords" content="download tiktok videos without short link">
+<meta name="keywords" content="download tiktok videos without watermark android">
+<meta name="keywords" content="download tiktok videos without watermark iphone">
+<meta name="keywords" content="download tiktok videos without watermark web">
+<meta name="keywords" content="download tiktok without watermark and audio">
+<meta name="keywords" content="save tiktok without watermark">
+descargar tiktok sin marca de agua<br>
+descargar videos de tiktok hd<br>
+bajar videos de tiktok sin logo<br>
+descargar videos tiktok online<br>
+descargar tiktok mp4<br>
+guardar videos de tiktok gratis<br>
+descargar videos tiktok alta calidad<br>
+descargar videos tiktok sin marca<br>
+descargar tiktok sin registro<br>
+descargar videos tiktok 1080p<br>
+convertidor tiktok sin marca de agua<br>
+descargar videos virales tiktok<br>
+tiktok downloader español<br>
+descargar videos tiktok rápido<br>
+descargar videos tiktok gratis<br>
+descargar videos sin logo<br>
+guardar videos de tiktok hd<br>
+bajar videos tiktok sin marca de agua<br>
+programa para descargar tiktok<br>
+descargar videos de tiktok sin app<br>
+descargar videos tiktok pc<br>
+descargar videos tiktok móvil<br>
+descargar contenido tiktok<br>
+bajar tiktok hd online<br>
+descargar videos tiktok sin enlace corto<br>
+descargar videos tiktok sin marca de agua android<br>
+descargar videos tiktok sin marca de agua iphone<br>
+descargar videos tiktok sin marca web<br>
+descargar tiktok sin marca y audio<br>
+guardar tiktok sin marca de agua<br>
+download tiktok without watermark<br>
+download tiktok videos hd<br>
+save tiktok videos without logo<br>
+download tiktok videos online<br>
+download tiktok mp4<br>
+save tiktok videos free<br>
+download high quality tiktok videos<br>
+download tiktok videos no watermark<br>
+download tiktok without registration<br>
+download tiktok videos 1080p<br>
+tiktok converter without watermark<br>
+download viral tiktok videos<br>
+tiktok downloader english<br>
+download tiktok videos fast<br>
+download tiktok videos free<br>
+download videos without logo<br>
+save tiktok videos hd<br>
+download tiktok videos without watermark<br>
+tiktok download software<br>
+download tiktok videos without app<br>
+download tiktok videos pc<br>
+download tiktok videos mobile<br>
+download tiktok content<br>
+download tiktok hd online<br>
+download tiktok videos without short link<br>
+download tiktok videos without watermark android<br>
+download tiktok videos without watermark iphone<br>
+download tiktok videos without watermark web<br>
+download tiktok without watermark and audio<br>
+save tiktok without watermark<br>
+
+descargar reels de tiktok sin marca de agua<br>
+descargar videos de tiktok en formato mp3<br>
+descargar tiktok sin inicio de sesión<br>
+guardar videos tiktok sin marca en línea<br>
+descargar videos largos de tiktok sin marca<br>
+descargar videos tiktok hd gratis<br>
+convertidor de tiktok a mp4 sin logo<br>
+descargar tiktok con sonido original sin marca de agua<br>
+
+download tiktok reels without watermark<br>
+download tiktok to mp3 format<br>
+save tiktok videos online without login<br>
+tiktok hd downloader free<br>
+convert tiktok to mp4 no logo<br>
+download tiktok videos with original sound<br>
+free tiktok video grabber<br>
+download long tiktok videos no watermark<br>
+
+
+
+
+#DescargarTikTok
+#TikTokDownloader
+#SinMarcaDeAgua
+#DescargarVideosTikTok
+#TikTokHD
+#TikTokDownload
+#GuardarTikTok
+#DescargarVideosHD
+#TikTokSinMarcaDeAgua
+#DownloadTikTok
+#TikTokSaver
+#DownloadTikTokHD
+#DescargarVideosGratis
+#TikTokVideoDownloader
+#BajarVideosTikTok
+#TikTokNoWatermark
+#SaveTikTok
+#DownloadWithoutWatermark
+#DescargarTikTokHD
+#VideosSinMarca
+#TikTokMP4
+#DescargarContenidoTikTok
+#TikTokFreeDownload
+#TikTokDescarga
+#TikTokEnHD
+#DescargarReelsTikTok
+#TikTokDownloaderOnline
+#SaveFromTikTok
+#TikTokHDDownload
+#TikTokDownloadFree
+
+#TikTokDownloader
+#DownloadTikTok
+#TikTokNoWatermark
+#SaveTikTokVideos
+#TikTokHDDownload
+#DownloadTikTokVideos
+#NoWatermarkTikTok
+#TikTokSaver
+#TikTokVideoDownloader
+#DownloadHDVideos
+#TikTokDownloadFree
+#SaveTikTok
+#DownloadWithoutWatermark
+#TikTokMP4
+#HDVideoDownload
+#TikTokDownloadHD
+#FreeTikTokDownloader
+#TikTokVideoSaver
+#DownloadTikTokNoWatermark
+#TikTokWithoutWatermark
+#DownloadTikTokApp
+#TikTokContentDownload
+#SaveTikTokHD
+#HDNoWatermark
+#TikTokGrabber
+#TikTokClipDownload
+#DownloadTikTokClips
+#TikTokVideoHD
+#FreeVideoDownloader
+#TikTokDL
+
+
+</p>
+</section>
+</div>
+
+
+
+
+
+
+
+
+
 
 	  
-	  
-    <p class="subtitle">Descargar videos de Tiktok sin marca de agua HD Alta calidad, Descargar videos de Youtube, Descargar videos de Instagram, Descargar videos de Facebook, Descargar Videos de Telegram, Descargar Videos de Threads, Descargar videos de X</p>
-
-     <div class="options">
-      <a href="t/1.html" class="btn"><img src="img/tiktok.png" alt="TikTok">Descargar Videos de TikTok HD sin Marca de Agua</a>
-      <a href="u/2.html" class="btn"><img src="img/threads.png" alt="Threads">Descargar Video de Threads HD</a>
-      <a href="u/3.html" class="btn"><img src="img/facebook.png" alt="Facebook">Descargar Videos de Facebook HD</a>
-      <a href="u/4.html" class="btn"><img src="img/instagram.png" alt="Instagram">Descargar Videos de Instagram HD</a>
-      <a href="t/1.html" class="btn"><img src="img/youtube.png" alt="YouTube">Descargar Videos de YouTube HD</a>
-      <a href="u/6.html" class="btn"><img src="img/x.png" alt="X">Descargar Videos de X (Twitter) HD</a>
-      <a href="u/7.html" class="btn"><img src="img/telegram.png" alt="Telegram">Descargar Videos de Telegram HD</a>
-    </div>
-
-
-
-<!-- Bloque de etiquetas SEO visible al final del contenedor -->
-    <div class="keywords-section">
-
-<script async="async" data-cfasync="false" src="//pl27987119.effectivegatecpm.com/38301d5520f0ffc8374fb86ba9fe3f0a/invoke.js"></script>
-<div id="container-38301d5520f0ffc8374fb86ba9fe3f0a"></div>
-<script type='text/javascript' src='//pl27987169.effectivegatecpm.com/f4/d3/95/f4d39536fb75e7240ac61ae609c8418d.js'></script>
-
-      <h2>Etiquetas populares</h2>
-      <div class="keywords-list">
-        <p>descargar videos sin marca de agua</p>
-        <p>tiktok downloader hd</p>
-        <p>descargar videos de tiktok gratis</p>
-        <p>descargar videos de tiktok sin marca de agua</p>
-        <p>descargar reels instagram</p>
-        <p>bajar videos instagram hd</p>
-        <p>descargar stories instagram</p>
-        <p>descargar reels instagram</p>
-        <p>instagram downloader español</p>
-        <p>descargar videos youtube hd</p>
-        <p>youtube downloader español</p>
-        <p>descargar videos youtube mp4</p>
-        <p>bajar videos 4k youtube</p>
-        <p>descargar videos threads</p>
-        <p>bajar videos threads hd</p>
-        <p>threads downloader español</p>
-        <p>descargar threads sin marca</p>
-        <p>threads video hd gratis</p>
-        <p>descargar threads online</p>
-        <p>descargar videos meta threads</p>
-        <p>youtube sin marca de agua</p>
-        <p>descargar musica youtube mp4</p>
-        <p>video downloader 2025</p>
-        <p>descargar reels sin logo</p>
-        <p>video downloader instagram 2025</p>
-        <p>descargar videos de facebook en hd</p>
-        <p>descargar videos de instagram gratis</p>
-        <p>video downloader español</p>
-        <p>bajar videos de todas las plataformas</p>
-        <p>descargar videos full hd</p>
-        <p>guardar videos online</p>
-        <p>download tiktok no watermark</p>
-        <p>descargar videos 4k</p>
-        <p>tiktok sin marca de agua</p>
-        <p>descargar videos tiktok hd</p>
-        <p>descargar tiktok sin logo</p>
-        <p>descargar tiktok sin marca</p>
-        <p>bajar tiktok hd</p>
-        <p>tiktok downloader gratis</p>
-        <p>descargar tiktok online</p>
-        <p>descargar videos de tiktok sin app</p>
-        <p>descargar videos tiktok full hd</p>
-        <p>descargar videos tiktok 2025</p>
-        <p>tiktok downloader español</p>
-        <p>guardar videos tiktok</p>
-        <p>descargar videos tiktok rápido</p>
-        <p>bajar videos tiktok sin logo</p>
-        <p>descargar tiktok no watermark</p>
-        <p>descargar tiktok gratis</p>
-        <p>tiktok video downloader hd</p>
-        <p>descargar videos tiktok mp4</p>
-        <p>tiktok saver hd</p>
-        <p>descargar videos tiktok sin publicidad</p>
-        <p>descargar videos tiktok directamente</p>
-        <p>tiktok download hd</p>
-        <p>descargar videos de tiktok desde enlace</p>
-      </div>
-    </div>
   </div>
 
 
-  
 
 
 
-
-
-<!-- Mantener servidor Render activo cada 3 minutos -->
+	
   <script>
-    setInterval(() => {
-      fetch("https://yt-downloader-api-1-ad1k.onrender.com/");
-    }, 180000); // cada 3 minutos (180,000 ms)
+    const WORKER_API = "https://late-sun-ad47.juniscottmatagalpa.workers.dev";
+    const btn = document.getElementById('btnGet');
+    const loader = document.getElementById('loader');
+    const videoUrlInput = document.getElementById('videoUrl');
+    const pasteClearBtn = document.getElementById('pasteClearBtn');
+
+    function validarTikTok(url) {
+      return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
+    }
+
+    pasteClearBtn.addEventListener('click', async () => {
+      if (videoUrlInput.value.trim() !== "") {
+        videoUrlInput.value = "";
+        pasteClearBtn.innerHTML = '<img src="img/pegar.png" alt="pegar">';
+        return;
+      }
+      try {
+        const text = await navigator.clipboard.readText();
+        if (validarTikTok(text)) {
+          videoUrlInput.value = text;
+          pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
+          obtenerInfo();
+        } else {
+          alert("El texto copiado no es un enlace válido de TikTok.");
+        }
+      } catch {
+        alert("No se pudo acceder al portapapeles.");
+      }
+    });
+
+    videoUrlInput.addEventListener("input", () => {
+      pasteClearBtn.innerHTML = videoUrlInput.value.trim()
+        ? '<img src="img/borrar.png" alt="borrar">'
+        : '<img src="img/pegar.png" alt="pegar">';
+    });
+
+    function showLoader(show){ loader.style.display = show ? 'block' : 'none'; }
+
+    btn.addEventListener('click', () => {
+      const url = videoUrlInput.value.trim();
+      if (!url || !validarTikTok(url)) return alert('Ingresa un enlace válido de TikTok');
+      obtenerInfo();
+    });
+
+    async function obtenerInfo(){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Ingresa un enlace de TikTok');
+
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('thumb').src = '';
+      document.getElementById('title').textContent = '';
+      document.getElementById('userInfo').innerHTML = '';
+      document.getElementById('description').textContent = '';
+      document.getElementById('hashtags').textContent = '';
+      document.getElementById('statsRow').classList.add('hidden');
+
+      showLoader(true);
+
+      const controller = new AbortController();
+      const timeout = setTimeout(()=> controller.abort(), 10000);
+
+      try {
+        const params = new URLSearchParams();
+        params.append('q', urlInput);
+
+        const res = await fetch(WORKER_API, {
+          method: 'POST',
+          headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString(),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch { showLoader(false); alert('Error: respuesta no válida.'); return; }
+
+        showLoader(false);
+        if(data.error){ alert('❌ Error: ' + data.error); return; }
+
+        // --- LÓGICA ORIGINAL DE DATOS ---
+        let videoData = null;
+        if (data.data) videoData = data.data;
+        else if (data.item) videoData = data.item;
+        else if (data.items && Array.isArray(data.items) && data.items.length) videoData = data.items[0];
+        else videoData = data;
+
+        const title = videoData.title || videoData.desc || videoData.description || '';
+        document.getElementById('title').textContent = title || 'Video sin título';
+
+        const thumb = videoData.cover || videoData.thumbnail || videoData.video?.cover || '';
+        document.getElementById('thumb').src = thumb || '';
+
+        let hashtagsText = '';
+        if(Array.isArray(videoData.hashtags)) hashtagsText = videoData.hashtags.map(h=>h.name||h).join(' ');
+        else if(videoData.hashtag) hashtagsText = videoData.hashtag;
+        else if(videoData.tags) hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(' ') : (videoData.tags || '');
+        document.getElementById('hashtags').textContent = hashtagsText;
+
+        const description = videoData.desc || videoData.description || '';
+        document.getElementById('description').textContent = description;
+
+        const author = videoData.author || videoData.owner || videoData.user;
+        if(author){
+          const avatar = author.avatar || author.cover || author.avatar_thumb || author.profile_image || '';
+          const name = author.unique_id || author.nickname || author.name || author.displayName || '';
+          document.getElementById('userInfo').innerHTML = `<img src="${avatar||''}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;margin-right:8px;vertical-align:middle"> <strong>${name || ''}</strong>`;
+        }
+
+        // ✅ Recupera correctamente las estadísticas
+        let stats = videoData.statistics || videoData.stat || videoData.stats || (videoData.aweme && videoData.aweme.statistics);
+        if(!stats){
+          const candidate = {};
+          if(videoData.play_count) candidate.play_count = videoData.play_count;
+          if(videoData.digg_count) candidate.digg_count = videoData.digg_count;
+          if(videoData.comment_count) candidate.comment_count = videoData.comment_count;
+          if(videoData.share_count) candidate.share_count = videoData.share_count;
+          if(videoData.collect_count) candidate.collect_count = videoData.collect_count;
+          stats = Object.keys(candidate).length ? candidate : null;
+        }
+
+        if(stats){
+          document.getElementById('views').textContent = (stats.play_count || stats.playCount || stats.views || 0).toLocaleString();
+          document.getElementById('likes').textContent = (stats.digg_count || stats.likeCount || stats.likes || 0).toLocaleString();
+          document.getElementById('comments').textContent = (stats.comment_count || stats.commentCount || 0).toLocaleString();
+          document.getElementById('shares').textContent = (stats.share_count || stats.shareCount || 0).toLocaleString();
+          document.getElementById('saves').textContent = (stats.collect_count || stats.collection_count || stats.collectCount || 0).toLocaleString();
+          document.getElementById('statsRow').classList.remove('hidden');
+        }
+
+        document.getElementById('result').style.display = 'block';
+      } catch (err){
+        clearTimeout(timeout);
+        showLoader(false);
+        alert('Error al obtener la información.');
+      }
+    }
+
+    async function descargar(quality){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Primero ingresa un enlace.');
+      try {
+        const params = new URLSearchParams(); params.append('q', urlInput);
+        const res = await fetch(WORKER_API, {
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString()
+        });
+        const text = await res.text();
+        const data = JSON.parse(text);
+        if(!data || !data.data){ alert('No se encontró enlace de descarga.'); return; }
+
+        const videoData = data.data;
+        let downloadUrl = '';
+        let ext = 'mp4';
+
+
+		 if (quality === 'high') {
+  setTimeout(() => {
+    window.open("https://www.effectivegatecpm.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a", "_blank");
+  }, 3000); // 3 segundos
+}
+
+
+
+		  
+        if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
+        else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
+        else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
+
+        if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
+
+        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${encodeURIComponent(ext)}`;
+      } catch(err){
+        alert('Error al preparar la descarga.');
+      }
+    }
   </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  <footer style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #f4f4f4;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.8em;
+  color: #777;
+  border-top: 1px solid #ddd;
+">
+
+<script type='text/javascript' src='//pl27968860.effectivegatecpm.com/20/47/35/2047358eb4db28f55419843288af6ce2.js'></script>
+
+
+
+  © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
+</footer>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
