@@ -206,9 +206,6 @@
     const videoUrlInput = document.getElementById('videoUrl');
     const pasteClearBtn = document.getElementById('pasteClearBtn');
 
-    function validarTikTok(url) {
-      return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
-    }
 
     pasteClearBtn.addEventListener('click', async () => {
       if (videoUrlInput.value.trim() !== "") {
@@ -400,6 +397,7 @@
 </footer>
 </body>
 </html>
+
 
 
 
