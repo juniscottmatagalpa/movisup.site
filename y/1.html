@@ -135,14 +135,11 @@ async function obtenerInfo(){
   showLoader(true);
 
   try {
-    const params = new URLSearchParams();
-    params.append('q', url);
-
     const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-      body: params.toString()
-    });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ q: url })
+});
 
     const text = await res.text();
     let data;
@@ -189,6 +186,7 @@ function startDownload(videoUrl, ext){
 </script>
 </body>
 </html>
+
 
 
 
