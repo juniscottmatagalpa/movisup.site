@@ -4,57 +4,103 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Instagram Downloader</title>
+
 <style>
-  body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#f6f8fb;color:#222;margin:0;padding:24px;display:flex;justify-content:center}
-  .card{width:100%;max-width:640px;background:#fff;padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(16,24,40,0.08)}
-  h1{margin:0 0 12px;color:#0ea5a1}
-  input{width:100%;padding:12px;border-radius:8px;border:1px solid #e6e9ef;font-size:15px}
-  .row{display:flex;gap:8px;margin-top:12px}
-  button{padding:10px 14px;border-radius:8px;border:none;background:#0ea5a1;color:#fff;cursor:pointer;font-weight:600}
-  button.secondary{background:#2563eb}
-  .meta{display:flex;gap:12px;margin-top:16px}
-  .thumb{width:160px;height:160px;background:#eee;border-radius:8px;object-fit:cover}
-  .info{flex:1}
-  .title{font-size:16px;font-weight:700;margin:0}
-  .desc{font-size:14px;color:#444;margin-top:8px;white-space:pre-wrap}
-  .downloads{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-  .btn-download{background:#10b981;padding:10px;border-radius:8px;color:#fff;border:none;cursor:pointer}
-  .btn-download.muted{background:#f97316}
-  .note{font-size:13px;color:#666;margin-top:12px}
-  #loader{display:none;margin-top:12px;color:#666}
-  .error{color:#ef4444;margin-top:10px}
+  body {
+    font-family: system-ui, Segoe UI, Roboto, Arial;
+    background: #f6f8fb;
+    color: #222;
+    margin: 0;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    width: 100%;
+    max-width: 680px;
+    background: #fff;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(16,24,40,0.08);
+  }
+  h1 { margin: 0 0 12px; color: #0ea5a1; }
+  input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e6e9ef;
+    font-size: 15px;
+  }
+  .row { display: flex; gap: 10px; margin-top: 12px; }
+  button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: #fff;
+  }
+  .btn-primary { background: #0ea5a1; }
+  .btn-secondary { background: #2563eb; }
+  .meta { display: flex; gap: 16px; margin-top: 18px; }
+  .thumb {
+    width: 170px;
+    height: 170px;
+    background: #eee;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  .info { flex: 1; }
+  #title { font-size: 17px; font-weight: 700; margin: 0; }
+  #desc { font-size: 14px; color: #444; white-space: pre-wrap; margin-top: 6px; }
+  .downloads { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .btn-download {
+    background: #10b981;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn-low { background: #6366f1; }
+  .btn-audio { background: #f97316; }
+  #loader { display: none; margin-top: 14px; color: #666; font-size: 15px; }
+  .error { color: #ef4444; margin-top: 10px; font-weight: 600; }
+  .note { font-size: 14px; color: #777; margin-top: 10px; }
 </style>
 </head>
+
 <body>
   <div class="card">
-    <h1>Descargar Instagram — Reels / Posts</h1>
-    <p>Pega el enlace público de Instagram (reel o post) y pulsa "Obtener información".</p>
+    <h1>Descargar Reels / Videos de Instagram</h1>
+    <p>Pega el enlace público de un Reel o publicación con video:</p>
 
     <input id="urlInput" placeholder="https://www.instagram.com/reel/..." />
     <div class="row">
-      <button id="btnGet">Obtener información</button>
-      <button id="btnClear" class="secondary">Limpiar</button>
+      <button id="btnGet" class="btn-primary">Obtener información</button>
+      <button id="btnClear" class="btn-secondary">Limpiar</button>
     </div>
 
-    <div id="loader">Cargando…</div>
+    <div id="loader">⏳ Cargando información...</div>
     <div id="error" class="error"></div>
 
-    <div id="metaWrap" style="display:none">
+    <div id="metaWrap" style="display:none;">
       <div class="meta">
-        <img id="thumb" class="thumb" src="" alt="miniatura"/>
+        <img id="thumb" class="thumb" src="" alt="miniatura" />
         <div class="info">
-          <p id="title" class="title"></p>
-          <div id="desc" class="desc"></div>
-          <div class="note" id="author"></div>
+          <p id="title"></p>
+          <p id="desc"></p>
+
           <div class="downloads" id="downloads"></div>
         </div>
       </div>
-      <p class="note">Nota: "Solo audio" requiere conversión — el botón ofrecerá el vídeo (descargar y convertir localmente) o puedes desplegar un servicio con ffmpeg.</p>
+      <p class="note">Si el botón de audio no convierte, el archivo será descargado como el video original.</p>
     </div>
   </div>
 
 <script>
-const WORKER_URL = "https://youtub-lake-6929.juniscottmatagalpa.workers.dev"; // <- reemplaza esto
+const WORKER_URL = "https://youtub-lake-6929.juniscottmatagalpa.workers.dev";
 const btnGet = document.getElementById('btnGet');
 const btnClear = document.getElementById('btnClear');
 const urlInput = document.getElementById('urlInput');
@@ -64,94 +110,85 @@ const metaWrap = document.getElementById('metaWrap');
 const thumb = document.getElementById('thumb');
 const titleEl = document.getElementById('title');
 const descEl = document.getElementById('desc');
-const authorEl = document.getElementById('author');
 const downloads = document.getElementById('downloads');
 
 btnGet.addEventListener('click', obtenerInfo);
-btnClear.addEventListener('click', ()=> {
-  urlInput.value=''; metaWrap.style.display='none'; errorDiv.textContent=''; downloads.innerHTML='';
+btnClear.addEventListener('click', () => {
+  urlInput.value = "";
+  metaWrap.style.display = "none";
+  errorDiv.textContent = "";
+  downloads.innerHTML = "";
 });
 
-function showLoader(show){ loader.style.display = show ? 'block' : 'none'; }
+function showLoader(show){ loader.style.display = show ? "block" : "none"; }
 
 async function obtenerInfo(){
-  errorDiv.textContent=''; downloads.innerHTML=''; metaWrap.style.display='none';
+  errorDiv.textContent = "";
+  downloads.innerHTML = "";
+  metaWrap.style.display = "none";
+
   const url = urlInput.value.trim();
-  if(!url) return errorDiv.textContent = 'Pega una URL de Instagram.';
-  if(!/^https?:\/\/(www\.)?instagram\.com\//.test(url)) return errorDiv.textContent = 'URL no válida. Debe ser instagram.com';
+  if(!url) return errorDiv.textContent = "Pega una URL de Instagram.";
+  if(!/^https?:\/\/(www\.)?instagram\.com\//.test(url))
+    return errorDiv.textContent = "URL no válida. Debe ser instagram.com";
 
   showLoader(true);
-  try{
-    const params = new URLSearchParams(); params.append('q', url);
+
+  try {
+    const params = new URLSearchParams();
+    params.append('q', url);
+
     const res = await fetch(WORKER_URL, {
-      method: 'POST',
-      headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
       body: params.toString()
     });
+
     const text = await res.text();
     let data;
-    try { data = JSON.parse(text); } catch { throw new Error('Respuesta no válida del servidor'); }
+    try { data = JSON.parse(text); }
+    catch { throw new Error("Respuesta no válida del servidor"); }
+
     showLoader(false);
+
     if(data.error) throw new Error(data.error);
+    if(!data.videoUrl) throw new Error("No se encontró URL de video en la respuesta.");
 
-    // data: {status:'ok', title, description, thumbnail, videoUrl}
-    if(!data.videoUrl) throw new Error('No se encontró URL de vídeo en la respuesta.');
+    metaWrap.style.display = "block";
+    thumb.src = data.thumbnail || "";
+    titleEl.textContent = data.title || "Sin título";
+    descEl.textContent = data.description || "";
 
-    // render
-    metaWrap.style.display='block';
-    thumb.src = data.thumbnail || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // placeholder
-    titleEl.textContent = data.title || 'Sin título';
-    descEl.textContent = data.description || '';
-    authorEl.textContent = 'Fuente: Instagram';
+    downloads.innerHTML = "";
 
-    // build download buttons
-    downloads.innerHTML = '';
+    // Botón HD
+    createDownload("📹 Descargar HD", data.videoUrl, "mp4", "btn-download");
+    // Botón baja calidad (mismo archivo, pero el usuario puede convertir)
+    createDownload("📥 Descargar baja", data.videoUrl, "mp4", "btn-download btn-low");
+    // Botón audio
+    createDownload("🎵 Solo audio (MP3)", data.videoUrl, "mp3", "btn-download btn-audio");
 
-    // HD button (principal)
-    const hdBtn = document.createElement('button');
-    hdBtn.className = 'btn-download';
-    hdBtn.textContent = '📹 Descargar HD';
-    hdBtn.onclick = ()=> startDownload(data.videoUrl, 'mp4');
-    downloads.appendChild(hdBtn);
-
-    // Baja calidad - heuristic: try to request with "low" param if available (Instagram may not provide)
-    const lowBtn = document.createElement('button');
-    lowBtn.className = 'btn-download muted';
-    lowBtn.textContent = '📥 Descargar baja';
-    lowBtn.onclick = ()=>{
-      // If there is no different low-quality url, fallback to same url
-      startDownload(data.videoUrl, 'mp4');
-    };
-    downloads.appendChild(lowBtn);
-
-    // Audio button: note about conversion
-    const audioBtn = document.createElement('button');
-    audioBtn.className = 'btn-download';
-    audioBtn.style.background='#f97316';
-    audioBtn.textContent = '🎵 Descargar audio (MP3)';
-    audioBtn.onclick = ()=>{
-      // Two options:
-      // 1) if you have server-side ffmpeg endpoint, replace code to call it.
-      // 2) Otherwise the worker will proxy the video file; user must convert client-side.
-      // We'll proxy the video and set ext=mp3 — note: this does NOT convert the data server-side.
-      // If you want actual conversion, deploy ffmpeg service (I can give code).
-      startDownload(data.videoUrl, 'mp3');
-    };
-    downloads.appendChild(audioBtn);
-
-  }catch(err){
+  } catch(err) {
     showLoader(false);
-    errorDiv.textContent = '❌ ' + (err.message || 'Error desconocido');
+    errorDiv.textContent = "❌ " + (err.message || "Error desconocido");
   }
 }
 
-function startDownload(directUrl, ext) {
-  // directUrl is the real CDN url extracted by scraper.
-  const dl = `${WORKER_URL}?download=${encodeURIComponent(directUrl)}&ext=${encodeURIComponent(ext)}`;
+function createDownload(text, videoUrl, ext, className){
+  const btn = document.createElement("button");
+  btn.textContent = text;
+  btn.className = className;
+  btn.onclick = () => startDownload(videoUrl, ext);
+  downloads.appendChild(btn);
+}
+
+function startDownload(videoUrl, ext){
+  const dl = `${WORKER_URL}?download=${encodeURIComponent(videoUrl)}&ext=${encodeURIComponent(ext)}`;
   window.location.href = dl;
 }
 </script>
 </body>
 </html>
+
 
 
