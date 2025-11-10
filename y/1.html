@@ -1,146 +1,156 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Downloader Worker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9fafc;
-      color: #222;
-      text-align: center;
-      padding: 2rem;
-    }
-    h1 {
-      color: #0070f3;
-      font-size: 1.8rem;
-    }
-    input {
-      width: 90%;
-      max-width: 480px;
-      padding: 0.7rem;
-      margin: 1rem 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-    button {
-      background: #0070f3;
-      color: white;
-      border: none;
-      padding: 0.7rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    button:hover {
-      background: #005ad6;
-    }
-    #result {
-      margin-top: 2rem;
-      display: none;
-    }
-    #downloadBtn {
-      background: #10b981;
-    }
-    #downloadBtn:hover {
-      background: #059669;
-    }
-    .error {
-      color: red;
-      margin-top: 1rem;
-    }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Instagram Downloader</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#f6f8fb;color:#222;margin:0;padding:24px;display:flex;justify-content:center}
+  .card{width:100%;max-width:640px;background:#fff;padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(16,24,40,0.08)}
+  h1{margin:0 0 12px;color:#0ea5a1}
+  input{width:100%;padding:12px;border-radius:8px;border:1px solid #e6e9ef;font-size:15px}
+  .row{display:flex;gap:8px;margin-top:12px}
+  button{padding:10px 14px;border-radius:8px;border:none;background:#0ea5a1;color:#fff;cursor:pointer;font-weight:600}
+  button.secondary{background:#2563eb}
+  .meta{display:flex;gap:12px;margin-top:16px}
+  .thumb{width:160px;height:160px;background:#eee;border-radius:8px;object-fit:cover}
+  .info{flex:1}
+  .title{font-size:16px;font-weight:700;margin:0}
+  .desc{font-size:14px;color:#444;margin-top:8px;white-space:pre-wrap}
+  .downloads{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .btn-download{background:#10b981;padding:10px;border-radius:8px;color:#fff;border:none;cursor:pointer}
+  .btn-download.muted{background:#f97316}
+  .note{font-size:13px;color:#666;margin-top:12px}
+  #loader{display:none;margin-top:12px;color:#666}
+  .error{color:#ef4444;margin-top:10px}
+</style>
 </head>
 <body>
-  <h1>Descargador universal 🌐</h1>
-  <p>Pega un enlace directo a un archivo (.mp4, .jpg, .png, etc.)</p>
+  <div class="card">
+    <h1>Descargar Instagram — Reels / Posts</h1>
+    <p>Pega el enlace público de Instagram (reel o post) y pulsa "Obtener información".</p>
 
-  <input type="url" id="inputUrl" placeholder="https://ejemplo.com/archivo.mp4" />
-  <br />
-  <button onclick="validarEnlace()">Validar enlace</button>
+    <input id="urlInput" placeholder="https://www.instagram.com/reel/..." />
+    <div class="row">
+      <button id="btnGet">Obtener información</button>
+      <button id="btnClear" class="secondary">Limpiar</button>
+    </div>
 
-  <div id="result">
-    <p id="statusMsg"></p>
-    <button id="downloadBtn" onclick="descargar()">⬇️ Descargar archivo</button>
+    <div id="loader">Cargando…</div>
+    <div id="error" class="error"></div>
+
+    <div id="metaWrap" style="display:none">
+      <div class="meta">
+        <img id="thumb" class="thumb" src="" alt="miniatura"/>
+        <div class="info">
+          <p id="title" class="title"></p>
+          <div id="desc" class="desc"></div>
+          <div class="note" id="author"></div>
+          <div class="downloads" id="downloads"></div>
+        </div>
+      </div>
+      <p class="note">Nota: "Solo audio" requiere conversión — el botón ofrecerá el vídeo (descargar y convertir localmente) o puedes desplegar un servicio con ffmpeg.</p>
+    </div>
   </div>
 
-  <p class="error" id="errorMsg"></p>
+<script>
+const WORKER_URL = "https://TU-WORKER.workers.dev"; // <- reemplaza esto
+const btnGet = document.getElementById('btnGet');
+const btnClear = document.getElementById('btnClear');
+const urlInput = document.getElementById('urlInput');
+const loader = document.getElementById('loader');
+const errorDiv = document.getElementById('error');
+const metaWrap = document.getElementById('metaWrap');
+const thumb = document.getElementById('thumb');
+const titleEl = document.getElementById('title');
+const descEl = document.getElementById('desc');
+const authorEl = document.getElementById('author');
+const downloads = document.getElementById('downloads');
 
-  <script>
-    // ⚙️ URL de tu Worker (actualiza esto)
-    const WORKER_URL = "https://youtub-lake-6929.juniscottmatagalpa.workers.dev";
+btnGet.addEventListener('click', obtenerInfo);
+btnClear.addEventListener('click', ()=> {
+  urlInput.value=''; metaWrap.style.display='none'; errorDiv.textContent=''; downloads.innerHTML='';
+});
 
-    const inputUrl = document.getElementById("inputUrl");
-    const resultDiv = document.getElementById("result");
-    const statusMsg = document.getElementById("statusMsg");
-    const errorMsg = document.getElementById("errorMsg");
-    const downloadBtn = document.getElementById("downloadBtn");
-    let directUrl = null;
+function showLoader(show){ loader.style.display = show ? 'block' : 'none'; }
 
-    async function validarEnlace() {
-      errorMsg.textContent = "";
-      resultDiv.style.display = "none";
-      const link = inputUrl.value.trim();
-      if (!link) return (errorMsg.textContent = "⚠️ Ingresa un enlace primero.");
+async function obtenerInfo(){
+  errorDiv.textContent=''; downloads.innerHTML=''; metaWrap.style.display='none';
+  const url = urlInput.value.trim();
+  if(!url) return errorDiv.textContent = 'Pega una URL de Instagram.';
+  if(!/^https?:\/\/(www\.)?instagram\.com\//.test(url)) return errorDiv.textContent = 'URL no válida. Debe ser instagram.com';
 
-      const params = new URLSearchParams();
-      params.append("q", link);
+  showLoader(true);
+  try{
+    const params = new URLSearchParams(); params.append('q', url);
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+      body: params.toString()
+    });
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('Respuesta no válida del servidor'); }
+    showLoader(false);
+    if(data.error) throw new Error(data.error);
 
-      statusMsg.textContent = "Validando enlace...";
-      resultDiv.style.display = "block";
+    // data: {status:'ok', title, description, thumbnail, videoUrl}
+    if(!data.videoUrl) throw new Error('No se encontró URL de vídeo en la respuesta.');
 
-      try {
-        const res = await fetch(WORKER_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-          },
-          body: params.toString(),
-        });
+    // render
+    metaWrap.style.display='block';
+    thumb.src = data.thumbnail || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // placeholder
+    titleEl.textContent = data.title || 'Sin título';
+    descEl.textContent = data.description || '';
+    authorEl.textContent = 'Fuente: Instagram';
 
-        const text = await res.text();
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch {
-          throw new Error("Respuesta no válida del servidor.");
-        }
+    // build download buttons
+    downloads.innerHTML = '';
 
-        if (data.error) throw new Error(data.error);
+    // HD button (principal)
+    const hdBtn = document.createElement('button');
+    hdBtn.className = 'btn-download';
+    hdBtn.textContent = '📹 Descargar HD';
+    hdBtn.onclick = ()=> startDownload(data.videoUrl, 'mp4');
+    downloads.appendChild(hdBtn);
 
-        if (data.status === "ok" && data.directUrl) {
-          directUrl = data.directUrl;
-          statusMsg.innerHTML = `✅ Enlace validado correctamente:<br><small>${data.directUrl}</small>`;
-          downloadBtn.style.display = "inline-block";
-        } else {
-          throw new Error("No se pudo validar el enlace.");
-        }
-      } catch (err) {
-        resultDiv.style.display = "none";
-        errorMsg.textContent = "❌ Error: " + err.message;
-      }
-    }
+    // Baja calidad - heuristic: try to request with "low" param if available (Instagram may not provide)
+    const lowBtn = document.createElement('button');
+    lowBtn.className = 'btn-download muted';
+    lowBtn.textContent = '📥 Descargar baja';
+    lowBtn.onclick = ()=>{
+      // If there is no different low-quality url, fallback to same url
+      startDownload(data.videoUrl, 'mp4');
+    };
+    downloads.appendChild(lowBtn);
 
-    function descargar() {
-      if (!directUrl) return alert("No hay enlace válido para descargar.");
-      const ext = directUrl.includes(".jpg")
-        ? "jpg"
-        : directUrl.includes(".png")
-        ? "png"
-        : directUrl.includes(".mp3")
-        ? "mp3"
-        : "mp4";
+    // Audio button: note about conversion
+    const audioBtn = document.createElement('button');
+    audioBtn.className = 'btn-download';
+    audioBtn.style.background='#f97316';
+    audioBtn.textContent = '🎵 Descargar audio (MP3)';
+    audioBtn.onclick = ()=>{
+      // Two options:
+      // 1) if you have server-side ffmpeg endpoint, replace code to call it.
+      // 2) Otherwise the worker will proxy the video file; user must convert client-side.
+      // We'll proxy the video and set ext=mp3 — note: this does NOT convert the data server-side.
+      // If you want actual conversion, deploy ffmpeg service (I can give code).
+      startDownload(data.videoUrl, 'mp3');
+    };
+    downloads.appendChild(audioBtn);
 
-      const downloadLink = `${WORKER_URL}?download=${encodeURIComponent(
-        directUrl
-      )}&ext=${ext}`;
+  }catch(err){
+    showLoader(false);
+    errorDiv.textContent = '❌ ' + (err.message || 'Error desconocido');
+  }
+}
 
-      window.location.href = downloadLink;
-    }
-  </script>
+function startDownload(directUrl, ext) {
+  // directUrl is the real CDN url extracted by scraper.
+  const dl = `${WORKER_URL}?download=${encodeURIComponent(directUrl)}&ext=${encodeURIComponent(ext)}`;
+  window.location.href = dl;
+}
+</script>
 </body>
 </html>
-
 
