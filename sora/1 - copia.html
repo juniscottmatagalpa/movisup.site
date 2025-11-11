@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+<meta name='admaven-placement' content=Bqja5pjgG>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<meta name="description" content="Descarga videos de TikTok gratis en HD y sin marca de agua. Rápido, seguro y compatible con cualquier dispositivo.">
+<meta name="keywords" content="descargar tiktok, tiktok downloader, videos tiktok hd, sin marca de agua, guardar tiktok">
+<meta name="robots" content="index, follow">
+<meta name="author" content="TuNombre o Marca">
+<meta name="theme-color" content="#ff6600">
+
+<!-- Open Graph (para compartir en redes) -->
+<meta property="og:title" content="Descargar Videos de TikTok Gratis HD | Sin Marca de Agua">
+<meta property="og:description" content="Descarga videos de TikTok en alta calidad directamente desde tu navegador. 100% gratis y sin registro.">
+<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+<meta property="og:url" content="http://movisup.site/">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Descargar Videos TikTok HD Gratis">
+<meta name="twitter:description" content="Guarda videos de TikTok sin marca de agua, rápido y gratis.">
+<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
+<meta name="description" content="Download TikTok videos for free in HD and without watermark. Fast, secure, and compatible with any device.">
+<meta name="keywords" content="tiktok downloader, download tiktok, tiktok videos hd, no watermark, save tiktok">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Your Name or Brand">
+<meta name="theme-color" content="#ff6600">
+
+<!-- Open Graph (for social media sharing) -->
+<meta property="og:title" content="Download TikTok Videos Free in HD | No Watermark">
+<meta property="og:description" content="Download TikTok videos in high quality directly from your browser. 100% free and no registration required.">
+<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+<meta property="og:url" content="http://movisup.site/">
+<meta property="og:type" content="website">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Download TikTok Videos in HD for Free">
+<meta name="twitter:description" content="Save TikTok videos without watermark, fast and free.">
+<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
+
+
+
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Descargar Video TikTok sin marca de agua</title>
+  <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .download-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .download-options button {
+      background-color: #ff7b00;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .download-options button:hover {
+      background-color: #e66b00;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .user-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+    .description {
+      margin-top: 8px;
+      font-size: 0.9em;
+      color: #444;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="img/icon.png" alt="Logo" />
+    </div>
+
+    <h2>Descargar Video de TikTok</h2>
+
+    <div class="input-wrapper">
+      <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de TikTok">
+      <img id="inputIcon" src="img/pegar.png" alt="Acción" onclick="handleIconClick()">
+    </div>
+
+    <button onclick="obtenerInfo()">Obtener información</button>
+
+    <div class="loader" id="loader"></div>
+
+    <div class="result" id="result">
+      <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
+      <h3 id="title"></h3>
+      <div class="user-info" id="userInfo"></div>
+      <p id="hashtags"></p>
+      <p class="description" id="description"></p>
+
+      <div class="download-options">
+        <button onclick="descargar('low')">📥 Descargar video baja calidad</button>
+        <button onclick="descargar('high')">📹 Descargar video HD</button>
+        <button onclick="descargar('audio')">🎵 Descargar solo MP3</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PY_API = "https://jsinfo.pythonanywhere.com";
+    const RENDER_API = "https://yt-downloader-api-youtu.onrender.com";
+
+    async function handleIconClick() {
+      const input = document.getElementById("videoUrl");
+      if (input.value.trim() !== "") {
+        input.value = "";
+        document.getElementById("inputIcon").src = "img/pegar.png";
+      } else {
+        try {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            input.value = text;
+            document.getElementById("inputIcon").src = "img/borrar.png";
+          } else {
+            alert("No hay texto copiado.");
+          }
+        } catch {
+          alert("Tu navegador no permite pegar automáticamente.");
+        }
+      }
+    }
+
+    async function obtenerInfo() {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
+
+      document.getElementById("loader").style.display = "block";
+      document.getElementById("result").style.display = "none";
+
+      try {
+        const res = await fetch(`${PY_API}/info`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+        document.getElementById("loader").style.display = "none";
+
+        if (data.error) {
+          alert("❌ " + data.error);
+          return;
+        }
+
+        document.getElementById("thumb").src = data.thumbnail || "";
+        document.getElementById("title").textContent = data.title || "Video sin título";
+        document.getElementById("description").textContent = data.description || "";
+        document.getElementById("hashtags").textContent = (data.hashtags || []).join(" ");
+        if (data.uploader) {
+          document.getElementById("userInfo").innerHTML = `
+            <img src="${data.uploader_picture || 'https://via.placeholder.com/50'}" alt="User">
+            <span>${data.uploader}</span>
+          `;
+        }
+
+        document.getElementById("result").style.display = "block";
+      } catch (err) {
+        document.getElementById("loader").style.display = "none";
+        alert("⚠️ Error al obtener la información del video.");
+      }
+    }
+
+    async function descargar(quality) {
+      const url = document.getElementById("videoUrl").value.trim();
+      if (!url) return alert("Primero ingresa un enlace.");
+
+      try {
+        const res = await fetch(`${RENDER_API}/download`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, quality })
+        });
+
+        if (!res.ok) {
+          alert("❌ No se pudo iniciar la descarga.");
+          return;
+        }
+
+        const blob = await res.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download =
+          quality === "audio"
+            ? "audio_tiktok.mp3"
+            : quality === "low"
+            ? "video_baja.mp4"
+            : "video_hd.mp4";
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (err) {
+        alert("Error al descargar el video.");
+        console.error(err);
+      }
+    }
+  </script>
+
+
+
+<div class="descrip">
+
+<!-- =========================
+     Descripción y pasos
+     Pegar este bloque debajo del cuadro de descarga
+     ========================= -->
+<section id="how-it-works" class="info-section" style="margin-top:24px; text-align:left; color:#333;">
+  <h3 style="margin-bottom:8px;">¿Qué hace esta página?</h3>
+
+
+<script type="text/javascript">
+	atOptions = {
+		'key' : '21adbeb2a12ad3d68baa439db8b91886',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/21adbeb2a12ad3d68baa439db8b91886/invoke.js"></script>
+
+
+  <p style="margin:0 0 12px 0; line-height:1.5;">
+    Esta herramienta te permite <strong>descargar videos de TikTok en HD</strong> directamente desde tu navegador, 
+    sin necesidad de registrarte. Los archivos se procesan temporalmente en el servidor y se entregan como descarga directa (archivo .mp4), 
+    sin quedar almacenados permanentemente en el servidor.
+  </p>
+
+  <h4 style="margin-top:12px; margin-bottom:8px;">Pasos para descargar un video de TikTok (HD sin marca de agua)</h4>
+  <ol style="margin:0 0 12px 20px; line-height:1.6;">
+    <li><strong>Copia el enlace</strong> del video de TikTok (puede ser un enlace completo o acortado: <code>vm.tiktok.com</code>, <code>vt.tiktok.com</code>, etc.).</li>
+    <li>Pega el enlace en el campo de arriba o pulsa el icono de <em>pegar</em> para pegar desde el portapapeles. Al pegar se iniciará automáticamente la comprobación.</li>
+    <li>Esperar a que aparezca la <strong>miniatura</strong>, el <strong>título</strong> y los <strong>hashtags</strong> del video.</li>
+    <li>Elegir <strong>"Descargar en baja calidad"</strong> o <strong>"Descargar en alta calidad"</strong> según prefieras. La descarga se iniciará inmediatamente y el archivo se guardará en tu dispositivo.</li>
+  </ol>
+
+  <h4 style="margin-top:8px; margin-bottom:8px;">Consejos útiles</h4>
+  <ul style="margin:0 0 12px 20px; line-height:1.6;">
+    <li>Para videos largos, la descarga puede tardar más: espera a que el navegador complete la transferencia.</li>
+    <li>Si el video no se reproduce en tu PC pero sí en el móvil, prueba la opción de <em>alta</em> o cambia de navegador (Chrome/Edge/Firefox recomiendan usar la última versión).</li>
+    <li>Si tu navegador bloquea el pegado automático, pega manualmente el enlace y pulsa <strong>Descargar ahora</strong>.</li>
+  </ul>
+
+  <h4 style="margin-top:8px; margin-bottom:8px;">Nota legal y uso responsable</h4>
+  <p style="margin:0 0 12px 0; line-height:1.5; font-size:0.95em; color:#666;">
+    Esta herramienta está pensada para uso personal y respetuoso con los derechos de autor. No fomentamos la distribución de contenido protegido sin permiso del titular. 
+    Asegúrate de tener los derechos o el permiso necesario antes de descargar y compartir videos que no te pertenezcan.
+  </p>
+
+  <p style="margin:0; font-size:0.9em; color:#444;">
+    ¿Necesitas ayuda o quieres más funciones (p. ej. extraer audio MP3)? <a href="#" style="color:#ff6600; text-decoration:none;">Contáctanos</a>.
+  </p>
+<p style="margin:20; font-size:0.9em; color:#444;">
+<meta name="keywords" content="descargar tiktok sin marca de agua">
+<meta name="keywords" content="descargar videos de tiktok hd">
+<meta name="keywords" content="bajar videos de tiktok sin logo">
+<meta name="keywords" content="descargar videos tiktok online">
+<meta name="keywords" content="descargar tiktok mp4">
+<meta name="keywords" content="guardar videos de tiktok gratis">
+<meta name="keywords" content="descargar videos tiktok alta calidad">
+<meta name="keywords" content="descargar videos tiktok sin marca">
+<meta name="keywords" content="descargar tiktok sin registro">
+<meta name="keywords" content="descargar videos tiktok 1080p">
+<meta name="keywords" content="convertidor tiktok sin marca de agua">
+<meta name="keywords" content="descargar videos virales tiktok">
+<meta name="keywords" content="tiktok downloader español">
+<meta name="keywords" content="descargar videos tiktok rápido">
+<meta name="keywords" content="descargar videos tiktok gratis">
+<meta name="keywords" content="descargar videos sin logo">
+<meta name="keywords" content="guardar videos de tiktok hd">
+<meta name="keywords" content="bajar videos tiktok sin marca de agua">
+<meta name="keywords" content="programa para descargar tiktok">
+<meta name="keywords" content="descargar videos de tiktok sin app">
+<meta name="keywords" content="descargar videos tiktok pc">
+<meta name="keywords" content="descargar videos tiktok móvil">
+<meta name="keywords" content="descargar contenido tiktok">
+<meta name="keywords" content="bajar tiktok hd online">
+<meta name="keywords" content="descargar videos tiktok sin enlace corto">
+<meta name="keywords" content="descargar videos tiktok sin marca de agua android">
+<meta name="keywords" content="descargar videos tiktok sin marca de agua iphone">
+<meta name="keywords" content="descargar videos tiktok sin marca web">
+<meta name="keywords" content="descargar tiktok sin marca y audio">
+<meta name="keywords" content="guardar tiktok sin marca de agua">
+
+<meta name="keywords" content="download tiktok without watermark">
+<meta name="keywords" content="download tiktok videos hd">
+<meta name="keywords" content="save tiktok videos without logo">
+<meta name="keywords" content="download tiktok videos online">
+<meta name="keywords" content="download tiktok mp4">
+<meta name="keywords" content="save tiktok videos free">
+<meta name="keywords" content="download high quality tiktok videos">
+<meta name="keywords" content="download tiktok videos no watermark">
+<meta name="keywords" content="download tiktok without registration">
+<meta name="keywords" content="download tiktok videos 1080p">
+<meta name="keywords" content="tiktok converter without watermark">
+<meta name="keywords" content="download viral tiktok videos">
+<meta name="keywords" content="tiktok downloader english">
+<meta name="keywords" content="download tiktok videos fast">
+<meta name="keywords" content="download tiktok videos free">
+<meta name="keywords" content="download videos without logo">
+<meta name="keywords" content="save tiktok videos hd">
+<meta name="keywords" content="download tiktok videos without watermark">
+<meta name="keywords" content="tiktok download software">
+<meta name="keywords" content="download tiktok videos without app">
+<meta name="keywords" content="download tiktok videos pc">
+<meta name="keywords" content="download tiktok videos mobile">
+<meta name="keywords" content="download tiktok content">
+<meta name="keywords" content="download tiktok hd online">
+<meta name="keywords" content="download tiktok videos without short link">
+<meta name="keywords" content="download tiktok videos without watermark android">
+<meta name="keywords" content="download tiktok videos without watermark iphone">
+<meta name="keywords" content="download tiktok videos without watermark web">
+<meta name="keywords" content="download tiktok without watermark and audio">
+<meta name="keywords" content="save tiktok without watermark">
+descargar tiktok sin marca de agua<br>
+descargar videos de tiktok hd<br>
+bajar videos de tiktok sin logo<br>
+descargar videos tiktok online<br>
+descargar tiktok mp4<br>
+guardar videos de tiktok gratis<br>
+descargar videos tiktok alta calidad<br>
+descargar videos tiktok sin marca<br>
+descargar tiktok sin registro<br>
+descargar videos tiktok 1080p<br>
+convertidor tiktok sin marca de agua<br>
+descargar videos virales tiktok<br>
+tiktok downloader español<br>
+descargar videos tiktok rápido<br>
+descargar videos tiktok gratis<br>
+descargar videos sin logo<br>
+guardar videos de tiktok hd<br>
+bajar videos tiktok sin marca de agua<br>
+programa para descargar tiktok<br>
+descargar videos de tiktok sin app<br>
+descargar videos tiktok pc<br>
+descargar videos tiktok móvil<br>
+descargar contenido tiktok<br>
+bajar tiktok hd online<br>
+descargar videos tiktok sin enlace corto<br>
+descargar videos tiktok sin marca de agua android<br>
+descargar videos tiktok sin marca de agua iphone<br>
+descargar videos tiktok sin marca web<br>
+descargar tiktok sin marca y audio<br>
+guardar tiktok sin marca de agua<br>
+download tiktok without watermark<br>
+download tiktok videos hd<br>
+save tiktok videos without logo<br>
+download tiktok videos online<br>
+download tiktok mp4<br>
+save tiktok videos free<br>
+download high quality tiktok videos<br>
+download tiktok videos no watermark<br>
+download tiktok without registration<br>
+download tiktok videos 1080p<br>
+tiktok converter without watermark<br>
+download viral tiktok videos<br>
+tiktok downloader english<br>
+download tiktok videos fast<br>
+download tiktok videos free<br>
+download videos without logo<br>
+save tiktok videos hd<br>
+download tiktok videos without watermark<br>
+tiktok download software<br>
+download tiktok videos without app<br>
+download tiktok videos pc<br>
+download tiktok videos mobile<br>
+download tiktok content<br>
+download tiktok hd online<br>
+download tiktok videos without short link<br>
+download tiktok videos without watermark android<br>
+download tiktok videos without watermark iphone<br>
+download tiktok videos without watermark web<br>
+download tiktok without watermark and audio<br>
+save tiktok without watermark<br>
+
+descargar reels de tiktok sin marca de agua<br>
+descargar videos de tiktok en formato mp3<br>
+descargar tiktok sin inicio de sesión<br>
+guardar videos tiktok sin marca en línea<br>
+descargar videos largos de tiktok sin marca<br>
+descargar videos tiktok hd gratis<br>
+convertidor de tiktok a mp4 sin logo<br>
+descargar tiktok con sonido original sin marca de agua<br>
+
+download tiktok reels without watermark<br>
+download tiktok to mp3 format<br>
+save tiktok videos online without login<br>
+tiktok hd downloader free<br>
+convert tiktok to mp4 no logo<br>
+download tiktok videos with original sound<br>
+free tiktok video grabber<br>
+download long tiktok videos no watermark<br>
+
+
+
+
+#DescargarTikTok
+#TikTokDownloader
+#SinMarcaDeAgua
+#DescargarVideosTikTok
+#TikTokHD
+#TikTokDownload
+#GuardarTikTok
+#DescargarVideosHD
+#TikTokSinMarcaDeAgua
+#DownloadTikTok
+#TikTokSaver
+#DownloadTikTokHD
+#DescargarVideosGratis
+#TikTokVideoDownloader
+#BajarVideosTikTok
+#TikTokNoWatermark
+#SaveTikTok
+#DownloadWithoutWatermark
+#DescargarTikTokHD
+#VideosSinMarca
+#TikTokMP4
+#DescargarContenidoTikTok
+#TikTokFreeDownload
+#TikTokDescarga
+#TikTokEnHD
+#DescargarReelsTikTok
+#TikTokDownloaderOnline
+#SaveFromTikTok
+#TikTokHDDownload
+#TikTokDownloadFree
+
+#TikTokDownloader
+#DownloadTikTok
+#TikTokNoWatermark
+#SaveTikTokVideos
+#TikTokHDDownload
+#DownloadTikTokVideos
+#NoWatermarkTikTok
+#TikTokSaver
+#TikTokVideoDownloader
+#DownloadHDVideos
+#TikTokDownloadFree
+#SaveTikTok
+#DownloadWithoutWatermark
+#TikTokMP4
+#HDVideoDownload
+#TikTokDownloadHD
+#FreeTikTokDownloader
+#TikTokVideoSaver
+#DownloadTikTokNoWatermark
+#TikTokWithoutWatermark
+#DownloadTikTokApp
+#TikTokContentDownload
+#SaveTikTokHD
+#HDNoWatermark
+#TikTokGrabber
+#TikTokClipDownload
+#DownloadTikTokClips
+#TikTokVideoHD
+#FreeVideoDownloader
+#TikTokDL
+
+
+</p>
+</section>
+</div>
+
+
+
+
+
+
+
+  
+
+
+<!-- Mantener servidor Render activo cada 3 minutos -->
+  <script>
+    setInterval(() => {
+      fetch("https://yt-downloader-api-youtu.onrender.com");
+    }, 180000); // cada 3 minutos (180,000 ms)
+  </script>
+
+
+<footer style="
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #f4f4f4;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.8em;
+  color: #777;
+  border-top: 1px solid #ddd;
+">
+
+
+
+
+  © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
+</footer>
+  
+</body>
+</html>
+
