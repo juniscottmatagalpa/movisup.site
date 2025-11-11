@@ -131,7 +131,7 @@ async function obtenerInfo() {
   document.getElementById("description").textContent = data.description || "Sin descripción";
   document.getElementById("thumb").src = data.image || "https://via.placeholder.com/400x250?text=Sin+miniatura";
 
-  window.directMP4 = data.direct_mp4 || data.video || null;
+  window.directMP4 = data.direct_mp4 || data.video || data.direct_m3u8 || null;
 
   if (window.directMP4) {
     document.getElementById("btnLow").style.display = "block";
@@ -158,7 +158,6 @@ function descargar(calidad) {
 
 </body>
 </html>
-
 
 
 
