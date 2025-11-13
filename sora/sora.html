@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Descargar Videos Sora / IA</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #ffefd5;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    background: #fff;
+    padding: 18px;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .input-group {
+    display: flex;
+    border: 2px solid #32cd32;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  #videoUrl {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+  }
+  #btnGet {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px;
+    background: #ff7b00;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #loader {
+    display: none;
+    text-align: center;
+    margin-top: 10px;
+  }
+  .result {
+    display: none;
+    background: #fafafa;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 16px;
+  }
+  .thumbnail {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  .download-buttons button {
+    width: 100%;
+    margin-top: 10px;
+    background: #ff7b00;
+    padding: 12px;
+    border: none;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <h2>Descargar videos de Sora / IA</h2>
+
+  <div class="input-group">
+    <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de Sora u otro servicio IA">
+  </div>
+
+  <button id="btnGet">Obtener información</button>
+  <div id="loader">Cargando...</div>
+
+  <div id="result" class="result">
+    <img id="thumb" class="thumbnail" src="">
+    <h3 id="title"></h3>
+    <p id="description"></p>
+
+    <div class="download-buttons">
+      <button id="btnLow" style="display:none" onclick="descargar('low')">📥 Descargar baja calidad</button>
+      <button id="btnHigh" style="display:none" onclick="descargar('high')">📹 Descargar alta calidad</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const WORKER = "https://youtub-lake-6929.juniscottmatagalpa.workers.dev/";  // URL del worker
+
+document.getElementById("btnGet").addEventListener("click", obtenerInfo);
+
+async function obtenerInfo() {
+  const link = document.getElementById("videoUrl").value.trim();
+  if (!link) return alert("Ingrese un enlace válido");
+
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("result").style.display = "none";
+
+  const res = await fetch(WORKER, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "q=" + encodeURIComponent(link)
+  });
+
+  document.getElementById("loader").style.display = "none";
+
+  const data = await res.json();
+  if (data.error) return alert(data.error);
+
+  document.getElementById("title").textContent = data.title || "Sin título";
+  document.getElementById("description").textContent = data.description || "Sin descripción";
+  document.getElementById("thumb").src = data.image || "https://via.placeholder.com/400x250?text=Sin+miniatura";
+
+  window.directMP4 = data.direct_mp4 || data.video || data.direct_m3u8 || null;
+
+  if (window.directMP4) {
+    document.getElementById("btnLow").style.display = "block";
+    document.getElementById("btnHigh").style.display = "block";
+  } else {
+    document.getElementById("btnLow").style.display = "none";
+    document.getElementById("btnHigh").style.display = "none";
+    alert("El video está protegido o no tiene una URL MP4 accesible.");
+  }
+
+  document.getElementById("result").style.display = "block";
+}
+
+function descargar(calidad) {
+  if (!window.directMP4) return alert("Descarga no disponible");
+
+  let url = window.directMP4;
+
+  if (calidad === "low") url += "?quality=low";
+
+  window.location.href = `${WORKER}?download=${encodeURIComponent(url)}`;
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
