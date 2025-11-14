@@ -1,56 +1,148 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <title>Descargar video Sora</title>
+<meta charset="UTF-8">
+<title>Sora Downloader</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    padding: 20px;
+  }
+  .container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ccc;
+  }
+  input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+  button {
+    background: black;
+    color: white;
+    cursor: pointer;
+    border: none;
+  }
+  button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+  .thumb {
+    margin-top: 15px;
+    width: 100%;
+    border-radius: 10px;
+  }
+</style>
 </head>
 <body>
-  <h3>Descargar video desde Sora</h3>
-  <input id="inputUrl" placeholder="Pega la URL de Sora aquí" style="width:80%" />
-  <button id="btn">Obtener y Descargar</button>
+
+<div class="container">
+  <h2>Sora Video Downloader</h2>
+
+  <label>URL del video de Sora:</label>
+  <input id="soraUrl" placeholder="Pega aquí la URL del video generado por Sora">
+
+  <button id="btnFetch">Obtener enlace directo</button>
+
+  <div id="preview" style="display:none;">
+    <h3>Vista previa:</h3>
+    <img id="thumb" class="thumb">
+    <p><b>Resolución:</b> <span id="res"></span></p>
+
+    <button id="btnDownload">Descargar video</button>
+  </div>
+
   <p id="status"></p>
+</div>
 
-  <script>
-    const vercelApi = 'https://sora2-nu.vercel.app/api/download'; // tu Vercel endpoint
-    const workerBase = 'https://youtub-lake-6929.juniscottmatagalpa.workers.dev'; // tu Worker
-    // PARA PRUEBAS: la key del worker (solo pruebas). En producción, NO ponerla en cliente.
-    const workerApiKey = 'mi-super-secreto-123';
+<script>
+// ==========================
+// CONFIGURACIONES
+// ==========================
+const BACKEND = "https://sora2-nu.vercel.app/api/download";  // tu API en Vercel
+const PROXY = "https://youtub-lake-6929.juniscottmatagalpa.workers.dev";
+const API_KEY = "mi-super-secreto-123";
 
-    document.getElementById('btn').addEventListener('click', async () => {
-      const url = document.getElementById('inputUrl').value.trim();
-      const status = document.getElementById('status');
-      status.textContent = '';
-      if (!url) { status.textContent = 'Ingresa una URL'; return; }
+let finalDirectUrl = "";  // aquí guardamos el enlace real sin watermark
 
-      try {
-        status.textContent = 'Llamando al backend (Vercel)...';
-        const resp = await fetch(vercelApi, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ video_url: url })
-        });
-        if (!resp.ok) {
-          const text = await resp.text();
-          status.textContent = 'Error del backend: ' + resp.status + ' ' + text;
-          return;
-        }
-        const body = await resp.json();
-        if (body.code !== 200 || !body.data || !body.data.encoded_video_url) {
-          status.textContent = 'Respuesta inesperada: ' + JSON.stringify(body);
-          return;
-        }
-        const encoded = encodeURIComponent(body.data.encoded_video_url);
-        // Construir URL al worker; añadimos api_key en query para pruebas rápidas
-        const final = `${workerBase}/?url=${encoded}&api_key=${encodeURIComponent(workerApiKey)}`;
-        status.textContent = 'Redirigiendo para descarga...';
-        // Navegar: forzará que el navegador descargue el archivo (gracias a Content-Disposition)
-        window.location.href = final;
-      } catch (err) {
-        console.error(err);
-        status.textContent = 'Error: ' + err.message;
-      }
+// ==========================
+// BOTÓN: Obtener enlace directo desde Vercel
+// ==========================
+document.getElementById("btnFetch").onclick = async () => {
+  const soraUrl = document.getElementById("soraUrl").value.trim();
+  if (!soraUrl) return alert("Pega un enlace válido.");
+
+  document.getElementById("status").innerText = "Consultando API...";
+  document.getElementById("btnFetch").disabled = true;
+
+  try {
+    const res = await fetch(BACKEND, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ video_url: soraUrl })
     });
-  </script>
+
+    const data = await res.json();
+
+    if (!data.data) throw new Error("Respuesta inválida del backend.");
+
+    // Extraemos la info principal
+    finalDirectUrl = data.data.nowatermarked_video_url;
+    document.getElementById("thumb").src = data.data.image_url;
+    document.getElementById("res").innerText = data.data.video_width + "x" + data.data.video_height;
+
+    // Mostramos vista previa
+    document.getElementById("preview").style.display = "block";
+    document.getElementById("status").innerText = "Listo.";
+    
+  } catch (e) {
+    console.error(e);
+    document.getElementById("status").innerText = "Error: " + e.message;
+  }
+
+  document.getElementById("btnFetch").disabled = false;
+};
+
+// ==========================
+// BOTÓN: Descargar vía PROXY privado
+// ==========================
+document.getElementById("btnDownload").onclick = async () => {
+  if (!finalDirectUrl) return alert("Obtén primero el enlace directo.");
+
+  document.getElementById("status").innerText = "Descargando...";
+
+  const proxyUrl = `${PROXY}/?url=${encodeURIComponent(finalDirectUrl)}`;
+
+  try {
+    const response = await fetch(proxyUrl, {
+      headers: { "x-api-key": API_KEY }
+    });
+
+    if (!response.ok) throw new Error("Worker rechazó la descarga.");
+
+    // Recibir video como blob
+    const blob = await response.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "sora_video.mp4";
+    a.click();
+
+    document.getElementById("status").innerText = "Descarga completada.";
+  } 
+  catch (e) {
+    console.error(e);
+    document.getElementById("status").innerText = "Error: " + e.message;
+  }
+};
+</script>
+
 </body>
 </html>
-
