@@ -1,59 +1,56 @@
 <!doctype html>
-if(!isValidUrl(input) && input.length<5) return showStatus('Please enter a valid Sora link or ID', 'error');
-setLoading(true);
-showStatus('Requesting server...', 'info');
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Descargar video Sora</title>
+</head>
+<body>
+  <h3>Descargar video desde Sora</h3>
+  <input id="inputUrl" placeholder="Pega la URL de Sora aquí" style="width:80%" />
+  <button id="btn">Obtener y Descargar</button>
+  <p id="status"></p>
 
+  <script>
+    const vercelApi = 'https://sora2-nu.vercel.app/api/download'; // tu Vercel endpoint
+    const workerBase = 'https://youtub-lake-6929.juniscottmatagalpa.workers.dev'; // tu Worker
+    // PARA PRUEBAS: la key del worker (solo pruebas). En producción, NO ponerla en cliente.
+    const workerApiKey = 'mi-super-secreto-123';
 
-try{
-const resp = await fetch('/api/download', {
-method:'POST', headers:{'Content-Type':'application/json'},
-body: JSON.stringify({ video_url: input })
-});
-const data = await resp.json();
-if(resp.ok && data.code===200){
-showVideoResult(data.data);
-showStatus('Ready', 'success');
-} else {
-showStatus(data?.message || 'Download failed. Check your link and try again.', 'error');
-}
-}catch(err){
-console.error(err);
-showStatus('Server error. Check console.', 'error');
-} finally{ setLoading(false); }
-}
+    document.getElementById('btn').addEventListener('click', async () => {
+      const url = document.getElementById('inputUrl').value.trim();
+      const status = document.getElementById('status');
+      status.textContent = '';
+      if (!url) { status.textContent = 'Ingresa una URL'; return; }
 
-
-function showVideoResult(o){
-$('video-result-container').classList.remove('hidden');
-$('video-thumbnail').src = o.image_url || '';
-$('video-resolution').textContent = (o.video_width && o.video_height) ? `${o.video_width} × ${o.video_height}` : '';
-$('video-prompt').textContent = o.prompt || o.description || '-';
-if(o.encoded_video_url) $('download-video-btn').dataset.encoded = o.encoded_video_url;
-if(o.nowatermarked_video_url) $('download-no-watermark-btn').dataset.encoded = o.nowatermarked_video_url;
-}
-
-
-function downloadUrl(url){
-if(!url) return showStatus('No download url', 'error');
-const a=document.createElement('a'); a.href=url; a.download=`sora_${Date.now()}.mp4`; document.body.appendChild(a); a.click(); a.remove();
-}
-
-
-window.addEventListener('load', ()=>{
-$('link-input').addEventListener('input', ()=>{
-const has = $('link-input').value.trim().length>0;
-$('download-btn').disabled = !has;
-if(has) $('clear-btn').classList.remove('hidden'); else $('clear-btn').classList.add('hidden');
-});
-
-
-$('download-btn').addEventListener('click', startDownload);
-$('clear-btn').addEventListener('click', ()=>{ $('link-input').value=''; $('download-btn').disabled=true; $('clear-btn').classList.add('hidden'); });
-
-
-$('download-video-btn').addEventListener('click', ()=>{ downloadUrl($('download-video-btn').dataset.encoded || '')});
-$('download-no-watermark-btn').addEventListener('click', ()=>{ downloadUrl($('download-no-watermark-btn').dataset.encoded || '')});
-});
-</script>
+      try {
+        status.textContent = 'Llamando al backend (Vercel)...';
+        const resp = await fetch(vercelApi, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ video_url: url })
+        });
+        if (!resp.ok) {
+          const text = await resp.text();
+          status.textContent = 'Error del backend: ' + resp.status + ' ' + text;
+          return;
+        }
+        const body = await resp.json();
+        if (body.code !== 200 || !body.data || !body.data.encoded_video_url) {
+          status.textContent = 'Respuesta inesperada: ' + JSON.stringify(body);
+          return;
+        }
+        const encoded = encodeURIComponent(body.data.encoded_video_url);
+        // Construir URL al worker; añadimos api_key en query para pruebas rápidas
+        const final = `${workerBase}/?url=${encoded}&api_key=${encodeURIComponent(workerApiKey)}`;
+        status.textContent = 'Redirigiendo para descarga...';
+        // Navegar: forzará que el navegador descargue el archivo (gracias a Content-Disposition)
+        window.location.href = final;
+      } catch (err) {
+        console.error(err);
+        status.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
 </body>
 </html>
+
