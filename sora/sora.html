@@ -45,7 +45,7 @@
       $("download-btn").disabled = true;
 
       try {
-        const res = await fetch("/api/download", {
+        const res = await fetch("https://sora2-iota.vercel.app/api/download", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url })
@@ -91,3 +91,4 @@
   </script>
 </body>
 </html>
+
