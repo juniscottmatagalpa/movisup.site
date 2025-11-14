@@ -1,83 +1,87 @@
 <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sora2 Downloader</title>
+<style>
+  .hidden { display:none; }
+  .container { max-width: 600px; margin:auto; padding:20px; font-family:Arial; }
+  textarea { width:100%; height:80px; margin-bottom:10px; }
+  button { padding:10px; margin-right:5px; }
+  .status { margin-top:10px; font-weight:bold; }
+  .result img { width:100%; border-radius:10px; margin-bottom:10px; }
+</style>
+</head>
+
+<body>
 <main class="container">
 <h1>Sora2 Downloader</h1>
-
 
 <textarea id="link-input" placeholder="Pega el enlace del video Sora..."></textarea>
 <button id="download-btn" disabled>Download</button>
 <button id="clear-btn" class="hidden">Clear</button>
 
-
 <div id="status" class="status"></div>
 
-
 <section id="video-result" class="hidden result">
-<img id="thumb">
-<p><strong>Prompt:</strong> <span id="prompt"></span></p>
-<p><strong>Resolución:</strong> <span id="res"></span></p>
-<button id="download-main">Descargar Procesado</button>
-<button id="download-nwm">Descargar Sin Marca</button>
+  <img id="thumb">
+  <p><strong>Prompt:</strong> <span id="prompt"></span></p>
+  <p><strong>Resolución:</strong> <span id="res"></span></p>
+  <button id="download-main">Descargar HD</button>
+  <button id="download-nwm">Descargar Original</button>
 </section>
 </main>
-
 
 <script>
 const $ = id => document.getElementById(id);
 
-
 function showStatus(msg){ $("status").textContent = msg }
 
-
 async function download(){
-const url = $("link-input").value.trim();
-if(!url) return showStatus("Ingresa un enlace válido");
+  const url = $("link-input").value.trim();
+  if(!url) return showStatus("Ingresa un enlace válido");
 
+  showStatus("Procesando...");
+  $("download-btn").disabled = true;
 
-showStatus("Procesando...");
-$("download-btn").disabled = true;
+  try {
+    const res = await fetch("/api/download", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ url })
+    });
 
+    const json = await res.json();
 
-const res = await fetch("/api/download", {
-method: "POST",
-headers: {"Content-Type": "application/json"},
-body: JSON.stringify({ url })
-});
+    if(json.code !== 200){
+      showStatus(json.message || "Error procesando el video");
+      $("download-btn").disabled = false;
+      return;
+    }
 
+    const v = json.data;
 
-const json = await res.json();
+    $("thumb").src = v.thumbnail;
+    $("prompt").textContent = v.prompt;
+    $("res").textContent = `${v.width}x${v.height}`;
 
+    $("download-main").onclick  = () => window.open(v.video_url);
+    $("download-nwm").onclick   = () => window.open(v.no_watermark_url);
 
-if(json.code !== 200){
-showStatus(json.message || "Error procesando el video");
-$("download-btn").disabled = false;
-return;
+    $("video-result").classList.remove("hidden");
+    showStatus("Listo!");
+  } catch (err){
+    showStatus("Error: " + err.message);
+  }
+
+  $("download-btn").disabled = false;
 }
-
-
-const v = json.data;
-
-
-$("thumb").src = v.thumbnail;
-$("prompt").textContent = v.prompt;
-$("res").textContent = `${v.width}x${v.height}`;
-
-
-$("download-main").onclick = () => window.open(v.video_url);
-$("download-nwm").onclick = () => window.open(v.no_watermark_url);
-
-
-$("video-result").classList.remove("hidden");
-showStatus("Listo!");
-$("download-btn").disabled = false;
-}
-
 
 $("link-input").oninput = () => {
-const has = $("link-input").value.trim().length > 0;
-$("download-btn").disabled = !has;
-$("clear-btn").classList.toggle("hidden", !has);
+  const has = $("link-input").value.trim().length > 0;
+  $("download-btn").disabled = !has;
+  $("clear-btn").classList.toggle("hidden", !has);
 };
-
 
 $("download-btn").onclick = download;
 $("clear-btn").onclick = () => { $("link-input").value = ""; };
