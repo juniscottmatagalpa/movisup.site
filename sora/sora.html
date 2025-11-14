@@ -1,4 +1,30 @@
 <!DOCTYPE html>
+<main class="container">
+<h1>Sora2 Downloader</h1>
+
+
+<textarea id="link-input" placeholder="Pega el enlace del video Sora..."></textarea>
+<button id="download-btn" disabled>Download</button>
+<button id="clear-btn" class="hidden">Clear</button>
+
+
+<div id="status" class="status"></div>
+
+
+<section id="video-result" class="hidden result">
+<img id="thumb">
+<p><strong>Prompt:</strong> <span id="prompt"></span></p>
+<p><strong>Resolución:</strong> <span id="res"></span></p>
+<button id="download-main">Descargar Procesado</button>
+<button id="download-nwm">Descargar Sin Marca</button>
+</section>
+</main>
+
+
+<script>
+const $ = id => document.getElementById(id);
+
+
 function showStatus(msg){ $("status").textContent = msg }
 
 
