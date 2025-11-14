@@ -37,6 +37,7 @@ const $ = id => document.getElementById(id);
 
 function showStatus(msg){ $("status").textContent = msg }
 
+
 async function download(){
   const url = $("link-input").value.trim();
   if(!url) return showStatus("Ingresa un enlace válido");
@@ -55,27 +56,51 @@ async function download(){
 
     if(json.code !== 200){
       showStatus(json.message || "Error procesando el video");
+      if (json.raw) {
+        console.log("DEBUG raw:", json.raw);
+      }
       $("download-btn").disabled = false;
       return;
     }
 
     const v = json.data;
 
-    $("thumb").src = v.thumbnail;
-    $("prompt").textContent = v.prompt;
-    $("res").textContent = `${v.width}x${v.height}`;
+    if (v.thumbnail) $("thumb").src = v.thumbnail;
+    else $("thumb").src = "";
 
-    $("download-main").onclick  = () => window.open(v.video_url);
-    $("download-nwm").onclick   = () => window.open(v.no_watermark_url);
+    $("prompt").textContent = v.prompt || "No disponible";
+    $("res").textContent = (v.width && v.height) ? `${v.width}x${v.height}` : "No disponible";
+
+    if (v.video_url) {
+      $("download-main").onclick = () => window.open(v.video_url);
+      $("download-main").disabled = false;
+    } else {
+      $("download-main").onclick = null;
+      $("download-main").disabled = true;
+    }
+
+    if (v.no_watermark_url) {
+      $("download-nwm").onclick = () => window.open(v.no_watermark_url);
+      $("download-nwm").disabled = false;
+    } else {
+      $("download-nwm").onclick = null;
+      $("download-nwm").disabled = true;
+    }
 
     $("video-result").classList.remove("hidden");
     showStatus("Listo!");
+    if (v.raw_preview) console.log("RAW preview (debug):", v.raw_preview);
+
   } catch (err){
     showStatus("Error: " + err.message);
   }
 
   $("download-btn").disabled = false;
 }
+
+
+
+  
 
 $("link-input").oninput = () => {
   const has = $("link-input").value.trim().length > 0;
@@ -88,3 +113,4 @@ $("clear-btn").onclick = () => { $("link-input").value = ""; };
 </script>
 </body>
 </html>
+
