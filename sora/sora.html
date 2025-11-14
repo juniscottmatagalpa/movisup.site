@@ -1,86 +1,60 @@
 <!DOCTYPE html>
-</div>
+function showStatus(msg){ $("status").textContent = msg }
 
 
-<div id="status" class="status"></div>
+async function download(){
+const url = $("link-input").value.trim();
+if(!url) return showStatus("Ingresa un enlace válido");
 
 
-<section id="video-result-container" class="hidden result">
-<img id="video-thumbnail">
-<div id="video-resolution"></div>
-<div id="video-prompt"></div>
-<button id="btn-dl-main">Download procesado</button>
-<button id="btn-dl-nwm">Download sin marca</button>
-</section>
-</main>
-
-
-<script>
-const $ = id => document.getElementById(id);
-
-
-function showStatus(msg, type="info"){
-const s = $("status");
-s.textContent = msg;
-s.dataset.type = type;
-}
-
-
-async function startDownload(){
-const link = $("link-input").value.trim();
-if(!link) return showStatus("Ingresa un enlace válido", "error");
-
-
-showStatus("Procesando...", "info");
+showStatus("Procesando...");
 $("download-btn").disabled = true;
 
 
-try{
 const res = await fetch("/api/download", {
 method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ url: link })
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({ url })
 });
 
 
 const json = await res.json();
-if(json.code !== 200) return showStatus(json.message, "error");
+
+
+if(json.code !== 200){
+showStatus(json.message || "Error procesando el video");
+$("download-btn").disabled = false;
+return;
+}
 
 
 const v = json.data;
 
 
-$("video-thumbnail").src = v.thumbnail;
-$("video-prompt").textContent = v.prompt;
-$("video-resolution").textContent = `${v.width}×${v.height}`;
+$("thumb").src = v.thumbnail;
+$("prompt").textContent = v.prompt;
+$("res").textContent = `${v.width}x${v.height}`;
 
 
-$("btn-dl-main").onclick = () => window.open(v.video_url);
-$("btn-dl-nwm").onclick = () => window.open(v.no_watermark_url);
+$("download-main").onclick = () => window.open(v.video_url);
+$("download-nwm").onclick = () => window.open(v.no_watermark_url);
 
 
-showStatus("Listo", "success");
-$("video-result-container").classList.remove("hidden");
-
-
-}catch(e){ showStatus("Error del servidor", "error"); }
-
-
+$("video-result").classList.remove("hidden");
+showStatus("Listo!");
 $("download-btn").disabled = false;
 }
 
 
-window.onload = () => {
 $("link-input").oninput = () => {
-const has = $("link-input").value.trim().length>0;
+const has = $("link-input").value.trim().length > 0;
 $("download-btn").disabled = !has;
 $("clear-btn").classList.toggle("hidden", !has);
 };
 
 
-$("download-btn").onclick = startDownload;
-$("clear-btn").onclick = () => { $("link-input").value=""; };
-};
+$("download-btn").onclick = download;
+$("clear-btn").onclick = () => { $("link-input").value = ""; };
 </script>
 </body>
 </html>
