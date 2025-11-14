@@ -51,8 +51,6 @@
           body: JSON.stringify({ url })
         });
 
-        if (!res.ok) throw new Error("Error en la API: " + res.status);
-
         const json = await res.json();
 
         if(json.code !== 200){
@@ -63,15 +61,23 @@
 
         const v = json.data;
 
-        $("thumb").src = v.thumbnail;
-        $("prompt").textContent = v.prompt;
-        $("res").textContent = `${v.width}x${v.height}`;
+        $("thumb").src = v.thumbnail || "";
+        $("prompt").textContent = v.prompt || "No encontrado";
+        $("res").textContent = `${v.width || "??"}x${v.height || "??"}`;
 
-        $("download-main").onclick = () => window.open(v.video_url);
-        $("download-nwm").onclick = () => window.open(v.no_watermark_url);
+        $("download-main").onclick = () => {
+          if(!v.video_url) return alert("⚠ No se encontró el video.");
+          window.open(v.video_url, "_blank");
+        };
+
+        $("download-nwm").onclick = () => {
+          if(!v.no_watermark_url) return alert("⚠ No se encontró el video sin marca.");
+          window.open(v.no_watermark_url, "_blank");
+        };
 
         $("video-result").classList.remove("hidden");
         showStatus("Listo!");
+
       } catch (err) {
         console.error(err);
         showStatus("Error: " + err.message);
@@ -91,4 +97,3 @@
   </script>
 </body>
 </html>
-
