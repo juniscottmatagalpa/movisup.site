@@ -1,148 +1,86 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Sora Downloader</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f7f7f7;
-    padding: 20px;
-  }
-  .container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #ccc;
-  }
-  input, button {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 15px;
-  }
-  button {
-    background: black;
-    color: white;
-    cursor: pointer;
-    border: none;
-  }
-  button:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-  }
-  .thumb {
-    margin-top: 15px;
-    width: 100%;
-    border-radius: 10px;
-  }
-</style>
-</head>
-<body>
-
-<div class="container">
-  <h2>Sora Video Downloader</h2>
-
-  <label>URL del video de Sora:</label>
-  <input id="soraUrl" placeholder="Pega aquí la URL del video generado por Sora">
-
-  <button id="btnFetch">Obtener enlace directo</button>
-
-  <div id="preview" style="display:none;">
-    <h3>Vista previa:</h3>
-    <img id="thumb" class="thumb">
-    <p><b>Resolución:</b> <span id="res"></span></p>
-
-    <button id="btnDownload">Descargar video</button>
-  </div>
-
-  <p id="status"></p>
 </div>
 
+
+<div id="status" class="status"></div>
+
+
+<section id="video-result-container" class="hidden result">
+<img id="video-thumbnail">
+<div id="video-resolution"></div>
+<div id="video-prompt"></div>
+<button id="btn-dl-main">Download procesado</button>
+<button id="btn-dl-nwm">Download sin marca</button>
+</section>
+</main>
+
+
 <script>
-// ==========================
-// CONFIGURACIONES
-// ==========================
-const BACKEND = "https://sora2-nu.vercel.app/api/download";  // tu API en Vercel
-const PROXY = "https://youtub-lake-6929.juniscottmatagalpa.workers.dev";
-const API_KEY = "mi-super-secreto-123";
+const $ = id => document.getElementById(id);
 
-let finalDirectUrl = "";  // aquí guardamos el enlace real sin watermark
 
-// ==========================
-// BOTÓN: Obtener enlace directo desde Vercel
-// ==========================
-document.getElementById("btnFetch").onclick = async () => {
-  const soraUrl = document.getElementById("soraUrl").value.trim();
-  if (!soraUrl) return alert("Pega un enlace válido.");
+function showStatus(msg, type="info"){
+const s = $("status");
+s.textContent = msg;
+s.dataset.type = type;
+}
 
-  document.getElementById("status").innerText = "Consultando API...";
-  document.getElementById("btnFetch").disabled = true;
 
-  try {
-    const res = await fetch(BACKEND, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ video_url: soraUrl })
-    });
+async function startDownload(){
+const link = $("link-input").value.trim();
+if(!link) return showStatus("Ingresa un enlace válido", "error");
 
-    const data = await res.json();
 
-    if (!data.data) throw new Error("Respuesta inválida del backend.");
+showStatus("Procesando...", "info");
+$("download-btn").disabled = true;
 
-    // Extraemos la info principal
-    finalDirectUrl = data.data.nowatermarked_video_url;
-    document.getElementById("thumb").src = data.data.image_url;
-    document.getElementById("res").innerText = data.data.video_width + "x" + data.data.video_height;
 
-    // Mostramos vista previa
-    document.getElementById("preview").style.display = "block";
-    document.getElementById("status").innerText = "Listo.";
-    
-  } catch (e) {
-    console.error(e);
-    document.getElementById("status").innerText = "Error: " + e.message;
-  }
+try{
+const res = await fetch("/api/download", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ url: link })
+});
 
-  document.getElementById("btnFetch").disabled = false;
+
+const json = await res.json();
+if(json.code !== 200) return showStatus(json.message, "error");
+
+
+const v = json.data;
+
+
+$("video-thumbnail").src = v.thumbnail;
+$("video-prompt").textContent = v.prompt;
+$("video-resolution").textContent = `${v.width}×${v.height}`;
+
+
+$("btn-dl-main").onclick = () => window.open(v.video_url);
+$("btn-dl-nwm").onclick = () => window.open(v.no_watermark_url);
+
+
+showStatus("Listo", "success");
+$("video-result-container").classList.remove("hidden");
+
+
+}catch(e){ showStatus("Error del servidor", "error"); }
+
+
+$("download-btn").disabled = false;
+}
+
+
+window.onload = () => {
+$("link-input").oninput = () => {
+const has = $("link-input").value.trim().length>0;
+$("download-btn").disabled = !has;
+$("clear-btn").classList.toggle("hidden", !has);
 };
 
-// ==========================
-// BOTÓN: Descargar vía PROXY privado
-// ==========================
-document.getElementById("btnDownload").onclick = async () => {
-  if (!finalDirectUrl) return alert("Obtén primero el enlace directo.");
 
-  document.getElementById("status").innerText = "Descargando...";
-
-  const proxyUrl = `${PROXY}/?url=${encodeURIComponent(finalDirectUrl)}`;
-
-  try {
-    const response = await fetch(proxyUrl, {
-      headers: { "x-api-key": API_KEY }
-    });
-
-    if (!response.ok) throw new Error("Worker rechazó la descarga.");
-
-    // Recibir video como blob
-    const blob = await response.blob();
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "sora_video.mp4";
-    a.click();
-
-    document.getElementById("status").innerText = "Descarga completada.";
-  } 
-  catch (e) {
-    console.error(e);
-    document.getElementById("status").innerText = "Error: " + e.message;
-  }
+$("download-btn").onclick = startDownload;
+$("clear-btn").onclick = () => { $("link-input").value=""; };
 };
 </script>
-
 </body>
 </html>
