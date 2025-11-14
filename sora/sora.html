@@ -421,7 +421,7 @@ function startDownload() {
 }
 
 function downloadVideo(o) {
-    postRequest("/api/download-video-1106", {
+    postRequest("savesora.com/api/download-video-1106", {
         video_url: o,
         format: "mp4",
         turnstile_token: "bypass-token-123"     // 🔥 TOKEN FALSO
@@ -895,6 +895,7 @@ $(document).ready(function() {
   </script>
  </body>
 </html>
+
 
 
 
