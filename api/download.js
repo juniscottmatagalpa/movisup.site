@@ -1,13 +1,20 @@
-import fetch from "node-fetch";
-
 export default async function handler(req, res) {
-  if (req.method !== "POST")
-    return res.status(405).json({ code: 405, message: "Método no permitido" });
+  // CORS: permite llamadas desde cualquier dominio
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  const { url } = req.body;
-  if (!url) return res.status(400).json({ code: 400, message: "Falta la URL" });
+  if (req.method === "OPTIONS") return res.status(200).end();
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ code: 405, message: "Método no permitido" });
+  }
 
   try {
+    const { url } = req.body || {};
+    if (!url) return res.status(400).json({ code: 400, message: "Falta la URL" });
+
+    // Worker de Cloudflare
     const WORKER = "https://youtub-lake-6929.juniscottmatagalpa.workers.dev";
 
     const r = await fetch(WORKER, {
@@ -16,22 +23,28 @@ export default async function handler(req, res) {
       body: JSON.stringify({ url })
     });
 
-    const text = await r.text();
+    const data = await r.json();
 
-    // Intentar parsear JSON
-    try {
-      const json = JSON.parse(text);
-      return res.status(200).json(json);
-    } catch (err) {
-      // En caso de recibir HTML u otro contenido, devolver mensaje claro
-      return res.status(500).json({
-        code: 500,
-        message: "El Worker devolvió contenido no-JSON (HTML u otro)",
-        raw: text.substring(0, 1000)
-      });
+    if (data.code !== 200) {
+      return res.status(400).json({ code: data.code, message: data.message || "Error al procesar el video" });
     }
 
-  } catch (e) {
-    return res.status(500).json({ code: 500, message: "Error interno", error: e.message });
+    // Devuelve solo los campos necesarios
+    const v = data.data;
+
+    return res.status(200).json({
+      code: 200,
+      data: {
+        thumbnail: v.thumbnail,
+        prompt: v.prompt,
+        video_url: v.video_url,
+        no_watermark_url: v.no_watermark_url,
+        width: v.width,
+        height: v.height
+      }
+    });
+
+  } catch (err) {
+    return res.status(500).json({ code: 500, message: "Error interno", error: err.message });
   }
 }
