@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descargar Videos Sora 2 - MovisUp</title>
+    <title>Descargar Videos Sora 2 Sin Marca de Agua - MovisUp</title>
+    <meta name="description" content="Descarga videos de Sora 2 sin marca de agua. Gratis, rápido y seguro. HD calidad sin watermark.">
+    
     <style>
         * {
             margin: 0;
@@ -13,7 +15,8 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #e5e7eb;
             min-height: 100vh;
             padding: 20px;
         }
@@ -21,27 +24,37 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: rgba(30, 30, 60, 0.4);
+            border: 1px solid rgba(139, 92, 246, 0.2);
             border-radius: 15px;
             padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            margin-top: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
         }
 
         .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            color: #333;
-            font-size: 2.5em;
+            font-size: 3em;
             margin-bottom: 10px;
         }
 
-        .logo p {
-            color: #666;
-            font-size: 1.1em;
+        .title {
+            font-size: 2.5em;
+            color: white;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #d946ef 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #9ca3af;
+            font-size: 1.2em;
+            margin-bottom: 30px;
         }
 
         .download-form {
@@ -51,47 +64,50 @@
         .url-input {
             width: 100%;
             padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            color: white;
             font-size: 16px;
-            margin-bottom: 15px;
-            transition: border-color 0.3s;
+            margin-bottom: 20px;
         }
 
         .url-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #a855f7;
         }
 
         .download-btn {
             width: 100%;
             padding: 15px;
-            background: #667eea;
+            background: linear-gradient(135deg, #d946ef 0%, #a855f7 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
 
         .download-btn:hover {
-            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(217, 70, 239, 0.5);
         }
 
         .download-btn:disabled {
-            background: #ccc;
+            background: #6b7280;
             cursor: not-allowed;
+            transform: none;
         }
 
         .result-container {
             display: none;
             margin-top: 30px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid rgba(139, 92, 246, 0.3);
             border-radius: 10px;
             padding: 20px;
-            background: #f9f9f9;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .video-preview {
@@ -112,48 +128,50 @@
         }
 
         .video-info h3 {
-            color: #333;
+            color: white;
             margin-bottom: 10px;
             font-size: 1.3em;
         }
 
         .video-info p {
-            color: #666;
+            color: #9ca3af;
             margin-bottom: 8px;
         }
 
         .prompt-text {
-            background: #fff;
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #a855f7;
             margin: 15px 0;
         }
 
         .download-hd-btn {
             width: 100%;
             padding: 15px;
-            background: #28a745;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
 
         .download-hd-btn:hover {
-            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
         }
 
         .error-message {
-            background: #f8d7da;
-            color: #721c24;
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
             padding: 15px;
             border-radius: 8px;
             margin: 15px 0;
             display: none;
+            border-left: 4px solid #ef4444;
         }
 
         .loading {
@@ -163,8 +181,8 @@
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #a855f7;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -187,12 +205,12 @@
         .step {
             text-align: center;
             padding: 20px;
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
         }
 
         .step-number {
-            background: #667eea;
+            background: #a855f7;
             color: white;
             width: 40px;
             height: 40px;
@@ -207,7 +225,7 @@
         footer {
             text-align: center;
             margin-top: 40px;
-            color: white;
+            color: #6b7280;
             font-size: 14px;
         }
 
@@ -220,19 +238,15 @@
                 width: 100%;
                 height: 200px;
             }
-            
-            .container {
-                margin-top: 20px;
-                padding: 20px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">
-            <h1>🎬 MovisUp</h1>
-            <p>Descarga videos de Sora 2 en HD sin marca de agua</p>
+        <div class="header">
+            <div class="logo">🎬</div>
+            <h1 class="title">MovisUp</h1>
+            <p class="subtitle">Descarga videos de Sora 2 en HD sin marca de agua</p>
         </div>
 
         <div class="download-form">
@@ -240,7 +254,7 @@
                 type="url" 
                 class="url-input" 
                 id="videoUrl" 
-                placeholder="🔗 Pega aquí el enlace de Sora 2..." 
+                placeholder="🔗 Pega aquí el enlace de Sora 2 (sora.chatgpt.com/p/...)" 
             >
             <button class="download-btn" id="downloadBtn">
                 🚀 Obtener Video
@@ -291,36 +305,46 @@
                 <p>¡Obtén tu video en HD sin marca de agua!</p>
             </div>
         </div>
+
+        <footer>
+            <p>&copy; 2024 MovisUp - Para uso educativo</p>
+        </footer>
     </div>
 
-    <footer>
-        <p>&copy; 2024 MovisUp - Para uso educativo</p>
-    </footer>
-
     <script>
-        // Tu Worker de Cloudflare
+        // Configuración - ACTUALIZA ESTA URL CON TU WORKER
         const WORKER_URL = 'https://youtub-lake-6929.juniscottmatagalpa.workers.dev';
 
-        document.getElementById('downloadBtn').addEventListener('click', processVideo);
-        document.getElementById('downloadHdBtn').addEventListener('click', downloadVideo);
+        // Elementos del DOM
+        const videoUrlInput = document.getElementById('videoUrl');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const resultContainer = document.getElementById('resultContainer');
+        const videoThumbnail = document.getElementById('videoThumbnail');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoDuration = document.getElementById('videoDuration');
+        const videoPrompt = document.getElementById('videoPrompt');
+        const downloadHdBtn = document.getElementById('downloadHdBtn');
+
+        // Event Listeners
+        downloadBtn.addEventListener('click', processVideo);
+        downloadHdBtn.addEventListener('click', downloadVideo);
 
         // También funciona con Enter
-        document.getElementById('videoUrl').addEventListener('keypress', function(e) {
+        videoUrlInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 processVideo();
             }
         });
 
+        // Función principal para procesar video
         async function processVideo() {
-            const videoUrl = document.getElementById('videoUrl').value.trim();
-            const downloadBtn = document.getElementById('downloadBtn');
-            const loading = document.getElementById('loading');
-            const errorMessage = document.getElementById('errorMessage');
-            const resultContainer = document.getElementById('resultContainer');
-
+            const videoUrl = videoUrlInput.value.trim();
+            
             // Reset
-            errorMessage.style.display = 'none';
-            resultContainer.style.display = 'none';
+            hideError();
+            hideResult();
 
             if (!videoUrl) {
                 showError('Por favor, pega un enlace de Sora 2');
@@ -328,15 +352,13 @@
             }
 
             // Validar que sea URL de Sora
-            if (!videoUrl.includes('sora') && !videoUrl.includes('openai')) {
-                showError('Por favor, ingresa un enlace válido de Sora 2');
+            if (!isValidSoraUrl(videoUrl)) {
+                showError('Por favor, ingresa un enlace válido de Sora 2 (sora.chatgpt.com/p/...)');
                 return;
             }
 
             // Mostrar loading
-            downloadBtn.disabled = true;
-            downloadBtn.textContent = 'Procesando...';
-            loading.style.display = 'block';
+            setLoading(true);
 
             try {
                 // Llamar al Worker de Cloudflare
@@ -363,39 +385,23 @@
             } catch (error) {
                 showError('Error: ' + error.message);
             } finally {
-                // Ocultar loading
-                downloadBtn.disabled = false;
-                downloadBtn.textContent = '🚀 Obtener Video';
-                loading.style.display = 'none';
+                setLoading(false);
             }
         }
 
-        function displayVideoInfo(videoData) {
-            document.getElementById('videoThumbnail').src = videoData.thumbnail;
-            document.getElementById('videoTitle').textContent = videoData.title;
-            document.getElementById('videoDuration').textContent = videoData.duration;
-            document.getElementById('videoPrompt').textContent = videoData.prompt;
-            
-            document.getElementById('resultContainer').style.display = 'block';
-
-            // Guardar datos para la descarga
-            document.getElementById('downloadHdBtn').setAttribute('data-video-id', videoData.id);
-        }
-
+        // Función para descargar video
         async function downloadVideo() {
-            const videoId = document.getElementById('downloadHdBtn').getAttribute('data-video-id');
-            const downloadBtn = document.getElementById('downloadHdBtn');
-
+            const videoId = downloadHdBtn.getAttribute('data-video-id');
+            
             if (!videoId) {
                 showError('No hay video para descargar');
                 return;
             }
 
-            downloadBtn.disabled = true;
-            downloadBtn.textContent = '⏳ Descargando...';
+            downloadHdBtn.disabled = true;
+            downloadHdBtn.textContent = '⏳ Descargando...';
 
             try {
-                // Llamar al Worker para descargar
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: {
@@ -403,8 +409,7 @@
                     },
                     body: JSON.stringify({
                         action: 'downloadVideo',
-                        videoId: videoId,
-                        quality: 'hd'
+                        videoId: videoId
                     })
                 });
 
@@ -420,21 +425,65 @@
                     link.click();
                     document.body.removeChild(link);
                 } else {
-                    throw new Error(data.error || 'Error al descargar');
+                    throw new Error(data.error || 'Error al descargar el video');
                 }
 
             } catch (error) {
                 showError('Error al descargar: ' + error.message);
             } finally {
-                downloadBtn.disabled = false;
-                downloadBtn.textContent = '📥 Descargar Video HD';
+                downloadHdBtn.disabled = false;
+                downloadHdBtn.textContent = '📥 Descargar Video HD';
             }
         }
 
+        // Mostrar información del video
+        function displayVideoInfo(videoData) {
+            videoThumbnail.src = videoData.thumbnail;
+            videoTitle.textContent = videoData.title;
+            videoDuration.textContent = videoData.duration;
+            videoPrompt.textContent = videoData.prompt;
+            
+            // Guardar datos para la descarga
+            downloadHdBtn.setAttribute('data-video-id', videoData.id);
+            
+            showResult();
+        }
+
+        // Validar URL de Sora
+        function isValidSoraUrl(url) {
+            return url.includes('sora.chatgpt.com') || 
+                   url.includes('sora.com') ||
+                   /^s_[a-zA-Z0-9]+$/.test(url);
+        }
+
+        // Helpers de UI
         function showError(message) {
-            const errorElement = document.getElementById('errorMessage');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function showResult() {
+            resultContainer.style.display = 'block';
+        }
+
+        function hideResult() {
+            resultContainer.style.display = 'none';
+        }
+
+        function setLoading(isLoading) {
+            if (isLoading) {
+                downloadBtn.disabled = true;
+                downloadBtn.textContent = 'Procesando...';
+                loading.style.display = 'block';
+            } else {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '🚀 Obtener Video';
+                loading.style.display = 'none';
+            }
         }
     </script>
 </body>
