@@ -3,109 +3,439 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Descargador de Videos Sora 2</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Descargar Videos Sora 2 - MovisUp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .download-form {
+            margin-bottom: 30px;
+        }
+
+        .url-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .download-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        .video-preview {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .video-thumbnail {
+            width: 200px;
+            height: 150px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .video-info {
+            flex: 1;
+        }
+
+        .video-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .video-info p {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .prompt-text {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+
+        .download-hd-btn {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .download-hd-btn:hover {
+            background: #218838;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .step {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .video-preview {
+                flex-direction: column;
+            }
+            
+            .video-thumbnail {
+                width: 100%;
+                height: 200px;
+            }
+            
+            .container {
+                margin-top: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar">
-            <div class="nav-container">
-                <h1 class="logo">Sora2Downloader</h1>
-                <ul class="nav-menu">
-                    <li><a href="#home">Inicio</a></li>
-                    <li><a href="#how-to">Cómo Usar</a></li>
-                    <li><a href="#faq">FAQ</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+    <div class="container">
+        <div class="logo">
+            <h1>🎬 MovisUp</h1>
+            <p>Descarga videos de Sora 2 en HD sin marca de agua</p>
+        </div>
 
-    <main>
-        <section id="home" class="hero">
-            <div class="container">
-                <h2>Descarga Videos de Sora 2 Sin Marca de Agua</h2>
-                <p>Pega el enlace del video y descárgalo en alta calidad</p>
-                
-                <div class="download-form">
-                    <input 
-                        type="url" 
-                        id="videoUrl" 
-                        placeholder="https://sora.com/video/..." 
-                        required
-                    >
-                    <button id="downloadBtn" class="btn-primary">
-                        Descargar Video
-                    </button>
-                </div>
-                
-                <div id="result" class="result-container" style="display: none;">
-                    <div class="video-preview">
-                        <img id="videoThumbnail" src="" alt="Vista previa">
-                        <div class="video-info">
-                            <h3 id="videoTitle">Título del video</h3>
-                            <p id="videoDuration">Duración: --:--</p>
-                        </div>
-                    </div>
-                    <div class="download-options">
-                        <button class="btn-download" data-quality="hd">
-                            📥 Descargar HD
-                        </button>
-                        <button class="btn-download" data-quality="sd">
-                            📥 Descargar SD
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="download-form">
+            <input 
+                type="url" 
+                class="url-input" 
+                id="videoUrl" 
+                placeholder="🔗 Pega aquí el enlace de Sora 2..." 
+            >
+            <button class="download-btn" id="downloadBtn">
+                🚀 Obtener Video
+            </button>
+        </div>
 
-        <section id="how-to" class="how-to">
-            <div class="container">
-                <h2>Cómo Descargar Videos</h2>
-                <div class="steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <h3>Encuentra el Video</h3>
-                        <p>Abre la app de Sora 2 y copia el enlace del video que quieres descargar</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <h3>Pega el Enlace</h3>
-                        <p>Pega el enlace en nuestro descargador y haz clic en "Descargar"</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <h3>Descarga</h3>
-                        <p>Elige la calidad y descarga tu video sin marca de agua</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Procesando video...</p>
+        </div>
 
-        <section id="faq" class="faq">
-            <div class="container">
-                <h2>Preguntas Frecuentes</h2>
-                <div class="faq-item">
-                    <h3>¿Es gratuito?</h3>
-                    <p>Sí, nuestro servicio es completamente gratuito.</p>
-                </div>
-                <div class="faq-item">
-                    <h3>¿Los videos tienen marca de agua?</h3>
-                    <p>No, los videos se descargan sin marca de agua.</p>
-                </div>
-                <div class="faq-item">
-                    <h3>¿Qué formatos están disponibles?</h3>
-                    <p>MP4 en calidades HD y SD.</p>
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="video-preview">
+                <img class="video-thumbnail" id="videoThumbnail" src="" alt="Miniatura del video">
+                <div class="video-info">
+                    <h3 id="videoTitle">Título del video</h3>
+                    <p><strong>Duración:</strong> <span id="videoDuration">--:--</span></p>
+                    <p><strong>Calidad:</strong> <span id="videoQuality">HD</span></p>
                 </div>
             </div>
-        </section>
-    </main>
+            
+            <div class="prompt-text">
+                <strong>🎨 Prompt utilizado:</strong>
+                <p id="videoPrompt">Cargando prompt...</p>
+            </div>
+
+            <button class="download-hd-btn" id="downloadHdBtn">
+                📥 Descargar Video HD
+            </button>
+        </div>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Copia el enlace</h3>
+                <p>Ve a Sora 2 y copia el enlace del video</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Pega aquí</h3>
+                <p>Pega el enlace en el campo de arriba</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Descarga</h3>
+                <p>¡Obtén tu video en HD sin marca de agua!</p>
+            </div>
+        </div>
+    </div>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2024 Sora2Downloader. Para uso personal.</p>
-        </div>
+        <p>&copy; 2024 MovisUp - Para uso educativo</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        // Tu Worker de Cloudflare
+        const WORKER_URL = 'https://youtub-lake-6929.juniscottmatagalpa.workers.dev';
+
+        document.getElementById('downloadBtn').addEventListener('click', processVideo);
+        document.getElementById('downloadHdBtn').addEventListener('click', downloadVideo);
+
+        // También funciona con Enter
+        document.getElementById('videoUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processVideo();
+            }
+        });
+
+        async function processVideo() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const resultContainer = document.getElementById('resultContainer');
+
+            // Reset
+            errorMessage.style.display = 'none';
+            resultContainer.style.display = 'none';
+
+            if (!videoUrl) {
+                showError('Por favor, pega un enlace de Sora 2');
+                return;
+            }
+
+            // Validar que sea URL de Sora
+            if (!videoUrl.includes('sora') && !videoUrl.includes('openai')) {
+                showError('Por favor, ingresa un enlace válido de Sora 2');
+                return;
+            }
+
+            // Mostrar loading
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Procesando...';
+            loading.style.display = 'block';
+
+            try {
+                // Llamar al Worker de Cloudflare
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'getVideoInfo',
+                        url: videoUrl
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Mostrar información del video
+                    displayVideoInfo(data.data);
+                } else {
+                    throw new Error(data.error || 'Error al procesar el video');
+                }
+
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                // Ocultar loading
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '🚀 Obtener Video';
+                loading.style.display = 'none';
+            }
+        }
+
+        function displayVideoInfo(videoData) {
+            document.getElementById('videoThumbnail').src = videoData.thumbnail;
+            document.getElementById('videoTitle').textContent = videoData.title;
+            document.getElementById('videoDuration').textContent = videoData.duration;
+            document.getElementById('videoPrompt').textContent = videoData.prompt;
+            
+            document.getElementById('resultContainer').style.display = 'block';
+
+            // Guardar datos para la descarga
+            document.getElementById('downloadHdBtn').setAttribute('data-video-id', videoData.id);
+        }
+
+        async function downloadVideo() {
+            const videoId = document.getElementById('downloadHdBtn').getAttribute('data-video-id');
+            const downloadBtn = document.getElementById('downloadHdBtn');
+
+            if (!videoId) {
+                showError('No hay video para descargar');
+                return;
+            }
+
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = '⏳ Descargando...';
+
+            try {
+                // Llamar al Worker para descargar
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'downloadVideo',
+                        videoId: videoId,
+                        quality: 'hd'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.data.downloadUrl) {
+                    // Crear enlace de descarga
+                    const link = document.createElement('a');
+                    link.href = data.data.downloadUrl;
+                    link.download = `sora-video-${videoId}.mp4`;
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    throw new Error(data.error || 'Error al descargar');
+                }
+
+            } catch (error) {
+                showError('Error al descargar: ' + error.message);
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '📥 Descargar Video HD';
+            }
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    </script>
 </body>
 </html>
