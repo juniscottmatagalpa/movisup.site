@@ -5,195 +5,223 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descargar Videos Sora - Movisup</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
         }
-
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
             background: white;
+            padding: 40px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
+            text-align: center;
         }
-
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .input-group {
+            margin: 30px 0;
+        }
+        input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .iframe-container {
-            position: relative;
-            width: 100%;
-            height: 700px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
+            padding: 15px 40px;
             border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s;
         }
-
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.2em;
-            color: #666;
+        button:hover {
+            transform: translateY(-2px);
         }
-
-        .instructions {
-            background: #f8f9fa;
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 30px;
             padding: 20px;
             border-radius: 10px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .info-box {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
             margin-top: 20px;
-            border-left: 4px solid #3498db;
-        }
-
-        .instructions h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .instructions ol {
-            margin-left: 20px;
-            line-height: 1.6;
-        }
-
-        .instructions li {
-            margin-bottom: 8px;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 20px;
-            background: #f8f9fa;
-            color: #666;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .iframe-container {
-                height: 500px;
-            }
-            
-            .content {
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.6em;
-            }
-            
-            .iframe-container {
-                height: 400px;
-            }
-            
-            body {
-                padding: 10px;
-            }
+            text-align: left;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🔄 Descargador de Videos Sora</h1>
-            <p>Descarga videos de Sora sin marca de agua directamente en Movisup</p>
+        <h1>🎬 Descargador de Videos Sora</h1>
+        <p class="subtitle">Descarga videos de Sora sin marca de agua - Totalmente gratis</p>
+        
+        <div class="input-group">
+            <input type="url" id="videoUrl" placeholder="Pega aquí el enlace del video de Sora..." required>
+            <button onclick="processVideo()" id="downloadBtn">Descargar Video</button>
         </div>
-
-        <div class="content">
-            <div class="iframe-container">
-                <div class="loading" id="loading">
-                    Cargando reproductor...
-                </div>
-                <iframe 
-                    src="https://soravdl.com/" 
-                    id="soraFrame"
-                    title="Descargador de Videos Sora"
-                    onload="document.getElementById('loading').style.display = 'none';"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-                </iframe>
-            </div>
-
-            <div class="instructions">
-                <h3>📋 Cómo usar el descargador:</h3>
-                <ol>
-                    <li>Pega la URL del video de Sora en el cuadro de texto dentro del reproductor</li>
-                    <li>Selecciona la calidad deseada del video</li>
-                    <li>Haz clic en el botón de descarga</li>
-                    <li>Espera a que se procese el video</li>
-                    <li>¡Descarga tu video sin marca de agua!</li>
-                </ol>
-            </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Procesando video... Esto puede tomar unos segundos.</p>
         </div>
-
-        <div class="footer">
-            <p>Movisup.site &copy; 2024 - Todos los derechos reservados</p>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="info-box">
+            <h3>💡 ¿Cómo funciona?</h3>
+            <p>1. Copia el enlace del video de Sora que quieres descargar</p>
+            <p>2. Pega el enlace en el cuadro de arriba</p>
+            <p>3. Haz clic en "Descargar Video"</p>
+            <p>4. ¡Descarga tu video sin marca de agua!</p>
         </div>
     </div>
 
     <script>
-        // Script para mejorar la experiencia del iframe
-        document.addEventListener('DOMContentLoaded', function() {
-            const iframe = document.getElementById('soraFrame');
+        // URL de tu Worker de Cloudflare - CAMBIA ESTO POR TU WORKER REAL
+        const WORKER_URL = 'https://youtub-lake-6929.juniscottmatagalpa.workers.dev';
+        
+        async function processVideo() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            const downloadBtn = document.getElementById('downloadBtn');
             const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
             
-            // Ocultar loading cuando el iframe cargue
-            iframe.onload = function() {
-                loading.style.display = 'none';
-            };
+            if (!videoUrl) {
+                alert('Por favor, pega el enlace del video de Sora');
+                return;
+            }
             
-            // Mostrar loading si hay error
-            iframe.onerror = function() {
-                loading.innerHTML = 'Error al cargar el reproductor. Por favor, recarga la página.';
-            };
+            // Validar que sea un enlace válido
+            if (!videoUrl.includes('http')) {
+                alert('Por favor, ingresa un enlace válido que comience con http:// o https://');
+                return;
+            }
             
-            // Forzar recarga cada 30 segundos si hay problemas de carga
-            setTimeout(() => {
-                if (loading.style.display !== 'none') {
-                    iframe.src = iframe.src;
+            // Mostrar loading, deshabilitar botón
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Procesando...';
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        url: videoUrl,
+                        action: 'download'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    result.className = 'result success';
+                    result.innerHTML = `
+                        <h3>✅ ¡Video listo para descargar!</h3>
+                        <p>Tu video ha sido procesado correctamente sin marca de agua.</p>
+                        <a href="${data.downloadUrl}" download class="download-btn">
+                            📥 Descargar Video Ahora
+                        </a>
+                        <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                            Si la descarga no inicia, <a href="${data.downloadUrl}" download>haz clic aquí</a>
+                        </p>
+                    `;
+                } else {
+                    result.className = 'result error';
+                    result.innerHTML = `
+                        <h3>❌ Error al procesar el video</h3>
+                        <p>${data.error || 'No se pudo procesar el video. Intenta con otro enlace.'}</p>
+                    `;
                 }
-            }, 30000);
+                
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `
+                    <h3>❌ Error de conexión</h3>
+                    <p>No se pudo conectar con el servidor. Intenta nuevamente en unos momentos.</p>
+                    <p style="font-size: 14px; margin-top: 10px;">Error técnico: ${error.message}</p>
+                `;
+            } finally {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = 'Descargar Video';
+            }
+        }
+        
+        // Permitir Enter para enviar
+        document.getElementById('videoUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                processVideo();
+            }
         });
+        
+        // Auto-enfocar el input
+        document.getElementById('videoUrl').focus();
     </script>
 </body>
 </html>
