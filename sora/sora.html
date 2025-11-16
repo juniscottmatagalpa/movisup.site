@@ -1,99 +1,199 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Sora2 Downloader</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    .container { max-width: 600px; margin: auto; }
-    textarea { width: 100%; height: 60px; margin-bottom: 1rem; }
-    button { padding: 0.5rem 1rem; margin-right: 0.5rem; }
-    .hidden { display: none; }
-    #status { margin: 1rem 0; font-weight: bold; }
-    #video-result img { max-width: 100%; margin-bottom: 1rem; }
-  </style>
-</head>
-<body>
-  <main class="container">
-    <h1>Sora2 Downloader</h1>
-
-    <textarea id="link-input" placeholder="Pega el enlace del video Sora..."></textarea>
-    <button id="download-btn" disabled>Download</button>
-    <button id="clear-btn" class="hidden">Clear</button>
-
-    <div id="status" class="status"></div>
-
-    <section id="video-result" class="hidden result">
-      <img id="thumb">
-      <p><strong>Prompt:</strong> <span id="prompt"></span></p>
-      <p><strong>Resolución:</strong> <span id="res"></span></p>
-      <button id="download-main">Descargar Procesado</button>
-      <button id="download-nwm">Descargar Sin Marca</button>
-    </section>
-  </main>
-
-  <script>
-    const $ = id => document.getElementById(id);
-
-    function showStatus(msg){ $("status").textContent = msg }
-
-    async function download(){
-      const url = $("link-input").value.trim();
-      if(!url) return showStatus("Ingresa un enlace válido");
-
-      showStatus("Procesando...");
-      $("download-btn").disabled = true;
-
-      try {
-        const res = await fetch("https://sora2-iota.vercel.app/api/download", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url })
-        });
-
-        const json = await res.json();
-
-        if(json.code !== 200){
-          showStatus(json.message || "Error procesando el video");
-          $("download-btn").disabled = false;
-          return;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar Videos Sora - Movisup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        const v = json.data;
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-        $("thumb").src = v.thumbnail || "";
-        $("prompt").textContent = v.prompt || "No encontrado";
-        $("res").textContent = `${v.width || "??"}x${v.height || "??"}`;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
 
-        $("download-main").onclick = () => {
-          if(!v.video_url) return alert("⚠ No se encontró el video.");
-          window.open(v.video_url, "_blank");
-        };
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
-        $("download-nwm").onclick = () => {
-          if(!v.no_watermark_url) return alert("⚠ No se encontró el video sin marca.");
-          window.open(v.no_watermark_url, "_blank");
-        };
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
 
-        $("video-result").classList.remove("hidden");
-        showStatus("Listo!");
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
 
-      } catch (err) {
-        console.error(err);
-        showStatus("Error: " + err.message);
-      } finally {
-        $("download-btn").disabled = false;
-      }
-    }
+        .content {
+            padding: 30px;
+        }
 
-    $("link-input").oninput = () => {
-      const has = $("link-input").value.trim().length > 0;
-      $("download-btn").disabled = !has;
-      $("clear-btn").classList.toggle("hidden", !has);
-    };
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
 
-    $("download-btn").onclick = download;
-    $("clear-btn").onclick = () => { $("link-input").value = ""; };
-  </script>
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .iframe-container {
+                height: 500px;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.6em;
+            }
+            
+            .iframe-container {
+                height: 400px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Descargador de Videos Sora</h1>
+            <p>Descarga videos de Sora sin marca de agua directamente en Movisup</p>
+        </div>
+
+        <div class="content">
+            <div class="iframe-container">
+                <div class="loading" id="loading">
+                    Cargando reproductor...
+                </div>
+                <iframe 
+                    src="https://soravdl.com/" 
+                    id="soraFrame"
+                    title="Descargador de Videos Sora"
+                    onload="document.getElementById('loading').style.display = 'none';"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <div class="instructions">
+                <h3>📋 Cómo usar el descargador:</h3>
+                <ol>
+                    <li>Pega la URL del video de Sora en el cuadro de texto dentro del reproductor</li>
+                    <li>Selecciona la calidad deseada del video</li>
+                    <li>Haz clic en el botón de descarga</li>
+                    <li>Espera a que se procese el video</li>
+                    <li>¡Descarga tu video sin marca de agua!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Movisup.site &copy; 2024 - Todos los derechos reservados</p>
+        </div>
+    </div>
+
+    <script>
+        // Script para mejorar la experiencia del iframe
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframe = document.getElementById('soraFrame');
+            const loading = document.getElementById('loading');
+            
+            // Ocultar loading cuando el iframe cargue
+            iframe.onload = function() {
+                loading.style.display = 'none';
+            };
+            
+            // Mostrar loading si hay error
+            iframe.onerror = function() {
+                loading.innerHTML = 'Error al cargar el reproductor. Por favor, recarga la página.';
+            };
+            
+            // Forzar recarga cada 30 segundos si hay problemas de carga
+            setTimeout(() => {
+                if (loading.style.display !== 'none') {
+                    iframe.src = iframe.src;
+                }
+            }, 30000);
+        });
+    </script>
 </body>
 </html>
