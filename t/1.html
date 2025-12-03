@@ -732,7 +732,16 @@ download long tiktok videos no watermark<br>
 		  
         if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
         else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
-        else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
+        else {
+  downloadUrl =
+    videoData.play ||
+    videoData.play_url ||
+    videoData.hdplay ||
+    videoData.hdplay_url ||
+    videoData.wmplay ||
+    videoData.download ||
+    videoData.url;
+}
 
         if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
 
@@ -775,6 +784,7 @@ download long tiktok videos no watermark<br>
 </footer>
 </body>
 </html>
+
 
 
 
