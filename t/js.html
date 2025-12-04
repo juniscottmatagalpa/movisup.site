@@ -564,7 +564,7 @@ download long tiktok videos no watermark<br>
 
 	
   <script>
-    const WORKER_API = "sora2-psi.vercel.app";
+    const WORKER_API = "https://tiktok-api-flax.vercel.app/api/info";
     const btn = document.getElementById('btnGet');
     const loader = document.getElementById('loader');
     const videoUrlInput = document.getElementById('videoUrl');
@@ -745,7 +745,9 @@ download long tiktok videos no watermark<br>
 
         if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
 
-        window.location.href = `${WORKER_API}?download=${encodeURIComponent(downloadUrl)}&ext=${encodeURIComponent(ext)}`;
+        window.location.href =
+  `https://tiktok-api-flax.vercel.app/api/download?url=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
+
       } catch(err){
         alert('Error al preparar la descarga.');
       }
@@ -784,6 +786,7 @@ download long tiktok videos no watermark<br>
 </footer>
 </body>
 </html>
+
 
 
 
