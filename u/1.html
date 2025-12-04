@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
 
-<meta name='admaven-placement' content=Bqja5pjgG>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<meta name="google-site-verification" content="HxQfgEYjM_HY3SQiEgDGgEyL8ND6MeSQkO1V0kqGPOE" />
+	
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 <meta name="description" content="Descarga videos de TikTok gratis en HD y sin marca de agua. Rápido, seguro y compatible con cualquier dispositivo.">
 <meta name="keywords" content="descargar tiktok, tiktok downloader, videos tiktok hd, sin marca de agua, guardar tiktok">
 <meta name="robots" content="index, follow">
@@ -15,7 +15,7 @@
 <!-- Open Graph (para compartir en redes) -->
 <meta property="og:title" content="Descargar Videos de TikTok Gratis HD | Sin Marca de Agua">
 <meta property="og:description" content="Descarga videos de TikTok en alta calidad directamente desde tu navegador. 100% gratis y sin registro.">
-<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+
 <meta property="og:url" content="http://movisup.site/">
 <meta property="og:type" content="website">
 
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Descargar Videos TikTok HD Gratis">
 <meta name="twitter:description" content="Guarda videos de TikTok sin marca de agua, rápido y gratis.">
-<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
 
 <meta name="description" content="Download TikTok videos for free in HD and without watermark. Fast, secure, and compatible with any device.">
 <meta name="keywords" content="tiktok downloader, download tiktok, tiktok videos hd, no watermark, save tiktok">
@@ -34,7 +34,7 @@
 <!-- Open Graph (for social media sharing) -->
 <meta property="og:title" content="Download TikTok Videos Free in HD | No Watermark">
 <meta property="og:description" content="Download TikTok videos in high quality directly from your browser. 100% free and no registration required.">
-<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+
 <meta property="og:url" content="http://movisup.site/">
 <meta property="og:type" content="website">
 
@@ -42,233 +42,215 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Download TikTok Videos in HD for Free">
 <meta name="twitter:description" content="Save TikTok videos without watermark, fast and free.">
-<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
 
 
+  <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
 
-
-
-  <title>Descargar Video de TikTok sin marca de agua HD</title>
-
-  <!-- 🧩 Icono -->
+ <!-- 🧩 Icono -->
   <link rel="icon" type="image/png" href="img/icon.png">
 
-  <!-- 🧩 Estilos -->
-  <link rel="stylesheet" href="css/style.css">
+	
 
 
 
-
-
-
- <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Descargar Video TikTok sin marca de agua</title>
-  <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
-  <link rel="stylesheet" href="css/style.css" />
+	
+  <title>Descargar videos de TikTok sin marca de agua HD</title>
   <style>
-    .download-options {
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      margin: 0;
+      padding: 20px;
+      background: #ffefd5; /* naranja claro */
+      color: #111;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
+      justify-content: center;
     }
-    .download-options button {
-      background-color: #ff7b00;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: 0.3s;
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
-    .download-options button:hover {
-      background-color: #e66b00;
+    h2 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: #222;
+      font-weight: 600;
+      margin-bottom: 20px;
     }
-    .user-info {
+    .input-group {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-top: 10px;
+      border: 2px solid #32cd32;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
     }
-    .user-info img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
+    #videoUrl {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      outline: none;
+    }
+    #pasteClearBtn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px;
+      width: 42px;
+      height: 42px;
+    }
+    #pasteClearBtn img {
+      width: 24px;
+      height: 24px;
+    }
+    #btnGet {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px;
+      background: #ff7b00;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #btnGet:active {
+      transform: scale(0.97);
+    }
+    #loader {
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+      color: #666;
+    }
+    .result {
+      display: none;
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fafafa;
+      border: 1px solid #eee;
+    }
+    .stats-row {
+      display: flex;
+      gap: 14px;
+      justify-content: space-around;
+      padding: 10px;
+      background: #fff7ed;
+      border-radius: 8px;
+      margin-bottom: 10px;
+	  font-size: 9px;
+    }
+    .thumbnail {
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
     }
     .description {
-      margin-top: 8px;
-      font-size: 0.9em;
-      color: #444;
-      text-align: left;
+      background: #f1f1f1;
+      padding: 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      margin-top: 10px;
+    }
+    .download-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .download-buttons button {
+      flex: 1;
+      background: #ff7b00;
+      border: none;
+      color: #fff;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .hidden { display:none }
+    @media (max-width: 480px) {
+      .container { padding: 16px; }
+      h2 { font-size: 1.2rem; }
     }
   </style>
-
-
-
-
-
-
-
-
 </head>
-
-
-
 <body>
+
+
+
+
+
+
+	
+	
   <div class="container">
-<p style="font-size: 0.9em; color: #555; margin-top: 10px;">
-Descarga videos de <strong>TikTok</strong> gratis, sin marca de agua y en alta calidad (HD o baja calidad).
-Compatible con todos los navegadores y dispositivos móviles.
-</p>
+
+ <!-- anuncio de adsterra -->
+<script type="text/javascript">
+	atOptions = {
+		'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 448,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
+ <!-- fin anuncio -->
+
+
+	  
+    <h2>Descargar videos de TikTok sin marca de agua HD</h2>
 
 
 <!-- 🖼️ Logo centrado -->
-  <div class="logo">
-    <img src="img/icon.png" alt="Logo ssstik" />
-  </div>
-
-    <h2>Descargar Video de TikTok</h2>
-
-  
-
-
-
-
-
-
-
- <div class="input-wrapper">
-      <input type="text" id="videoUrl" placeholder="Pega aquí el enlace de TikTok">
-      <img id="inputIcon" src="img/pegar.png" alt="Acción" onclick="handleIconClick()">
+ <div class="logo" style="text-align:center; margin-bottom:15px;">
+  <img src="img/icon.png" alt="Logo ssstik" style="width:100px; margin-bottom:10px; height:auto; border-radius:10px;">
+</div>
+	  
+    <div class="input-group">
+      <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de TikTok">
+      <button id="pasteClearBtn"><img src="img/pegar.png" alt="pegar"></button>
     </div>
 
-    <button onclick="obtenerInfo()">Obtener información</button>
+    <button id="btnGet">Obtener información</button>
 
-    <div class="loader" id="loader"></div>
+    <div id="loader">Cargando...</div>
 
-    <div class="result" id="result">
+    <div id="result" class="result">
+      <div id="statsRow" class="stats-row hidden">
+        <div>👁️ <b id="views">0</b></div>
+        <div>❤️ <b id="likes">0</b></div>
+        <div>💬 <b id="comments">0</b></div>
+        <div>🔄 <b id="shares">0</b></div>
+        <div>📌 <b id="saves">0</b></div>
+      </div>
+
       <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
       <h3 id="title"></h3>
-      <div class="user-info" id="userInfo"></div>
-      <p id="hashtags"></p>
-      <p class="description" id="description"></p>
+      <div id="userInfo" class="small"></div>
+      <div id="hashtags" class="small" style="margin-top:8px;color:#666"></div>
+      <div id="description" class="description"></div>
 
-      <div class="download-options">
-        <button onclick="descargar('low')">📥 Descargar video baja calidad</button>
-        <button onclick="descargar('high')">📹 Descargar video HD</button>
-        <button onclick="descargar('audio')">🎵 Descargar solo MP3</button>
+
+<p style="margin-top:16px; font-weight:600; text-align:center; color:#222;">
+  Descargar Video de TikTok sin Marca de Agua en:
+</p>
+      
+      <div class="download-buttons">
+        <button onclick="descargar('low')">📥 Baja calidad</button>
+        <button onclick="descargar('high')">📹 Alta calidad HD</button>
+        <button onclick="descargar('audio')">🎵 Solo MP3</button>
       </div>
     </div>
-  </div>
-
-  <script>
-    const PY_API = "https://jsinfo.pythonanywhere.com";
-    const RENDER_API = "https://yt-downloader-api-1-ad1k.onrender.com";
-
-    async function handleIconClick() {
-      const input = document.getElementById("videoUrl");
-      if (input.value.trim() !== "") {
-        input.value = "";
-        document.getElementById("inputIcon").src = "img/pegar.png";
-      } else {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            input.value = text;
-            document.getElementById("inputIcon").src = "img/borrar.png";
-          } else {
-            alert("No hay texto copiado.");
-          }
-        } catch {
-          alert("Tu navegador no permite pegar automáticamente.");
-        }
-      }
-    }
-
-    async function obtenerInfo() {
-      const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Por favor, ingresa un enlace de TikTok.");
-
-      document.getElementById("loader").style.display = "block";
-      document.getElementById("result").style.display = "none";
-
-      try {
-        const res = await fetch(`${PY_API}/info`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url })
-        });
-
-        const data = await res.json();
-        document.getElementById("loader").style.display = "none";
-
-        if (data.error) {
-          alert("❌ " + data.error);
-          return;
-        }
-
-        document.getElementById("thumb").src = data.thumbnail || "";
-        document.getElementById("title").textContent = data.title || "Video sin título";
-        document.getElementById("description").textContent = data.description || "";
-        document.getElementById("hashtags").textContent = (data.hashtags || []).join(" ");
-        if (data.uploader) {
-          document.getElementById("userInfo").innerHTML = `
-            <img src="${data.uploader_picture || 'https://via.placeholder.com/50'}" alt="User">
-            <span>${data.uploader}</span>
-          `;
-        }
-
-        document.getElementById("result").style.display = "block";
-      } catch (err) {
-        document.getElementById("loader").style.display = "none";
-        alert("⚠️ Error al obtener la información del video.");
-      }
-    }
-
-    async function descargar(quality) {
-      const url = document.getElementById("videoUrl").value.trim();
-      if (!url) return alert("Primero ingresa un enlace.");
-
-      try {
-        const res = await fetch(`${RENDER_API}/download`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url, quality })
-        });
-
-        if (!res.ok) {
-          alert("❌ No se pudo iniciar la descarga.");
-          return;
-        }
-
-        const blob = await res.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download =
-          quality === "audio"
-            ? "audio_tiktok.mp3"
-            : quality === "low"
-            ? "video_baja.mp4"
-            : "video_hd.mp4";
-        a.click();
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (err) {
-        alert("Error al descargar el video.");
-        console.error(err);
-      }
-    }
-  </script>
-
-
-
-
-
-
-
-
 
 
 
@@ -310,6 +292,20 @@ Compatible con todos los navegadores y dispositivos móviles.
     <li>Elegir <strong>"Descargar en baja calidad"</strong> o <strong>"Descargar en alta calidad"</strong> según prefieras. La descarga se iniciará inmediatamente y el archivo se guardará en tu dispositivo.</li>
   </ol>
 
+	 <!-- anuncio de adsterra -->
+<script type="text/javascript">
+	atOptions = {
+		'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
+ <!-- fin anuncio -->
+	
+
   <h4 style="margin-top:8px; margin-bottom:8px;">Consejos útiles</h4>
   <ul style="margin:0 0 12px 20px; line-height:1.6;">
     <li>Para videos largos, la descarga puede tardar más: espera a que el navegador complete la transferencia.</li>
@@ -322,6 +318,19 @@ Compatible con todos los navegadores y dispositivos móviles.
     Esta herramienta está pensada para uso personal y respetuoso con los derechos de autor. No fomentamos la distribución de contenido protegido sin permiso del titular. 
     Asegúrate de tener los derechos o el permiso necesario antes de descargar y compartir videos que no te pertenezcan.
   </p>
+
+	 <!-- anuncio de adsterra -->
+<script type="text/javascript">
+	atOptions = {
+		'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
+ <!-- fin anuncio -->
 
   <p style="margin:0; font-size:0.9em; color:#444;">
     ¿Necesitas ayuda o quieres más funciones (p. ej. extraer audio MP3)? <a href="#" style="color:#ff6600; text-decoration:none;">Contáctanos</a>.
@@ -538,8 +547,6 @@ download long tiktok videos no watermark<br>
 </div>
 
 
-  <!-- 🧩 Script -->
-  <script src="js/script.js"></script>
 
 
 
@@ -548,7 +555,217 @@ download long tiktok videos no watermark<br>
 
 
 
-<footer style="
+	  
+  </div>
+
+
+
+
+
+	
+  <script>
+    const WORKER_API = "https://tiktok-api-flax.vercel.app/api/info";
+    const btn = document.getElementById('btnGet');
+    const loader = document.getElementById('loader');
+    const videoUrlInput = document.getElementById('videoUrl');
+    const pasteClearBtn = document.getElementById('pasteClearBtn');
+
+    function validarTikTok(url) {
+      return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
+    }
+
+    pasteClearBtn.addEventListener('click', async () => {
+      if (videoUrlInput.value.trim() !== "") {
+        videoUrlInput.value = "";
+        pasteClearBtn.innerHTML = '<img src="img/pegar.png" alt="pegar">';
+        return;
+      }
+      try {
+        const text = await navigator.clipboard.readText();
+        if (validarTikTok(text)) {
+          videoUrlInput.value = text;
+          pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
+          obtenerInfo();
+        } else {
+          alert("El texto copiado no es un enlace válido de TikTok.");
+        }
+      } catch {
+        alert("No se pudo acceder al portapapeles.");
+      }
+    });
+
+    videoUrlInput.addEventListener("input", () => {
+      pasteClearBtn.innerHTML = videoUrlInput.value.trim()
+        ? '<img src="img/borrar.png" alt="borrar">'
+        : '<img src="img/pegar.png" alt="pegar">';
+    });
+
+    function showLoader(show){ loader.style.display = show ? 'block' : 'none'; }
+
+    btn.addEventListener('click', () => {
+      const url = videoUrlInput.value.trim();
+      if (!url || !validarTikTok(url)) return alert('Ingresa un enlace válido de TikTok');
+      obtenerInfo();
+    });
+
+    async function obtenerInfo(){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Ingresa un enlace de TikTok');
+
+      document.getElementById('result').style.display = 'none';
+      document.getElementById('thumb').src = '';
+      document.getElementById('title').textContent = '';
+      document.getElementById('userInfo').innerHTML = '';
+      document.getElementById('description').textContent = '';
+      document.getElementById('hashtags').textContent = '';
+      document.getElementById('statsRow').classList.add('hidden');
+
+      showLoader(true);
+
+      const controller = new AbortController();
+      const timeout = setTimeout(()=> controller.abort(), 10000);
+
+      try {
+        const params = new URLSearchParams();
+        params.append('q', urlInput);
+
+        const res = await fetch(WORKER_API, {
+          method: 'POST',
+          headers: {'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString(),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch { showLoader(false); alert('Error: respuesta no válida.'); return; }
+
+        showLoader(false);
+        if(data.error){ alert('❌ Error: ' + data.error); return; }
+
+        // --- LÓGICA ORIGINAL DE DATOS ---
+        let videoData = null;
+        if (data.data) videoData = data.data;
+        else if (data.item) videoData = data.item;
+        else if (data.items && Array.isArray(data.items) && data.items.length) videoData = data.items[0];
+        else videoData = data;
+
+        const title = videoData.title || videoData.desc || videoData.description || '';
+        document.getElementById('title').textContent = title || 'Video sin título';
+
+        const thumb = videoData.cover || videoData.thumbnail || videoData.video?.cover || '';
+        document.getElementById('thumb').src = thumb || '';
+
+        let hashtagsText = '';
+        if(Array.isArray(videoData.hashtags)) hashtagsText = videoData.hashtags.map(h=>h.name||h).join(' ');
+        else if(videoData.hashtag) hashtagsText = videoData.hashtag;
+        else if(videoData.tags) hashtagsText = Array.isArray(videoData.tags) ? videoData.tags.join(' ') : (videoData.tags || '');
+        document.getElementById('hashtags').textContent = hashtagsText;
+
+        const description = videoData.desc || videoData.description || '';
+        document.getElementById('description').textContent = description;
+
+        const author = videoData.author || videoData.owner || videoData.user;
+        if(author){
+          const avatar = author.avatar || author.cover || author.avatar_thumb || author.profile_image || '';
+          const name = author.unique_id || author.nickname || author.name || author.displayName || '';
+          document.getElementById('userInfo').innerHTML = `<img src="${avatar||''}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;margin-right:8px;vertical-align:middle"> <strong>${name || ''}</strong>`;
+        }
+
+        // ✅ Recupera correctamente las estadísticas
+        let stats = videoData.statistics || videoData.stat || videoData.stats || (videoData.aweme && videoData.aweme.statistics);
+        if(!stats){
+          const candidate = {};
+          if(videoData.play_count) candidate.play_count = videoData.play_count;
+          if(videoData.digg_count) candidate.digg_count = videoData.digg_count;
+          if(videoData.comment_count) candidate.comment_count = videoData.comment_count;
+          if(videoData.share_count) candidate.share_count = videoData.share_count;
+          if(videoData.collect_count) candidate.collect_count = videoData.collect_count;
+          stats = Object.keys(candidate).length ? candidate : null;
+        }
+
+        if(stats){
+          document.getElementById('views').textContent = (stats.play_count || stats.playCount || stats.views || 0).toLocaleString();
+          document.getElementById('likes').textContent = (stats.digg_count || stats.likeCount || stats.likes || 0).toLocaleString();
+          document.getElementById('comments').textContent = (stats.comment_count || stats.commentCount || 0).toLocaleString();
+          document.getElementById('shares').textContent = (stats.share_count || stats.shareCount || 0).toLocaleString();
+          document.getElementById('saves').textContent = (stats.collect_count || stats.collection_count || stats.collectCount || 0).toLocaleString();
+          document.getElementById('statsRow').classList.remove('hidden');
+        }
+
+        document.getElementById('result').style.display = 'block';
+      } catch (err){
+        clearTimeout(timeout);
+        showLoader(false);
+        alert('Error al obtener la información.');
+      }
+    }
+
+    async function descargar(quality){
+      const urlInput = videoUrlInput.value.trim();
+      if(!urlInput) return alert('Primero ingresa un enlace.');
+      try {
+        const params = new URLSearchParams(); params.append('q', urlInput);
+        const res = await fetch(WORKER_API, {
+          method:'POST',
+          headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8'},
+          body: params.toString()
+        });
+        const text = await res.text();
+        const data = JSON.parse(text);
+        if(!data || !data.data){ alert('No se encontró enlace de descarga.'); return; }
+
+        const videoData = data.data;
+        let downloadUrl = '';
+        let ext = 'mp4';
+
+
+		 if (quality === 'high') {
+  setTimeout(() => {
+    window.open("https://www.effectivegatecpm.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a", "_blank");
+  }, 3000); // 3 segundos
+}
+
+
+
+		  
+        if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
+        else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
+        else {
+  downloadUrl =
+    videoData.play ||
+    videoData.play_url ||
+    videoData.hdplay ||
+    videoData.hdplay_url ||
+    videoData.wmplay ||
+    videoData.download ||
+    videoData.url;
+}
+
+        if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
+
+        window.location.href =
+  `https://tiktok-api-flax.vercel.app/api/download?url=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
+
+      } catch(err){
+        alert('Error al preparar la descarga.');
+      }
+    }
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  <footer style="
   position: fixed;
   bottom: 0;
   left: 0;
@@ -567,9 +784,5 @@ download long tiktok videos no watermark<br>
 
   © 2025 movisup.site — Descargador de videos de TikTok gratis sin marca de agua.
 </footer>
-
-
 </body>
-
-
 </html>
