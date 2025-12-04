@@ -564,7 +564,7 @@ download long tiktok videos no watermark<br>
 
 	
   <script>
-    const WORKER_API = "insta-api-mu-one.vercel.app/api/info";
+    const WORKER_API = "https://insta-api-mu-one.vercel.app/api/info";
     const btn = document.getElementById('btnGet');
     const loader = document.getElementById('loader');
     const videoUrlInput = document.getElementById('videoUrl');
@@ -733,8 +733,9 @@ async function descargar(quality) {
     const downloadUrl = info.video[0].url;
     const ext = "mp4";
 
-    window.location.href =
-      `https://tiktok-api-flax.vercel.app/api/download?url=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
+   window.location.href =
+  `https://insta-api-mu-one.vercel.app/api/download?url=${encodeURIComponent(downloadUrl)}&ext=${ext}`;
+
   } catch (err) {
     alert('Error al preparar la descarga.');
   }
@@ -783,6 +784,7 @@ async function descargar(quality) {
 </footer>
 </body>
 </html>
+
 
 
 
