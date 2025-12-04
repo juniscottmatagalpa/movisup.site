@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descargar videos de Instagram HD sin marca de agua</title>
 
+  <meta name="description" content="Descarga videos de Instagram en HD sin marca de agua. Rápido, gratis y sin registro.">
+  <meta name="keywords" content="descargar instagram hd, reels downloader, bajar videos instagram alta calidad, sin marca de agua">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="movisup.site">
+  <meta name="theme-color" content="#ff6600">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Descargar videos de Instagram HD gratis">
+  <meta property="og:description" content="Descarga reels, posts e IGTV en calidad HD sin marca de agua.">
 :contentReference[oaicite:0]{index=0}
 :contentReference[oaicite:1]{index=1}
 :contentReference[oaicite:2]{index=2}
-
-  <title>Descargar videos de Instagram HD sin marca de agua</title>
-
   <style>
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -31,17 +38,14 @@
     h2 {
       text-align: center;
       font-size: 1.4rem;
-      color: #222;
       font-weight: 600;
       margin-bottom: 20px;
     }
     .input-group {
       display: flex;
-      align-items: center;
       border: 2px solid #32cd32;
       border-radius: 10px;
       overflow: hidden;
-      background: #fff;
     }
     #videoUrl {
       flex: 1;
@@ -74,12 +78,9 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    #btnGet:active {
-      transform: scale(0.97);
-    }
     #loader {
       display: none;
-      margin-top: 10px;
+      margin-top: 12px;
       text-align: center;
       color: #666;
     }
@@ -91,16 +92,6 @@
       background: #fafafa;
       border: 1px solid #eee;
     }
-    .stats-row {
-      display: flex;
-      gap: 14px;
-      justify-content: space-around;
-      padding: 10px;
-      background: #fff7ed;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      font-size: 9px;
-    }
     .thumbnail {
       width: 100%;
       max-height: 420px;
@@ -108,18 +99,10 @@
       border-radius: 8px;
       background: #eee;
     }
-    .description {
-      background: #f1f1f1;
-      padding: 12px;
-      border-radius: 8px;
-      white-space: pre-wrap;
-      margin-top: 10px;
-    }
     .download-buttons {
       display: flex;
       gap: 8px;
       margin-top: 12px;
-      flex-wrap: wrap;
     }
     .download-buttons button {
       flex: 1;
@@ -130,60 +113,43 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    .hidden { display:none }
   </style>
-
 </head>
 <body>
 
   <div class="container">
-
-    <h2>Descargar videos de Instagram HD sin marca de agua</h2>
+    <h2>Descargar videos Instagram en HD</h2>
 
     <div class="logo" style="text-align:center; margin-bottom:15px;">
-      <img src="img/icon.png" alt="Logo" style="width:100px;height:auto;border-radius:10px;">
+      <img src="img/icon.png" style="width:100px; height:auto; border-radius:10px;">
     </div>
 
     <div class="input-group">
       <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de Instagram">
-      <button id="pasteClearBtn"><img src="img/pegar.png" alt="pegar"></button>
+      <button id="pasteClearBtn"><img src="img/pegar.png"></button>
     </div>
 
     <button id="btnGet">Obtener información</button>
-
     <div id="loader">Cargando...</div>
 
     <div id="result" class="result">
-      <div id="statsRow" class="stats-row hidden">
-        <div>👁️ <b id="views">0</b></div>
-        <div>❤️ <b id="likes">0</b></div>
-        <div>💬 <b id="comments">0</b></div>
-        <div>🔄 <b id="shares">0</b></div>
-        <div>📌 <b id="saves">0</b></div>
-      </div>
+      <img id="thumb" class="thumbnail" src="" />
+      <h3 id="title"></h3>
 
-      <img id="thumb" class="thumbnail" src="" alt="Miniatura" />
-      <h3 id="title"> </h3>
-      <div id="userInfo" class="small"></div>
-      <div id="hashtags" class="small" style="margin-top:8px;color:#666"></div>
-      <div id="description" class="description"></div>
-
-      <p style="margin-top:16px;font-weight:600;text-align:center;color:#222;">Descargar video en:</p>
+      <p style="margin-top:16px;font-weight:600;text-align:center;color:#222;">
+        Descargar video en:
+      </p>
 
       <div class="download-buttons">
-        <button onclick="descargar('low')">📥 Baja calidad</button>
-        <button onclick="descargar('high')">📹 Alta calidad HD</button>
-        <button onclick="descargar('audio')">🎵 Solo MP3</button>
+        <button onclick="descargar()">📹 Descargar HD MP4</button>
       </div>
 
     </div>
-
   </div>
 
 <script>
 
-const WORKER_API = "/api/info"; // Llamada local a TU API
-
+const WORKER_API = "https://insta-api-mu-one.vercel.app/api/info"; // ✅ Tu API local en Vercel
 const btn = document.getElementById('btnGet');
 const loader = document.getElementById('loader');
 const input = document.getElementById('videoUrl');
@@ -231,49 +197,30 @@ async function obtenerInfo(){
 
     const res = await fetch(WORKER_API, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
       body: form.toString()
     });
 
-    const html = await res.text();
-
-    let data;
-    const m = html.match(/var\s+data\s*=\s*(\{.*?\});/s);
-    if(!m){
-      showLoader(false);
-      return alert("❌ No se pudo extraer la información de Instagram");
-    }
-
-    data = JSON.parse(m[1]);
-
+    const data = await res.json();
     showLoader(false);
 
-    document.getElementById('title').textContent = data.title || "Video de Instagram";
-    document.getElementById('thumb').src = data.thumbnail || data.image || "";
-
-    if(data.user){
-      document.getElementById('userInfo').innerHTML = `
-        <img src="${data.user.profile_pic}" style="width:36;height:36;border-radius:8px;margin-right:8px;">
-        <strong>${data.user.full_name || ""}</strong>
-      `;
+    if(data.error || !data.data?.video?.length){
+      return alert("❌ No se encontró video");
     }
 
-    document.getElementById('description').textContent = "";
-    document.getElementById('hashtags').textContent = "";
-    document.getElementById('statsRow').classList.add('hidden');
+    document.getElementById('title').textContent = "Video Instagram";
+    document.getElementById('thumb').src = data.data.thumbnail || "";
+
     document.getElementById('result').style.display = "block";
 
   } catch(err){
     showLoader(false);
-    alert("🚫 Error al obtener datos: " + err);
+    alert("Error al obtener datos: " + err);
   }
 }
 
-async function descargar(quality){
+async function descargar(){
   const url = input.value.trim();
-  if(!url) return alert("Pega un enlace primero");
 
   try {
     const form = new URLSearchParams();
@@ -281,20 +228,17 @@ async function descargar(quality){
 
     const res = await fetch("/api/info", {
       method: "POST",
-      headers: {"Content-Type":"application/x-www-form-urlencoded; charset=UTF-8"},
+      headers: { "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8" },
       body: form.toString()
     });
 
-    const html = await res.text();
+    const data = await res.json();
+    if(data.error || !data.data?.video?.length){
+      return alert("No hay enlace de descarga");
+    }
 
-    const m = html.match(/var\s+data\s*=\s*(\{.*?\});/s);
-    if(!m) return alert("No se halló enlace de descarga");
-
-    const data = JSON.parse(m[1]);
-    if(!data.video?.length) return alert("No hay video disponible");
-
-    const downloadUrl = data.video[0].url;
-    window.location.href = `/api/download?url=${encodeURIComponent(downloadUrl)}&ext=mp4`;
+    const downloadUrl = data.data.video[0].url;
+    window.location.href = `https://insta-api-mu-one.vercel.app/api/download?url=${encodeURIComponent(downloadUrl)}&ext=mp4`;
 
   } catch(err){
     alert("Error en descarga: " + err);
@@ -320,3 +264,4 @@ async function descargar(quality){
 
 </body>
 </html>
+
