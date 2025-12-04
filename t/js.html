@@ -15,7 +15,7 @@
 <!-- Open Graph (para compartir en redes) -->
 <meta property="og:title" content="Descargar Videos de TikTok Gratis HD | Sin Marca de Agua">
 <meta property="og:description" content="Descarga videos de TikTok en alta calidad directamente desde tu navegador. 100% gratis y sin registro.">
-<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+
 <meta property="og:url" content="http://movisup.site/">
 <meta property="og:type" content="website">
 
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Descargar Videos TikTok HD Gratis">
 <meta name="twitter:description" content="Guarda videos de TikTok sin marca de agua, rápido y gratis.">
-<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
 
 <meta name="description" content="Download TikTok videos for free in HD and without watermark. Fast, secure, and compatible with any device.">
 <meta name="keywords" content="tiktok downloader, download tiktok, tiktok videos hd, no watermark, save tiktok">
@@ -34,7 +34,7 @@
 <!-- Open Graph (for social media sharing) -->
 <meta property="og:title" content="Download TikTok Videos Free in HD | No Watermark">
 <meta property="og:description" content="Download TikTok videos in high quality directly from your browser. 100% free and no registration required.">
-<meta property="og:image" content="https://ssstik.cu.ma/img/icon.png">
+
 <meta property="og:url" content="http://movisup.site/">
 <meta property="og:type" content="website">
 
@@ -42,7 +42,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Download TikTok Videos in HD for Free">
 <meta name="twitter:description" content="Save TikTok videos without watermark, fast and free.">
-<meta name="twitter:image" content="https://ssstik.cu.ma/img/icon.png">
+
 
   <meta name="description" content="Descarga videos de TikTok gratis, sin marca de agua y en HD o MP3.">
 
@@ -570,7 +570,9 @@ download long tiktok videos no watermark<br>
     const videoUrlInput = document.getElementById('videoUrl');
     const pasteClearBtn = document.getElementById('pasteClearBtn');
 
-   
+    function validarTikTok(url) {
+      return /tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com/i.test(url);
+    }
 
     pasteClearBtn.addEventListener('click', async () => {
       if (videoUrlInput.value.trim() !== "") {
@@ -580,11 +582,13 @@ download long tiktok videos no watermark<br>
       }
       try {
         const text = await navigator.clipboard.readText();
-       
+        if (validarTikTok(text)) {
           videoUrlInput.value = text;
           pasteClearBtn.innerHTML = '<img src="img/borrar.png" alt="borrar">';
           obtenerInfo();
-       
+        } else {
+          alert("El texto copiado no es un enlace válido de TikTok.");
+        }
       } catch {
         alert("No se pudo acceder al portapapeles.");
       }
@@ -728,7 +732,16 @@ download long tiktok videos no watermark<br>
 		  
         if(quality==='audio'){ downloadUrl = videoData.music || videoData.music_url; ext='mp3'; }
         else if(quality==='low'){ downloadUrl = videoData.wmplay || videoData.play; }
-        else{ downloadUrl = videoData.play || videoData.hdplay || videoData.wmplay; }
+        else {
+  downloadUrl =
+    videoData.play ||
+    videoData.play_url ||
+    videoData.hdplay ||
+    videoData.hdplay_url ||
+    videoData.wmplay ||
+    videoData.download ||
+    videoData.url;
+}
 
         if(!downloadUrl){ alert('No se encontró URL válida.'); return; }
 
@@ -771,10 +784,6 @@ download long tiktok videos no watermark<br>
 </footer>
 </body>
 </html>
-
-
-
-
 
 
 
