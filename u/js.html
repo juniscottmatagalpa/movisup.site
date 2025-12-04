@@ -226,7 +226,7 @@ async function descargar(){
     const form = new URLSearchParams();
     form.append("q", url);
 
-    const res = await fetch("/api/info", {
+    const res = await fetch("https://insta-api-mu-one.vercel.app/api/info", {
       method: "POST",
       headers: { "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8" },
       body: form.toString()
