@@ -1,192 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Descargar videos de Instagram HD sin marca de agua</title>
-
-  <meta name="description" content="Descarga videos de Instagram en HD sin marca de agua. Rápido, gratis y sin registro.">
-  <meta name="keywords" content="descargar instagram hd, reels downloader, bajar videos instagram alta calidad, sin marca de agua">
-  <meta name="robots" content="index, follow">
-  <meta name="author" content="movisup.site">
-  <meta name="theme-color" content="#ff6600">
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Descargar videos de Instagram HD gratis">
-  <meta property="og:description" content="Descarga reels, posts e IGTV en calidad HD sin marca de agua.">
-
-  <style>
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      margin: 0;
-      padding: 20px;
-      background: #ffefd5;
-      color: #111;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      width: 100%;
-      max-width: 480px;
-      background: #fff;
-      padding: 22px;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      font-size: 1.4rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-    .input-group {
-      display: flex;
-      border: 2px solid #32cd32;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    #videoUrl {
-      flex: 1;
-      border: none;
-      padding: 12px;
-      font-size: 15px;
-      outline: none;
-    }
-    #pasteClearBtn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 10px;
-      width: 42px;
-      height: 42px;
-    }
-    #pasteClearBtn img {
-      width: 24px;
-      height: 24px;
-    }
-    #btnGet {
-      width: 100%;
-      margin-top: 14px;
-      padding: 12px;
-      background: #ff7b00;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #loader {
-      display: none;
-      margin-top: 12px;
-      text-align: center;
-      color: #666;
-    }
-    .result {
-      display: none;
-      margin-top: 16px;
-      padding: 12px;
-      border-radius: 10px;
-      background: #fafafa;
-      border: 1px solid #eee;
-    }
-    .thumbnail {
-      width: 100%;
-      max-height: 420px;
-      object-fit: cover;
-      border-radius: 8px;
-      background: #eee;
-    }
-    .download-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .download-buttons button {
-      flex: 1;
-      background: #ff7b00;
-      border: none;
-      color: #fff;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Descargar Videos de Instagram Gratis HD</title>
+<link rel="stylesheet" href="optimized-style.css">
+<link rel="icon" type="image/png" href="https://i.imgur.com/HajdCqE.png">
+<style>
+html, body { margin:0; padding:0; width:100%; height:100%; }
+body { display:flex; flex-direction:column; align-items:center; background:#f2f2f2; }
+input[type="text"]{ width:90%; max-width:450px; padding:14px; border-radius:8px; border:2px solid #ccc; font-size:16px; margin-top:15px; }
+button{ padding:14px 20px; margin:10px; font-size:16px; border:none; border-radius:6px; cursor:pointer; background:#007aff; color:white; }
+#result{ display:none; margin-top:20px; width:90%; max-width:500px; background:white; padding:15px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+#thumb{ width:100%; border-radius:10px; }
+#loader { display:none; font-size:18px; margin-top:15px; }
+</style>
 </head>
+
 <body>
 
-  <div class="container">
-    <h2>Descargar videos Instagram en HD</h2>
+<h1>Descargar Videos de Instagram HD</h1>
+<input id="input" type="text" placeholder="Pega un enlace de Instagram aquí">
 
-    <div class="logo" style="text-align:center; margin-bottom:15px;">
-      <img src="img/icon.png" style="width:100px; height:auto; border-radius:10px;">
-    </div>
+<button onclick="obtenerInfo()">Obtener Video</button>
 
-    <div class="input-group">
-      <input id="videoUrl" type="text" placeholder="Pega aquí el enlace de Instagram">
-      <button id="pasteClearBtn"><img src="img/pegar.png"></button>
-    </div>
+<div id="loader">Cargando información...</div>
 
-    <button id="btnGet">Obtener información</button>
-    <div id="loader">Cargando...</div>
-
-    <div id="result" class="result">
-      <img id="thumb" class="thumbnail" src="" />
-      <h3 id="title"></h3>
-
-      <p style="margin-top:16px;font-weight:600;text-align:center;color:#222;">
-        Descargar video en:
-      </p>
-
-      <div class="download-buttons">
-        <button onclick="descargar()">📹 Descargar HD MP4</button>
-      </div>
-
-    </div>
-  </div>
+<div id="result">
+  <h3 id="title"></h3>
+  <img id="thumb" src="">
+  <button onclick="descargar()">Descargar Video</button>
+</div>
 
 <script>
+const input = document.getElementById("input");
 
-const WORKER_API = "https://insta-api-mu-one.vercel.app/api/info"; // ✅ Tu API local en Vercel
-const btn = document.getElementById('btnGet');
-const loader = document.getElementById('loader');
-const input = document.getElementById('videoUrl');
-const pasteBtn = document.getElementById('pasteClearBtn');
+// ⭐ TU API REAL EN VERCEL
+const WORKER_API = "https://insta-api-mu-one.vercel.app/api/info";
 
-function validarIg(url){
-  return /instagram\.com\/(reel|p|tv)\//i.test(url);
+// Mostrar / ocultar loader
+function showLoader(show){
+  document.getElementById("loader").style.display = show ? "block" : "none";
 }
 
-btn.addEventListener('click', ()=> {
-  const url = input.value.trim();
-  if(!url || !validarIg(url)) return alert('Ingresa un enlace válido de Instagram');
-  obtenerInfo();
-});
-
-pasteBtn.addEventListener('click', async ()=> {
-  if(input.value.trim() !== "") {
-    input.value = "";
-    pasteBtn.innerHTML = '<img src="img/pegar.png">';
-    return;
-  }
-  try {
-    const text = await navigator.clipboard.readText();
-    if(validarIg(text)){
-      input.value = text;
-      pasteBtn.innerHTML = '<img src="img/borrar.png">';
-      obtenerInfo();
-    } else {
-      alert("No es un enlace válido de Instagram");
-    }
-  } catch {
-    alert("No se pudo leer el portapapeles");
-  }
-});
-
-function showLoader(show){ loader.style.display = show ? "block" : "none"; }
-
+// ========= OBTENER INFORMACIÓN ==========
 async function obtenerInfo(){
   const url = input.value.trim();
+  if(!url) return alert("Ingrese un enlace válido");
+
   showLoader(true);
 
   try {
@@ -195,30 +56,36 @@ async function obtenerInfo(){
 
     const res = await fetch(WORKER_API, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+      headers: { "Content-Type":"application/x-www-form-urlencoded; charset=UTF-8" },
       body: form.toString()
     });
 
     const data = await res.json();
     showLoader(false);
 
-    if(data.error || !data.data?.video?.length){
-      return alert("❌ No se encontró video");
+    if(data.error){
+      return alert("❌ Error: " + data.error);
     }
 
-    document.getElementById('title').textContent = "Video Instagram";
-    document.getElementById('thumb').src = data.data.thumbnail || "";
+    if(!data.data?.video?.length){
+      return alert("❌ No se pudo extraer el video.");
+    }
 
-    document.getElementById('result').style.display = "block";
+    document.getElementById("title").textContent = "Video listo para descargar";
+    document.getElementById("thumb").src = data.data.thumbnail || "https://i.imgur.com/ufFES8A.jpeg";
+    document.getElementById("result").style.display = "block";
 
-  } catch(err){
+  } catch (err) {
     showLoader(false);
     alert("Error al obtener datos: " + err);
   }
 }
 
+
+// ========= DESCARGAR VIDEO ==========
 async function descargar(){
   const url = input.value.trim();
+  if(!url) return alert("Ingrese un enlace válido");
 
   try {
     const form = new URLSearchParams();
@@ -231,35 +98,23 @@ async function descargar(){
     });
 
     const data = await res.json();
-    if(data.error || !data.data?.video?.length){
-      return alert("No hay enlace de descarga");
+
+    if(!data.data?.video?.length){
+      return alert("❌ No se encontró enlace de descarga");
     }
 
     const downloadUrl = data.data.video[0].url;
-    window.location.href = `https://insta-api-mu-one.vercel.app/api/download?url=${encodeURIComponent(downloadUrl)}&ext=mp4`;
 
-  } catch(err){
+    // Abrir descarga desde tu API
+    window.location.href =
+      `https://insta-api-mu-one.vercel.app/api/download?url=${encodeURIComponent(downloadUrl)}&ext=mp4`;
+
+  } catch (err) {
     alert("Error en descarga: " + err);
   }
 }
 
 </script>
 
-<footer style="
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  background:#f4f4f4;
-  text-align:center;
-  padding:10px 0;
-  font-size:0.8em;
-  color:#777;
-  border-top:1px solid #ddd;
-">
-  © 2025 movisup.site — Descargador de videos Instagram HD.
-</footer>
-
 </body>
 </html>
-
