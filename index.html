@@ -11,11 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -98,7 +94,7 @@
       transition: .3s ease;
     }
 
-    .search-box button:hover {
+    .search-box button:hover:not(:disabled) {
       transform: translateY(-2px);
       opacity: .95;
     }
@@ -106,7 +102,6 @@
     .search-box button:disabled {
       opacity: .6;
       cursor: not-allowed;
-      transform: none;
     }
 
     .card {
@@ -138,15 +133,7 @@
     }
 
     .image-box img {
-      max-width: 100%;
-      max-height: 380px;
-      object-fit: contain;
-    }
-
-    .info {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      max-width: 100%; max-height: 380px; object-fit: contain;
     }
 
     .badge {
@@ -192,12 +179,7 @@
       color: white;
       font-weight: 600;
       background: linear-gradient(90deg, #f59e0b, #f97316);
-      transition: .3s ease;
       font-size: 17px;
-    }
-
-    .buy-btn:hover {
-      transform: translateY(-3px);
     }
 
     .error {
@@ -215,47 +197,25 @@
       font-size: 14px;
     }
 
-    @media(max-width: 900px) {
-      .card-content {
-        grid-template-columns: 1fr;
-      }
-
-      .product-title {
-        font-size: 28px;
-      }
-
-      .price {
-        font-size: 34px;
-      }
-
-      .image-box {
-        min-height: 300px;
-      }
+    @media (max-width: 900px) {
+      .card-content { grid-template-columns: 1fr; }
+      .product-title { font-size: 28px; }
+      .price { font-size: 34px; }
+      .image-box { min-height: 300px; }
     }
   </style>
 </head>
 <body>
-
   <div class="background"></div>
 
   <div class="container">
-
     <section class="hero">
       <h1 class="logo">MOVISUP</h1>
-      <p class="subtitle">
-        Busca el código del producto que viste en TikTok o Instagram.
-      </p>
+      <p class="subtitle">Busca el código del producto que viste en TikTok o Instagram.</p>
 
       <div class="search-box">
-        <input
-          type="text"
-          id="productCode"
-          placeholder="Ejemplo: A127"
-          autocomplete="off"
-        >
-        <button id="searchButton" onclick="searchProduct()">
-          Buscar Producto
-        </button>
+        <input type="text" id="productCode" placeholder="Ejemplo: A127" autocomplete="off">
+        <button id="searchButton" onclick="searchProduct()">Buscar Producto</button>
       </div>
 
       <div class="error" id="errorMessage"></div>
@@ -263,45 +223,29 @@
 
     <div class="card" id="productCard">
       <div class="card-content">
-
         <div class="image-box">
           <img id="productImage" src="" alt="Producto">
         </div>
 
         <div class="info">
           <div class="badge">Producto Viral</div>
-
           <h2 class="product-title" id="productTitle"></h2>
-
           <div class="price" id="productPrice"></div>
-
           <p class="description" id="productDescription"></p>
-
           <a id="buyButton" class="buy-btn" target="_blank" rel="noopener noreferrer">
             Comprar en Amazon
           </a>
         </div>
-
       </div>
     </div>
 
-    <div class="footer">
-      © 2026 Movisup.site - Productos recomendados
-    </div>
-
+    <div class="footer">© 2026 Movisup.site - Productos recomendados</div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // =====================================
-    // CONFIGURACIÓN DE FIREBASE
-    // =====================================
     const firebaseConfig = {
       apiKey: "AIzaSyBe9HJk7TCbQr3g5wK6fzH2og75NPrAf5M",
       authDomain: "movisup-39c30.firebaseapp.com",
@@ -312,11 +256,9 @@
       measurementId: "G-BCX9MCK60Q"
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Referencias DOM
     const input = document.getElementById('productCode');
     const searchButton = document.getElementById('searchButton');
     const productCard = document.getElementById('productCard');
@@ -328,71 +270,61 @@
     const productDescription = document.getElementById('productDescription');
     const buyButton = document.getElementById('buyButton');
 
-    // Mostrar error
     function showError(message) {
       errorMessage.textContent = message;
       errorMessage.style.display = 'block';
       productCard.style.display = 'none';
     }
 
-    // Ocultar error
     function hideError() {
       errorMessage.style.display = 'none';
       errorMessage.textContent = '';
     }
 
-    // Mostrar producto
     function showProduct(data) {
-      productImage.src = data.image && data.image.trim() !== ''
-        ? data.image
-        : 'https://via.placeholder.com/600x600?text=Sin+Imagen';
+      productImage.src = (data.image || '').trim() || 'https://via.placeholder.com/600x600?text=Sin+Imagen';
+      productTitle.textContent = data.title || 'Producto sin título';
+      productPrice.textContent = data.price || 'Precio no disponible';
+      productDescription.textContent = data.description || 'Descripción no disponible.';
 
-      productTitle.textContent = data.title || 'Sin título';
-      productPrice.textContent = data.price || 'Sin precio';
-      productDescription.textContent = data.description || 'Sin descripción disponible.';
-      buyButton.href = data.link || '#';
+      if (data.link && data.link.trim() !== '') {
+        buyButton.href = data.link;
+        buyButton.style.display = 'inline-flex';
+      } else {
+        buyButton.style.display = 'none';
+      }
 
       hideError();
       productCard.style.display = 'block';
     }
 
-    // Buscar producto
     async function searchProduct() {
       const code = input.value.trim().toUpperCase();
 
-      // Validación: campo vacío
       if (!code) {
         showError('Por favor escribe el código del producto.');
         input.focus();
         return;
       }
 
-      // Estado de carga
       hideError();
       productCard.style.display = 'none';
       searchButton.disabled = true;
       searchButton.textContent = 'Buscando...';
 
       try {
-        // Busca en la colección: products
-        // Documento: A127, B205, etc.
         const docRef = doc(db, 'products', code);
         const docSnap = await getDoc(docRef);
 
-        // Documento no existe
         if (!docSnap.exists()) {
           showError('Producto no encontrado.');
           return;
         }
 
         const data = docSnap.data();
+        console.log('Producto encontrado:', data);
 
-        // Validación básica
-        if (!data.title || !data.price || !data.description || !data.link) {
-          showError('El producto existe, pero está incompleto en Firebase.');
-          return;
-        }
-
+        // Siempre mostrar el producto aunque falten campos.
         showProduct(data);
 
       } catch (error) {
@@ -404,29 +336,20 @@
       }
     }
 
-    // Exponer la función al botón onclick
     window.searchProduct = searchProduct;
 
-    // Buscar al presionar Enter
     input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        searchProduct();
-      }
+      if (e.key === 'Enter') searchProduct();
     });
 
-    // Ocultar error al escribir
     input.addEventListener('input', () => {
-      if (input.value.trim() !== '') {
-        hideError();
-      }
+      if (input.value.trim() !== '') hideError();
     });
 
-    // Imagen por defecto si falla la URL
     productImage.addEventListener('error', () => {
       productImage.src = 'https://via.placeholder.com/600x600?text=Imagen+No+Disponible';
     });
   </script>
-
 </body>
 </html>
 ```
