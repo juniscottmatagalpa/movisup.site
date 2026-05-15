@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -100,6 +101,12 @@
     .search-box button:hover {
       transform: translateY(-2px);
       opacity: .95;
+    }
+
+    .search-box button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .card {
@@ -240,13 +247,18 @@
       </p>
 
       <div class="search-box">
-        <input type="text" id="productCode" placeholder="Ejemplo: A127">
-        <button onclick="searchProduct()">Buscar Producto</button>
+        <input
+          type="text"
+          id="productCode"
+          placeholder="Ejemplo: A127"
+          autocomplete="off"
+        >
+        <button id="searchButton" onclick="searchProduct()">
+          Buscar Producto
+        </button>
       </div>
 
-      <div class="error" id="errorMessage">
-        Producto no encontrado.
-      </div>
+      <div class="error" id="errorMessage"></div>
     </section>
 
     <div class="card" id="productCard">
@@ -265,7 +277,7 @@
 
           <p class="description" id="productDescription"></p>
 
-          <a id="buyButton" class="buy-btn" target="_blank">
+          <a id="buyButton" class="buy-btn" target="_blank" rel="noopener noreferrer">
             Comprar en Amazon
           </a>
         </div>
@@ -280,100 +292,141 @@
   </div>
 
   <script type="module">
-
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-
     import {
       getFirestore,
       doc,
       getDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // =====================================
+    // CONFIGURACIÓN DE FIREBASE
+    // =====================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBe9HJk7TCbQr3g5wK6fzH2og75NPrAf5M",
+      authDomain: "movisup-39c30.firebaseapp.com",
+      projectId: "movisup-39c30",
+      storageBucket: "movisup-39c30.firebasestorage.app",
+      messagingSenderId: "174880975388",
+      appId: "1:174880975388:web:fb2b4336ec6f0ff4514dd9",
+      measurementId: "G-BCX9MCK60Q"
+    };
 
-    // =============================
-    // PEGA AQUI TU CONFIG FIREBASE
-    // =============================
-
-    // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBe9HJk7TCbQr3g5wK6fzH2og75NPrAf5M",
-  authDomain: "movisup-39c30.firebaseapp.com",
-  projectId: "movisup-39c30",
-  storageBucket: "movisup-39c30.firebasestorage.app",
-  messagingSenderId: "174880975388",
-  appId: "1:174880975388:web:fb2b4336ec6f0ff4514dd9",
-  measurementId: "G-BCX9MCK60Q"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
+    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Referencias DOM
+    const input = document.getElementById('productCode');
+    const searchButton = document.getElementById('searchButton');
+    const productCard = document.getElementById('productCard');
+    const errorMessage = document.getElementById('errorMessage');
 
-    window.searchProduct = async function () {
+    const productImage = document.getElementById('productImage');
+    const productTitle = document.getElementById('productTitle');
+    const productPrice = document.getElementById('productPrice');
+    const productDescription = document.getElementById('productDescription');
+    const buyButton = document.getElementById('buyButton');
 
-      const code = document
-        .getElementById('productCode')
-        .value
-        .trim()
-        .toUpperCase();
+    // Mostrar error
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      productCard.style.display = 'none';
+    }
 
-      const productCard = document.getElementById('productCard');
-      const errorMessage = document.getElementById('errorMessage');
+    // Ocultar error
+    function hideError() {
+      errorMessage.style.display = 'none';
+      errorMessage.textContent = '';
+    }
 
+    // Mostrar producto
+    function showProduct(data) {
+      productImage.src = data.image && data.image.trim() !== ''
+        ? data.image
+        : 'https://via.placeholder.com/600x600?text=Sin+Imagen';
+
+      productTitle.textContent = data.title || 'Sin título';
+      productPrice.textContent = data.price || 'Sin precio';
+      productDescription.textContent = data.description || 'Sin descripción disponible.';
+      buyButton.href = data.link || '#';
+
+      hideError();
+      productCard.style.display = 'block';
+    }
+
+    // Buscar producto
+    async function searchProduct() {
+      const code = input.value.trim().toUpperCase();
+
+      // Validación: campo vacío
       if (!code) {
-        errorMessage.style.display = 'block';
-        errorMessage.innerText = 'Escribe un código.';
-        productCard.style.display = 'none';
+        showError('Por favor escribe el código del producto.');
+        input.focus();
         return;
       }
 
-      try {
+      // Estado de carga
+      hideError();
+      productCard.style.display = 'none';
+      searchButton.disabled = true;
+      searchButton.textContent = 'Buscando...';
 
+      try {
+        // Busca en la colección: products
+        // Documento: A127, B205, etc.
         const docRef = doc(db, 'products', code);
         const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-
-          const data = docSnap.data();
-
-          document.getElementById('productImage').src = data.image;
-          document.getElementById('productTitle').innerText = data.title;
-          document.getElementById('productPrice').innerText = data.price;
-          document.getElementById('productDescription').innerText = data.description;
-          document.getElementById('buyButton').href = data.link;
-
-          productCard.style.display = 'block';
-          errorMessage.style.display = 'none';
-
-        } else {
-
-          productCard.style.display = 'none';
-          errorMessage.style.display = 'block';
-          errorMessage.innerText = 'Producto no encontrado.';
+        // Documento no existe
+        if (!docSnap.exists()) {
+          showError('Producto no encontrado.');
+          return;
         }
 
+        const data = docSnap.data();
+
+        // Validación básica
+        if (!data.title || !data.price || !data.description || !data.link) {
+          showError('El producto existe, pero está incompleto en Firebase.');
+          return;
+        }
+
+        showProduct(data);
+
       } catch (error) {
-
-        console.error(error);
-
-        productCard.style.display = 'none';
-        errorMessage.style.display = 'block';
-        errorMessage.innerText = 'Error conectando con Firebase.';
+        console.error('Error Firebase:', error);
+        showError('Error conectando con Firebase. Revisa la consola del navegador (F12).');
+      } finally {
+        searchButton.disabled = false;
+        searchButton.textContent = 'Buscar Producto';
       }
     }
 
+    // Exponer la función al botón onclick
+    window.searchProduct = searchProduct;
+
+    // Buscar al presionar Enter
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        searchProduct();
+      }
+    });
+
+    // Ocultar error al escribir
+    input.addEventListener('input', () => {
+      if (input.value.trim() !== '') {
+        hideError();
+      }
+    });
+
+    // Imagen por defecto si falla la URL
+    productImage.addEventListener('error', () => {
+      productImage.src = 'https://via.placeholder.com/600x600?text=Imagen+No+Disponible';
+    });
   </script>
 
 </body>
 </html>
+```
