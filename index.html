@@ -294,15 +294,27 @@
     // PEGA AQUI TU CONFIG FIREBASE
     // =============================
 
-    const firebaseConfig = {
-      apiKey: "PEGA_AQUI",
-      authDomain: "PEGA_AQUI",
-      projectId: "PEGA_AQUI",
-      storageBucket: "PEGA_AQUI",
-      messagingSenderId: "PEGA_AQUI",
-      appId: "PEGA_AQUI"
-    };
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBe9HJk7TCbQr3g5wK6fzH2og75NPrAf5M",
+  authDomain: "movisup-39c30.firebaseapp.com",
+  projectId: "movisup-39c30",
+  storageBucket: "movisup-39c30.firebasestorage.app",
+  messagingSenderId: "174880975388",
+  appId: "1:174880975388:web:fb2b4336ec6f0ff4514dd9",
+  measurementId: "G-BCX9MCK60Q"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
