@@ -425,5 +425,62 @@ partido();
 
  <!-- obtener los titulos de los partidos que estan en vivo-->
   <script src="partido.js"></script>
+
+
+
+
+
+
+ <!-- estadistiscas de pagina-->
+ <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  remove,
+  onDisconnect,
+  get,
+  update
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBZi2SC14v0Nu5mN4c-1KAUoZ0296Y2bf8",
+  authDomain: "movisupjs.firebaseapp.com",
+  databaseURL: "https://movisupjs-default-rtdb.firebaseio.com",
+  projectId: "movisupjs",
+  storageBucket: "movisupjs.firebasestorage.app",
+  messagingSenderId: "299820640341",
+  appId: "1:299820640341:web:1aa2172ea96ff9fc384cdc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const userId = crypto.randomUUID();
+
+const onlineRef = ref(db, "online/" + userId);
+
+set(onlineRef, {
+  connected: true,
+  time: Date.now()
+});
+
+onDisconnect(onlineRef).remove();
+
+const statsRef = ref(db, "stats");
+
+get(statsRef).then((snap) => {
+  const visits = snap.exists() ? (snap.val().visits || 0) : 0;
+
+  update(statsRef, {
+    visits: visits + 1
+  });
+});
+</script>
+ <!-- fin estadisticas-->
+
+
+ 
 </body>
 </html>
