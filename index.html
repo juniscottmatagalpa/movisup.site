@@ -4,40 +4,151 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Reproductor</title>
+<title>DSports Plus en Vivo</title>
 
 <style>
-body{
+
+*{
     margin:0;
-    background:#000;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#111;
+    color:white;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    font-size:32px;
+    margin-bottom:15px;
+}
+
+.descripcion{
+    text-align:center;
+    font-size:18px;
+    color:#ccc;
+    margin-bottom:25px;
+}
+
+/* Publicidad */
+.banner{
+    width:100%;
+    min-height:90px;
+    border:2px dashed #555;
+    background:#1c1c1c;
+
     display:flex;
-    justify-content:center;
     align-items:center;
-    height:100vh;
+    justify-content:center;
+
+    margin-bottom:25px;
+    overflow:hidden;
 }
 
-.player{
-    width:90%;
-    max-width:1280px;
+
+/* Video */
+
+.video-box{
+    width:100%;
     aspect-ratio:16/9;
+    background:black;
+    border-radius:8px;
+    overflow:hidden;
+    margin-bottom:25px;
 }
 
-.player iframe{
+
+.video-box iframe{
     width:100%;
     height:100%;
     border:none;
 }
+
+
+.footer{
+    text-align:center;
+    color:#888;
+    padding:15px;
+}
+
+
 </style>
 
 </head>
+
 <body>
 
-<div class="player">
-    <iframe
-        src="https://latamvidzfy.org/dsportsplus.php"
-        allowfullscreen
-        allow="autoplay; encrypted-media">
-    </iframe>
+
+<div class="container">
+
+
+<h1>TÍTULO DEL EVENTO</h1>
+
+<p class="descripcion">
+
+Aquí puedes escribir la descripción del partido,
+canal o transmisión.
+
+</p>
+
+
+
+<!-- PUBLICIDAD SUPERIOR -->
+
+<div class="banner">
+
+<!-- PEGA AQUÍ TU CÓDIGO DE PUBLICIDAD -->
+
+Publicidad Superior 970x90
+
+</div>
+
+
+
+
+<!-- VIDEO -->
+
+<div class="video-box">
+
+<iframe
+src="https://latamvidzfy.org/dsportsplus.php"
+allowfullscreen
+allow="autoplay; encrypted-media">
+</iframe>
+
+</div>
+
+
+
+
+<!-- PUBLICIDAD INFERIOR -->
+
+<div class="banner">
+
+<!-- PEGA AQUÍ TU CÓDIGO DE PUBLICIDAD -->
+
+Publicidad Inferior 970x90
+
+</div>
+
+
+
+<div class="footer">
+
+© 2026 Mi Sitio Web
+
+</div>
+
+
 </div>
 
 </body>
