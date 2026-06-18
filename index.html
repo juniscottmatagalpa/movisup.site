@@ -432,16 +432,17 @@ partido();
 
 
  <!-- estadistiscas de pagina-->
- <script type="module">
+<script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
 import {
   getDatabase,
   ref,
   set,
-  remove,
-  onDisconnect,
   get,
-  update
+  update,
+  onDisconnect
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -457,26 +458,74 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const userId = crypto.randomUUID();
+/* ========= ID UNICO ========= */
 
-const onlineRef = ref(db, "online/" + userId);
+let visitorId = localStorage.getItem("visitorId");
 
-set(onlineRef, {
-  connected: true,
-  time: Date.now()
+if(!visitorId){
+    visitorId = crypto.randomUUID();
+    localStorage.setItem("visitorId", visitorId);
+}
+
+/* ========= DATOS DE IP ========= */
+
+const ipData = await fetch("https://ipwho.is/")
+.then(r=>r.json());
+
+const userRef = ref(db, "users/" + visitorId);
+
+const snap = await get(userRef);
+
+if(!snap.exists()){
+
+    const totalRef = ref(db,"stats");
+
+    const totalSnap = await get(totalRef);
+
+    const total = totalSnap.exists()
+        ? (totalSnap.val().uniqueUsers || 0)
+        : 0;
+
+    await update(totalRef,{
+        uniqueUsers: total + 1
+    });
+
+}
+
+await set(userRef,{
+    ip: ipData.ip,
+    country: ipData.country,
+    city: ipData.city,
+    firstVisit: snap.exists()
+      ? snap.val().firstVisit
+      : Date.now(),
+    lastVisit: Date.now()
+});
+
+/* ========= VISITAS ========= */
+
+const statsRef = ref(db,"stats");
+
+const statsSnap = await get(statsRef);
+
+const visits = statsSnap.exists()
+    ? (statsSnap.val().visits || 0)
+    : 0;
+
+await update(statsRef,{
+    visits: visits + 1
+});
+
+/* ========= ONLINE ========= */
+
+const onlineRef = ref(db,"online/" + visitorId);
+
+await set(onlineRef,{
+    connected:true
 });
 
 onDisconnect(onlineRef).remove();
 
-const statsRef = ref(db, "stats");
-
-get(statsRef).then((snap) => {
-  const visits = snap.exists() ? (snap.val().visits || 0) : 0;
-
-  update(statsRef, {
-    visits: visits + 1
-  });
-});
 </script>
  <!-- fin estadisticas-->
 
