@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -9,76 +11,155 @@
 <style>
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-    background:#111;
-    color:white;
-    font-family:Arial, Helvetica, sans-serif;
+
+background:#111;
+color:white;
+font-family:Arial,Helvetica,sans-serif;
+
 }
+
 
 .container{
-    max-width:1200px;
-    margin:auto;
-    padding:20px;
+
+max-width:1200px;
+margin:auto;
+padding:20px;
+
 }
+
+
 
 h1{
-    text-align:center;
-    font-size:32px;
-    margin-bottom:15px;
+
+text-align:center;
+font-size:32px;
+margin-bottom:10px;
+
 }
+
 
 .descripcion{
-    text-align:center;
-    font-size:18px;
-    color:#ccc;
-    margin-bottom:25px;
-}
 
-/* Publicidad */
-.banner{
-    width:100%;
-    min-height:90px;
-    border:2px dashed #555;
-    background:#1c1c1c;
+text-align:center;
+font-size:18px;
+color:#ccc;
+margin-bottom:25px;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    margin-bottom:25px;
-    overflow:hidden;
 }
 
 
-/* Video */
+
+.botones{
+
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:10px;
+margin-bottom:20px;
+
+}
+
+
+
+.botones button{
+
+
+padding:12px 18px;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-size:15px;
+
+font-weight:bold;
+
+background:#2196F3;
+
+color:white;
+
+transition:0.3s;
+
+
+}
+
+
+.botones button:hover{
+
+
+background:#1976D2;
+
+transform:translateY(-2px);
+
+
+}
+
+
 
 .video-box{
-    width:100%;
-    aspect-ratio:16/9;
-    background:black;
-    border-radius:8px;
-    overflow:hidden;
-    margin-bottom:25px;
+
+
+width:100%;
+
+aspect-ratio:16/9;
+
+background:black;
+
+overflow:hidden;
+
+border-radius:10px;
+
+
 }
+
 
 
 .video-box iframe{
-    width:100%;
-    height:100%;
-    border:none;
+
+width:100%;
+height:100%;
+border:none;
+
 }
+
+
 
 
 .footer{
-    text-align:center;
-    color:#888;
-    padding:15px;
+
+text-align:center;
+
+margin-top:20px;
+
+color:#888;
+
+
 }
+
+
+
+
+@media(max-width:768px){
+
+
+.botones button{
+
+width:48%;
+
+}
+
+
+}
+
+
 
 
 </style>
@@ -88,86 +169,80 @@ h1{
 <body>
 
 
+
 <div class="container">
 
 
-<h1>Uzbekistan vs Colombia en Vivo</h1>
+
+<h1>
+
+Uzbekistan vs Colombia en Vivo
+
+</h1>
+
+
 
 <p class="descripcion">
 
-Uzbekistan vs Colombia en Vivo
+Selecciona una señal disponible.
 
 </p>
 
 
 
-<!-- PUBLICIDAD SUPERIOR -->
+<div class="botones">
 
-<div class="banner">
+<button onclick="cargar(0)">
+Canal 1
+</button>
 
-<!-- PEGA AQUÍ TU CÓDIGO DE PUBLICIDAD -->
+<button onclick="cargar(1)">
+Canal 2
+</button>
 
-<script>
-  atOptions = {
-    'key' : '9ca91d93beb307173656f60518c354e5',
-    'format' : 'iframe',
-    'height' : 300,
-    'width' : 160,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/9ca91d93beb307173656f60518c354e5/invoke.js"></script>
+<button onclick="cargar(2)">
+Canal 3
+</button>
 
-    
-<script>
-  atOptions = {
-    'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
-    'format' : 'iframe',
-    'height' : 60,
-    'width' : 468,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
+<button onclick="cargar(3)">
+Canal 4
+</button>
 
+<button onclick="cargar(4)">
+Canal 5
+</button>
+
+<button onclick="cargar(5)">
+Canal 6
+</button>
+
+<button onclick="cargar(6)">
+Canal 7
+</button>
+
+<button onclick="cargar(7)">
+Canal 8
+</button>
 
 </div>
 
 
 
-
-<!-- VIDEO -->
 
 <div class="video-box">
 
+
 <iframe
+
+id="player"
+
 src="https://esvidzy99.co/caracoltv.php"
+
 allowfullscreen
+
 allow="autoplay; encrypted-media">
+
 </iframe>
-
-</div>
-
-
-
-
-<!-- PUBLICIDAD INFERIOR -->
-
-<div class="banner">
-
-<!-- PEGA AQUÍ TU CÓDIGO DE PUBLICIDAD -->
-<script src="https://pl27987169.effectivecpmnetwork.com/f4/d3/95/f4d39536fb75e7240ac61ae609c8418d.js"></script>
-
-<script>
-  atOptions = {
-    'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
-    'format' : 'iframe',
-    'height' : 60,
-    'width' : 468,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
 
 
 </div>
@@ -181,7 +256,55 @@ allow="autoplay; encrypted-media">
 </div>
 
 
+
 </div>
+
+
+
+
+
+<script>
+
+
+
+const canales=[
+
+
+'https://esvidzy99.co/caracoltv.php',
+
+'https://latamvidzfy.org/dsportsplus.php',
+
+'https://latamvidzfy.org/rcn.php',
+
+'https://latamvidzs.org/canal.php?stream=tycsports',
+
+'https://latamvidzfy.org/fox1us.php',
+
+'https://latamvidzfy.org/sportvbr.php',
+
+'https://latamvidzs.org/canal.php?stream=disney2',
+
+'https://latamvidzfy.org/caze2.php'
+
+
+];
+
+
+
+
+
+function cargar(numero){
+
+document.getElementById("player").src=canales[numero];
+
+}
+
+
+
+</script>
+
+
+
 
 </body>
 </html>
