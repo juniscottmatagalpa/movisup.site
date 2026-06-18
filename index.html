@@ -208,9 +208,9 @@ width:48%;
   
 
 
-<h1>
+<h1 id="partidoActual">
 
-Mundial 2026 en vivo
+Cargando partido...
 
 </h1>
 
@@ -282,6 +282,21 @@ allow="autoplay; encrypted-media">
 </div>
 
 
+<p id="descripcionPartido"
+style="
+margin-top:20px;
+font-size:18px;
+line-height:30px;
+text-align:center;
+color:#ddd;
+">
+
+Cargando información del partido...
+
+</p>
+
+
+  
 
 <div class="footer">
 
@@ -349,5 +364,30 @@ document.getElementById("player").src=canales[numero];
 </script>
 <script src="https://www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
 
+
+
+
+
+
+
+
+<script>
+async function partido(){
+try{
+let r=await fetch('partido.php');
+let d=await r.json();
+document.getElementById("partidoActual")
+.innerHTML=d.partido;
+document.getElementById("descripcionPartido")
+.innerHTML=d.descripcion;
+}catch(e){
+console.log(e);
+}
+}
+  partido();
+setInterval(()=>{
+partido();
+},300000);
+</script>  
 </body>
 </html>
