@@ -1,361 +1,44 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Movisup | Productos Virales</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="icon" type="image/png" href="img/iconmovisup.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Reproductor</title>
 
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<style>
+body{
+    margin:0;
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #0f172a;
-      color: white;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+.player{
+    width:90%;
+    max-width:1280px;
+    aspect-ratio:16/9;
+}
 
-    .background {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(59,130,246,.35), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(168,85,247,.30), transparent 30%),
-        #0f172a;
-      z-index: -1;
-    }
+.player iframe{
+    width:100%;
+    height:100%;
+    border:none;
+}
+</style>
 
-    .container {
-      width: 90%;
-      max-width: 1200px;
-      margin: auto;
-      padding: 40px 0;
-    }
-
-    .hero {
-      text-align: center;
-      margin-bottom: 50px;
-    }
-
-    .logo {
-      font-size: 42px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      background: linear-gradient(90deg, #60a5fa, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .subtitle {
-      color: #cbd5e1;
-      font-size: 18px;
-      margin-bottom: 35px;
-    }
-
-    .search-box {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .search-box input {
-      width: 320px;
-      max-width: 100%;
-      padding: 16px;
-      border-radius: 16px;
-      border: none;
-      outline: none;
-      background: rgba(255,255,255,.1);
-      color: white;
-      font-size: 16px;
-      backdrop-filter: blur(10px);
-    }
-
-    .search-box input::placeholder {
-      color: #cbd5e1;
-    }
-
-    .search-box button {
-      padding: 16px 24px;
-      border: none;
-      border-radius: 16px;
-      cursor: pointer;
-      background: linear-gradient(90deg, #3b82f6, #9333ea);
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      transition: .3s ease;
-    }
-
-    .search-box button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      opacity: .95;
-    }
-
-    .search-box button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    .card {
-      margin-top: 40px;
-      display: none;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 28px;
-      overflow: hidden;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-
-    .card-content {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      padding: 30px;
-    }
-
-    .image-box {
-      background: white;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      min-height: 400px;
-    }
-
-    .image-box img {
-      max-width: 100%; max-height: 380px; object-fit: contain;
-    }
-
-    .badge {
-      display: inline-block;
-      background: rgba(34,197,94,.15);
-      color: #4ade80;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 14px;
-      margin-bottom: 18px;
-      width: fit-content;
-    }
-
-    .product-title {
-      font-size: 34px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      line-height: 1.2;
-    }
-
-    .price {
-      font-size: 42px;
-      font-weight: 700;
-      color: #60a5fa;
-      margin-bottom: 20px;
-    }
-
-    .description {
-      color: #cbd5e1;
-      line-height: 1.7;
-      margin-bottom: 30px;
-      font-size: 16px;
-    }
-
-    .buy-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: fit-content;
-      padding: 18px 28px;
-      border-radius: 18px;
-      text-decoration: none;
-      color: white;
-      font-weight: 600;
-      background: linear-gradient(90deg, #f59e0b, #f97316);
-      font-size: 17px;
-    }
-
-    .error {
-      margin-top: 25px;
-      text-align: center;
-      color: #fca5a5;
-      display: none;
-      font-size: 17px;
-    }
-
-    .footer {
-      margin-top: 70px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 14px;
-    }
-
-    @media (max-width: 900px) {
-      .card-content { grid-template-columns: 1fr; }
-      .product-title { font-size: 28px; }
-      .price { font-size: 34px; }
-      .image-box { min-height: 300px; }
-    }
-  </style>
 </head>
 <body>
-  <div class="background"></div>
 
-  <div class="container">
-    <section class="hero">
-      <h1 class="logo">MOVISUP</h1>
+<div class="player">
+    <iframe
+        src="https://latamvidzfy.org/dsportsplus.php"
+        allowfullscreen
+        allow="autoplay; encrypted-media">
+    </iframe>
+</div>
 
-      <img
-  src="img/iconmovisup.png"
-  alt="Logo Movisup"
-  width="90"
-  height="90"
->
-      <p class="subtitle">Busca el código del producto que viste en TikTok o Instagram.</p>
-
-      <div class="search-box">
-        <input type="text" id="productCode" placeholder="Ejemplo: A127" autocomplete="off">
-        <button id="searchButton" onclick="searchProduct()">Buscar Producto</button>
-      </div>
-
-      <div class="error" id="errorMessage"></div>
-    </section>
-
-    <div class="card" id="productCard">
-      <div class="card-content">
-        <div class="image-box">
-          <img id="productImage" src="" alt="Producto">
-        </div>
-
-        <div class="info">
-          <div class="badge">Producto Viral</div>
-          <h2 class="product-title" id="productTitle"></h2>
-          <div class="price" id="productPrice"></div>
-          <p class="description" id="productDescription"></p>
-          <a id="buyButton" class="buy-btn" target="_blank" rel="noopener noreferrer">
-            Comprar en Amazon
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="footer">© 2026 Movisup.site - Productos recomendados</div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBe9HJk7TCbQr3g5wK6fzH2og75NPrAf5M",
-      authDomain: "movisup-39c30.firebaseapp.com",
-      projectId: "movisup-39c30",
-      storageBucket: "movisup-39c30.firebasestorage.app",
-      messagingSenderId: "174880975388",
-      appId: "1:174880975388:web:fb2b4336ec6f0ff4514dd9",
-      measurementId: "G-BCX9MCK60Q"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const input = document.getElementById('productCode');
-    const searchButton = document.getElementById('searchButton');
-    const productCard = document.getElementById('productCard');
-    const errorMessage = document.getElementById('errorMessage');
-
-    const productImage = document.getElementById('productImage');
-    const productTitle = document.getElementById('productTitle');
-    const productPrice = document.getElementById('productPrice');
-    const productDescription = document.getElementById('productDescription');
-    const buyButton = document.getElementById('buyButton');
-
-    function showError(message) {
-      errorMessage.textContent = message;
-      errorMessage.style.display = 'block';
-      productCard.style.display = 'none';
-    }
-
-    function hideError() {
-      errorMessage.style.display = 'none';
-      errorMessage.textContent = '';
-    }
-
-    function showProduct(data) {
-      productImage.src = (data.image || '').trim() || 'https://via.placeholder.com/600x600?text=Sin+Imagen';
-      productTitle.textContent = data.title || 'Producto sin título';
-      productPrice.textContent = data.price || 'Precio no disponible';
-      productDescription.textContent = data.description || 'Descripción no disponible.';
-
-      if (data.link && data.link.trim() !== '') {
-        buyButton.href = data.link;
-        buyButton.style.display = 'inline-flex';
-      } else {
-        buyButton.style.display = 'none';
-      }
-
-      hideError();
-      productCard.style.display = 'block';
-    }
-
-    async function searchProduct() {
-      const code = input.value.trim().toUpperCase();
-
-      if (!code) {
-        showError('Por favor escribe el código del producto.');
-        input.focus();
-        return;
-      }
-
-      hideError();
-      productCard.style.display = 'none';
-      searchButton.disabled = true;
-      searchButton.textContent = 'Buscando...';
-
-      try {
-        const docRef = doc(db, 'products', code);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
-          showError('Producto no encontrado.');
-          return;
-        }
-
-        const data = docSnap.data();
-        console.log('Producto encontrado:', data);
-
-        // Siempre mostrar el producto aunque falten campos.
-        showProduct(data);
-
-      } catch (error) {
-        console.error('Error Firebase:', error);
-        showError('Error conectando con Firebase. Revisa la consola del navegador (F12).');
-      } finally {
-        searchButton.disabled = false;
-        searchButton.textContent = 'Buscar Producto';
-      }
-    }
-
-    window.searchProduct = searchProduct;
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') searchProduct();
-    });
-
-    input.addEventListener('input', () => {
-      if (input.value.trim() !== '') hideError();
-    });
-
-    productImage.addEventListener('error', () => {
-      productImage.src = 'https://via.placeholder.com/600x600?text=Imagen+No+Disponible';
-    });
-  </script>
 </body>
 </html>
