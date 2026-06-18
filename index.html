@@ -184,30 +184,44 @@ width:48%;
 
 <body>
 
+  <!-- anuncio-->
+<script>
+  atOptions = {
+    'key' : '9ca91d93beb307173656f60518c354e5',
+    'format' : 'iframe',
+    'height' : 300,
+    'width' : 160,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/9ca91d93beb307173656f60518c354e5/invoke.js"></script>
+<!-- fin anuncio-->
 
+
+
+  
 
 <div class="container">
 
 
-
+ <!-- titulo-->
 <h1 id="partidoActual">
 
 Cargando partido...
 
 </h1>
+ <!-- fin titulo-->
 
 
-
+   <!-- descripciono-->
 <p id="descripcionPartido">
-
 Cargando información...
-
 </p>
+   <!-- fin descripcion-->
 
 
-
+ <!-- botones-->
 <div class="botones">
-
 <button onclick="cargar(0)">
 Canal 1
 </button>
@@ -244,26 +258,21 @@ Canal 8
 Canal 9
 </button>
 
+   <!-- fin botones-->
+
 </div>
 
 
 
-
+ <!-- iframe video-->
 <div class="video-box">
-
-
 <iframe
-
 id="player"
-
 src="https://latamvidzfy.org/dsportsar.php"
-
 allowfullscreen
-
 allow="autoplay; encrypted-media">
-
 </iframe>
-
+   <!-- fin iframe video-->
 
 </div>
 
@@ -276,9 +285,7 @@ line-height:30px;
 text-align:center;
 color:#ddd;
 ">
-
 Cargando información del partido...
-
 </p>
 
 
@@ -301,7 +308,7 @@ Cargando información del partido...
 <script>
 
 
-
+ <!-- lista de canales-->
 const canales=[
 
 'https://latamvidzfy.org/dsportsar.php',
@@ -386,7 +393,7 @@ partido();
 },300000);
 </script>  
 
-
+ <!-- obtener los titulos de los partidos que estan en vivo-->
   <script src="partido.js"></script>
 </body>
 </html>
