@@ -433,9 +433,7 @@ partido();
 
  <!-- estadistiscas de pagina-->
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-
 import {
   getDatabase,
   ref,
@@ -458,70 +456,67 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ========= ID UNICO ========= */
+/* ID único por dispositivo */
+let visitorId = localStorage.getItem("movisup_visitor");
 
-let visitorId = localStorage.getItem("visitorId");
-
-if(!visitorId){
-    visitorId = crypto.randomUUID();
-    localStorage.setItem("visitorId", visitorId);
+if (!visitorId) {
+  visitorId = crypto.randomUUID();
+  localStorage.setItem("movisup_visitor", visitorId);
 }
 
-/* ========= DATOS DE IP ========= */
-
-const ipData = await fetch("https://ipwho.is/")
-.then(r=>r.json());
-
+/* Referencia del usuario */
 const userRef = ref(db, "users/" + visitorId);
 
-const snap = await get(userRef);
+/* Comprobar si es nuevo */
+const userSnap = await get(userRef);
 
-if(!snap.exists()){
+if (!userSnap.exists()) {
 
-    const totalRef = ref(db,"stats");
+  const statsRef = ref(db, "stats");
+  const statsSnap = await get(statsRef);
 
-    const totalSnap = await get(totalRef);
+  const uniqueUsers = statsSnap.exists()
+    ? (statsSnap.val().uniqueUsers || 0)
+    : 0;
 
-    const total = totalSnap.exists()
-        ? (totalSnap.val().uniqueUsers || 0)
-        : 0;
+  await update(statsRef, {
+    uniqueUsers: uniqueUsers + 1
+  });
 
-    await update(totalRef,{
-        uniqueUsers: total + 1
-    });
+  await set(userRef, {
+    firstVisit: Date.now(),
+    lastVisit: Date.now()
+  });
+
+} else {
+
+  const oldData = userSnap.val();
+
+  await set(userRef, {
+    firstVisit: oldData.firstVisit,
+    lastVisit: Date.now()
+  });
 
 }
 
-await set(userRef,{
-    ip: ipData.ip,
-    country: ipData.country,
-    city: ipData.city,
-    firstVisit: snap.exists()
-      ? snap.val().firstVisit
-      : Date.now(),
-    lastVisit: Date.now()
-});
-
-/* ========= VISITAS ========= */
-
-const statsRef = ref(db,"stats");
-
+/* Contador de visitas */
+const statsRef = ref(db, "stats");
 const statsSnap = await get(statsRef);
 
 const visits = statsSnap.exists()
-    ? (statsSnap.val().visits || 0)
-    : 0;
+  ? (statsSnap.val().visits || 0)
+  : 0;
 
-await update(statsRef,{
-    visits: visits + 1
+await update(statsRef, {
+  visits: visits + 1
 });
 
-/* ========= ONLINE ========= */
+/* Usuarios online */
+const onlineRef = ref(db, "online/" + visitorId);
 
-const onlineRef = ref(db,"online/" + visitorId);
-
-await set(onlineRef,{
-    connected:true
+await set(onlineRef, {
+  connected: true,
+  lastSeen: Date.now()
 });
 
 onDisconnect(onlineRef).remove();
