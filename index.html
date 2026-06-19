@@ -524,6 +524,35 @@ onDisconnect(onlineRef).remove();
  <!-- fin estadisticas-->
 
 
+
+
+ <!-- otro panel de video-->
+  <video id="video" width="100%" height="auto" controls autoplay></video>
+    
+    <script>
+        var video = document.getElementById('video');
+        var videoSrc = 'https://ovaut.vivolatamz.org/lb04/dsports/index.m3u8?token=92130b859b86dbf8aa807463d680a33e28cd6e02-d7-1781948760-1781894760&ip=152.231.46.14';
+        
+        if (Hls.isSupported()) {
+            var hls = new Hls({
+                xhrSetup: function(xhr, url) {
+                    xhr.setRequestHeader('Referer', 'https://latamvidzs.org/');
+                    xhr.setRequestHeader('Origin', 'https://latamvidzs.org');
+                }
+            });
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play();
+            });
+        }
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
+        }
+    </script>
  
 </body>
 </html>
