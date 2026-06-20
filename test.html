@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor DSports</title>
+    <title>Reproductor Universal DSports</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@8.5.2/dist/video-js.min.css">
     <style>
         * {
@@ -27,7 +27,7 @@
         .player-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* Aspect ratio 16:9 */
+            padding-bottom: 56.25%;
             background-color: #000;
             border-radius: 8px;
             overflow: hidden;
@@ -73,6 +73,7 @@
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.3s;
+            margin-top: 10px;
         }
         
         button:hover {
@@ -110,6 +111,25 @@
             text-align: center;
         }
         
+        .alternative-methods {
+            margin-top: 20px;
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .alternative-methods h3 {
+            margin-bottom: 15px;
+            color: #e50914;
+        }
+        
+        .method {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #2a2a2a;
+            border-radius: 4px;
+        }
+        
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -123,7 +143,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Reproductor DSports</h1>
+        <h1>Reproductor Universal DSports</h1>
         
         <div class="player-container">
             <video
@@ -140,6 +160,11 @@
         
         <div class="controls">
             <div class="control-group">
+                <label for="stream-url">URL del Stream:</label>
+                <input type="text" id="stream-url" value="https://xrpma.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8" placeholder="URL del stream">
+            </div>
+            
+            <div class="control-group">
                 <label for="ip-input">Dirección IP:</label>
                 <input type="text" id="ip-input" value="186.1.63.67" placeholder="Introduce la IP">
             </div>
@@ -154,67 +179,40 @@
             <div id="status" class="status">Listo para cargar el stream</div>
         </div>
         
+        <div class="alternative-methods">
+            <h3>Métodos Alternativos:</h3>
+            
+            <div class="method">
+                <h4>Método 1: Usar un Proxy CORS</h4>
+                <p>Algunos proxies pueden ayudarte a eludir restricciones de origen.</p>
+                <button onclick="tryCorsProxy()">Intentar con Proxy CORS</button>
+            </div>
+            
+            <div class="method">
+                <h4>Método 2: Obtener nuevos parámetros</h4>
+                <p>Necesitas obtener nuevos valores de token e IP desde la fuente original (Futbol Libre).</p>
+                <p>Ve a la página que te dio el stream y genera uno nuevo.</p>
+            </div>
+            
+            <div class="method">
+                <h4>Método 3: Usar IFrame con CORS Proxy</h4>
+                <p>Para embeds, usa servicios como:</p>
+                <code style="display:block; background:#333; padding:10px; margin-top:10px;">
+                https://corsproxy.io/?https://xrpma.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8?ip=TU_IP&token=TU_TOKEN
+                </code>
+            </div>
+        </div>
+        
         <div class="info-box">
-            <h3>Información:</h3>
-            <p>Este reproductor está diseñado para funcionar con streams protegidos que requieren parámetros específicos como IP y token.</p>
-            <p>Si el stream no carga, es posible que necesites actualizar el token o la IP desde la fuente original.</p>
+            <h3>Información importante:</h3>
+            <p>El token que tienes probablemente está vinculado al dispositivo específico donde fue generado. Esto es una medida de seguridad del servidor.</p>
+            <p>Para que funcione en otros dispositivos, necesitas:</p>
+            <ul style="margin-left:20px; margin-top:10px;">
+                <li>Obtener un nuevo token desde la fuente original (Futbol Libre)</li>
+                <li>Usar un servicio que pueda generar tokens dinámicos</li>
+                <li>Implementar un backend que obtenga los tokens automáticamente</li>
+            </ul>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/video.js@8.5.2/dist/video.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const player = videojs('player');
-            const loadButton = document.getElementById('load-stream');
-            const ipInput = document.getElementById('ip-input');
-            const tokenInput = document.getElementById('token-input');
-            const statusDiv = document.getElementById('status');
-            
-            loadButton.addEventListener('click', function() {
-                const ip = ipInput.value.trim();
-                const token = tokenInput.value.trim();
-                
-                if (!ip || !token) {
-                    updateStatus('Por favor introduce tanto la IP como el token', 'error');
-                    return;
-                }
-                
-                const baseUrl = 'https://xrpma.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8';
-                const streamUrl = `${baseUrl}?ip=${ip}&token=${token}`;
-                
-                updateStatus('Cargando stream...', 'success');
-                
-                player.src({
-                    src: streamUrl,
-                    type: 'application/x-mpegURL'
-                });
-                
-                player.ready(function() {
-                    player.play().catch(e => {
-                        updateStatus('Error al reproducir: ' + e.message, 'error');
-                    });
-                });
-                
-                player.on('error', function() {
-                    const error = player.error();
-                    updateStatus('Error del reproductor: ' + (error ? error.message : 'Desconocido'), 'error');
-                });
-                
-                player.on('loadedmetadata', function() {
-                    updateStatus('Stream cargado correctamente', 'success');
-                });
-            });
-            
-            function updateStatus(message, type) {
-                statusDiv.textContent = message;
-                statusDiv.className = 'status ' + type;
-            }
-            
-            // Intentar cargar automáticamente con los valores por defecto
-            setTimeout(() => {
-                loadButton.click();
-            }, 1000);
-        });
-    </script>
-</body>
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/video.js@8.5
