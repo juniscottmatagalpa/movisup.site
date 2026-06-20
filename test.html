@@ -50,13 +50,8 @@
             justify-content: center;
             align-items: center;
             pointer-events: none;
-            background: rgba(0,0,0,0.3);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .overlay.active {
-            opacity: 1;
+            background: rgba(0,0,0,0.5);
+            z-index: 10;
         }
         
         .loader {
@@ -92,6 +87,7 @@
             gap: 15px;
             opacity: 0;
             transition: opacity 0.3s;
+            z-index: 20;
         }
         
         .player-container:hover .controls {
@@ -151,20 +147,7 @@
             font-weight: bold;
             font-size: 14px;
             backdrop-filter: blur(10px);
-        }
-        
-        .quality-selector {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0,0,0,0.7);
-            padding: 8px 15px;
-            border-radius: 8px;
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-            border: none;
-            backdrop-filter: blur(10px);
+            z-index: 20;
         }
         
         .big-play {
@@ -179,6 +162,7 @@
             cursor: pointer;
             pointer-events: auto;
             transition: transform 0.2s;
+            z-index: 15;
         }
         
         .big-play:hover {
@@ -212,21 +196,17 @@
     <div class="player-container" id="playerContainer">
         <div class="title">MEGA SPORT LIVE</div>
         
-        <select class="quality-selector" id="qualitySelector">
-            <option value="auto">AUTO</option>
-        </select>
-        
-        <video id="video" playsinline preload="metadata"></video>
+        <video id="video" playsinline preload="auto"></video>
         
         <div class="overlay" id="overlay">
             <div class="loader" id="loader"></div>
-            <div class="big-play" id="bigPlay"></div>
+            <div class="big-play hidden" id="bigPlay"></div>
             <div class="error-msg" id="errorMsg">Error al cargar el stream</div>
         </div>
         
         <div class="controls">
             <button id="playBtn">▶</button>
-            <span class="time" id="timeDisplay">0:00 / 0:00</span>
+            <span class="time" id="timeDisplay">LIVE</span>
             <div class="progress-container" id="progressContainer">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
@@ -249,22 +229,20 @@
         const progressContainer = document.getElementById('progressContainer');
         const progressBar = document.getElementById('progressBar');
         const timeDisplay = document.getElementById('timeDisplay');
-        const qualitySelector = document.getElementById('qualitySelector');
         
         const WORKER_URL = 'https://megasport-worker.juniscottmatagalpa.workers.dev';
+        const PROXY_PLAYLIST = `${WORKER_URL}/hls/dsports`;
+        
         let hls = null;
-        let currentUrl = '';
         
         function showLoader() {
             loader.style.display = 'block';
             bigPlay.classList.add('hidden');
             errorMsg.style.display = 'none';
-            overlay.classList.add('active');
         }
         
         function hideLoader() {
             loader.style.display = 'none';
-            overlay.classList.remove('active');
         }
         
         function showError(msg) {
@@ -272,7 +250,7 @@
             bigPlay.classList.add('hidden');
             errorMsg.textContent = msg;
             errorMsg.style.display = 'block';
-            overlay.classList.add('active');
+            console.error(msg);
         }
         
         function formatTime(seconds) {
@@ -286,12 +264,6 @@
             showLoader();
             
             try {
-                const response = await fetch(`${WORKER_URL}/api/stream`);
-                if (!response.ok) throw new Error('Error en el worker');
-                
-                const data = await response.json();
-                currentUrl = data.url;
-                
                 if (Hls.isSupported()) {
                     if (hls) {
                         hls.destroy();
@@ -304,65 +276,48 @@
                         maxBufferLength: 30,
                         maxMaxBufferLength: 600,
                         liveSyncDurationCount: 3,
-                        liveMaxLatencyDurationCount: 10,
                         debug: false,
                         xhrSetup: function(xhr, url) {
-                            // Forzar que los segmentos pasen por el worker
-                            if (url.includes('.ts')) {
-                                const proxyUrl = `${WORKER_URL}/proxy?url=${encodeURIComponent(url)}`;
-                                xhr.open('GET', proxyUrl, true);
+                            if (url.includes('vivolatamz.org') && !url.includes('workers.dev')) {
+                                const workerUrl = `${WORKER_URL}/proxy?url=${encodeURIComponent(url)}`;
+                                xhr.open('GET', workerUrl, true);
                             }
                         }
                     });
                     
-                    hls.loadSource(currentUrl);
+                    hls.loadSource(PROXY_PLAYLIST);
                     hls.attachMedia(video);
                     
-                    hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
                         hideLoader();
                         bigPlay.classList.remove('hidden');
-                        
-                        // Poblar selector de calidad
-                        qualitySelector.innerHTML = '<option value="auto">AUTO</option>';
-                        data.levels.forEach((level, index) => {
-                            const height = level.height || level.name;
-                            qualitySelector.innerHTML += `<option value="${index}">${height}p</option>`;
-                        });
-                        
-                        video.play().catch(() => {
-                            // Autoplay bloqueado, mostrar botón grande
+                        video.play().catch(e => {
+                            console.log('Autoplay bloqueado:', e);
                         });
                     });
                     
                     hls.on(Hls.Events.ERROR, (event, data) => {
+                        console.error('HLS Error:', data);
                         if (data.fatal) {
                             switch(data.type) {
                                 case Hls.ErrorTypes.NETWORK_ERROR:
-                                    console.log('Error de red, intentando recuperar...');
+                                    console.log('Error de red, reintentando...');
                                     hls.startLoad();
                                     break;
                                 case Hls.ErrorTypes.MEDIA_ERROR:
-                                    console.log('Error de media, intentando recuperar...');
+                                    console.log('Error de media, recuperando...');
                                     hls.recoverMediaError();
                                     break;
                                 default:
-                                    showError('Error al cargar el stream. Recargando...');
+                                    showError('Error en el stream. Recargando...');
                                     setTimeout(cargarStream, 3000);
                                     break;
                             }
                         }
                     });
                     
-                    hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-                        const level = hls.levels[data.level];
-                        if (level) {
-                            console.log('Calidad cambiada a:', level.height + 'p');
-                        }
-                    });
-                    
                 } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    // Safari nativo
-                    video.src = currentUrl;
+                    video.src = PROXY_PLAYLIST;
                     video.addEventListener('loadedmetadata', () => {
                         hideLoader();
                         video.play();
@@ -373,11 +328,10 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                showError('No se pudo cargar el stream. Intenta de nuevo.');
+                showError('Error al iniciar: ' + error.message);
             }
         }
         
-        // Controles
         playBtn.onclick = () => {
             if (video.paused) {
                 video.play();
@@ -411,49 +365,31 @@
         fullscreen.onclick = () => {
             const elem = document.getElementById('playerContainer');
             if (!document.fullscreenElement) {
-                elem.requestFullscreen?.() || elem.webkitRequestFullscreen?.() || elem.msRequestFullscreen?.();
+                elem.requestFullscreen?.() || elem.webkitRequestFullscreen?.();
             } else {
-                document.exitFullscreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
+                document.exitFullscreen?.();
             }
         };
         
-        // Barra de progreso
         video.ontimeupdate = () => {
-            if (video.duration) {
+            if (video.duration && !isNaN(video.duration)) {
                 const percent = (video.currentTime / video.duration) * 100;
                 progressBar.style.width = percent + '%';
                 timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
-            } else if (video.currentTime) {
-                // Stream en vivo
-                timeDisplay.textContent = `LIVE • ${formatTime(video.currentTime)}`;
+            } else {
                 progressBar.style.width = '100%';
+                timeDisplay.textContent = `LIVE • ${formatTime(video.currentTime || 0)}`;
             }
         };
         
-        progressContainer.onclick = (e) => {
-            const rect = progressContainer.getBoundingClientRect();
-            const pos = (e.clientX - rect.left) / rect.width;
-            if (video.duration) {
-                video.currentTime = pos * video.duration;
-            }
-        };
-        
-        // Cambio de calidad
-        qualitySelector.onchange = () => {
-            if (!hls) return;
-            const quality = qualitySelector.value;
-            hls.currentLevel = quality === 'auto' ? -1 : parseInt(quality);
-        };
-        
-        // Eventos del video
         video.addEventListener('waiting', () => {
             loader.style.display = 'block';
-            overlay.classList.add('active');
         });
         
         video.addEventListener('playing', () => {
             hideLoader();
             playBtn.innerHTML = '❚❚';
+            bigPlay.classList.add('hidden');
         });
         
         video.addEventListener('pause', () => {
@@ -461,17 +397,8 @@
             bigPlay.classList.remove('hidden');
         });
         
-        video.addEventListener('ended', () => {
-            playBtn.innerHTML = '▶';
-            bigPlay.classList.remove('hidden');
-            // Reconectar si es stream en vivo
-            setTimeout(cargarStream, 2000);
-        });
-        
-        // Iniciar
         cargarStream();
         
-        // Recargar cada 4 horas para renovar token
         setInterval(cargarStream, 14400000);
     </script>
 </body>
