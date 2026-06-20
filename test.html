@@ -1,325 +1,478 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Mega Sport Player</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-background:#000;
-height:100vh;
-overflow:hidden;
-display:flex;
-justify-content:center;
-align-items:center;
-}
-
-.player{
-
-position:relative;
-width:100%;
-max-width:1400px;
-background:black;
-overflow:hidden;
-
-}
-
-video{
-
-width:100%;
-height:auto;
-display:block;
-background:black;
-
-}
-
-.overlay{
-
-position:absolute;
-top:0;
-left:0;
-
-width:100%;
-height:100%;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-pointer-events:none;
-
-}
-
-.loader{
-
-width:60px;
-height:60px;
-
-border:5px solid rgba(255,255,255,.2);
-
-border-top:5px solid white;
-
-border-radius:50%;
-
-animation:spin 1s linear infinite;
-
-display:none;
-
-}
-
-@keyframes spin{
-
-100%{
-transform:rotate(360deg);
-}
-
-}
-
-.controls{
-
-position:absolute;
-
-bottom:0;
-
-width:100%;
-
-padding:12px;
-
-background:linear-gradient(transparent,rgba(0,0,0,.9));
-
-display:flex;
-
-align-items:center;
-
-gap:10px;
-
-}
-
-button{
-
-background:none;
-
-border:none;
-
-color:white;
-
-font-size:22px;
-
-cursor:pointer;
-
-}
-
-input[type=range]{
-
-flex:1;
-
-}
-
-.title{
-
-position:absolute;
-
-top:15px;
-left:15px;
-
-background:rgba(0,0,0,.7);
-
-padding:8px 15px;
-
-border-radius:8px;
-
-color:white;
-
-font-weight:bold;
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Sport Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .player-container {
+            position: relative;
+            width: 100%;
+            max-width: 1400px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #000;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            background: rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .error-msg {
+            color: #ff4444;
+            font-size: 16px;
+            margin-top: 20px;
+            text-align: center;
+            padding: 0 20px;
+            display: none;
+        }
+        
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .player-container:hover .controls {
+            opacity: 1;
+        }
+        
+        button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .progress-container {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #00d4ff;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .time {
+            color: white;
+            font-size: 12px;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .title {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .quality-selector {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .big-play {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: rgba(0,212,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: transform 0.2s;
+        }
+        
+        .big-play:hover {
+            transform: scale(1.1);
+        }
+        
+        .big-play::after {
+            content: '▶';
+            color: white;
+            font-size: 30px;
+            margin-left: 5px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                opacity: 1;
+                padding: 10px;
+            }
+            .time {
+                min-width: 80px;
+                font-size: 11px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-<div class="player">
-
-<div class="title">
-MEGA SPORT
-</div>
-
-<video id="video" playsinline></video>
-
-<div class="overlay">
-<div class="loader" id="loader"></div>
-</div>
-
-<div class="controls">
-
-<button id="playBtn">▶</button>
-
-<input type="range"
-id="volume"
-min="0"
-max="1"
-step="0.1"
-value="1">
-
-<button id="fullscreen">
-⛶
-</button>
-
-</div>
-
-</div>
-
-
-<script>
-
-const video=document.getElementById("video");
-
-const loader=document.getElementById("loader");
-
-const playBtn=document.getElementById("playBtn");
-
-const volume=document.getElementById("volume");
-
-const fullscreen=document.getElementById("fullscreen");
-
-
-// Worker que devuelve JSON
-const API="https://megasport-worker.juniscottmatagalpa.workers.dev";
-
-
-async function cargar(){
-
-
-loader.style.display="block";
-
-
-const r=await fetch(API);
-
-const data=await r.json();
-
-
-const url=data.url;
-
-
-if(Hls.isSupported()){
-
-
-const hls=new Hls({
-
-enableWorker:true,
-
-lowLatencyMode:true
-
-});
-
-
-hls.loadSource(url);
-
-hls.attachMedia(video);
-
-
-hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-
-loader.style.display="none";
-
-video.play();
-
-});
-
-
-}else{
-
-
-video.src=url;
-
-loader.style.display="none";
-
-video.play();
-
-}
-
-
-}
-
-
-cargar();
-
-
-
-playBtn.onclick=()=>{
-
-
-if(video.paused){
-
-video.play();
-
-playBtn.innerHTML='❚❚';
-
-}
-else{
-
-video.pause();
-
-playBtn.innerHTML='▶';
-
-}
-
-
-};
-
-
-
-volume.oninput=()=>{
-
-video.volume=volume.value;
-
-};
-
-
-
-fullscreen.onclick=()=>{
-
-
-if(video.requestFullscreen){
-
-video.requestFullscreen();
-
-}
-
-
-};
-
-
-video.addEventListener('waiting',()=>{
-
-loader.style.display='block';
-
-});
-
-
-video.addEventListener('playing',()=>{
-
-loader.style.display='none';
-
-});
-
-
-</script>
-
+    <div class="player-container" id="playerContainer">
+        <div class="title">MEGA SPORT LIVE</div>
+        
+        <select class="quality-selector" id="qualitySelector">
+            <option value="auto">AUTO</option>
+        </select>
+        
+        <video id="video" playsinline preload="metadata"></video>
+        
+        <div class="overlay" id="overlay">
+            <div class="loader" id="loader"></div>
+            <div class="big-play" id="bigPlay"></div>
+            <div class="error-msg" id="errorMsg">Error al cargar el stream</div>
+        </div>
+        
+        <div class="controls">
+            <button id="playBtn">▶</button>
+            <span class="time" id="timeDisplay">0:00 / 0:00</span>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <button id="muteBtn">🔊</button>
+            <input type="range" id="volume" min="0" max="1" step="0.1" value="1" style="width: 80px;">
+            <button id="fullscreen">⛶</button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const overlay = document.getElementById('overlay');
+        const loader = document.getElementById('loader');
+        const bigPlay = document.getElementById('bigPlay');
+        const errorMsg = document.getElementById('errorMsg');
+        const playBtn = document.getElementById('playBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const volume = document.getElementById('volume');
+        const fullscreen = document.getElementById('fullscreen');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const qualitySelector = document.getElementById('qualitySelector');
+        
+        const WORKER_URL = 'https://megasport-worker.juniscottmatagalpa.workers.dev';
+        let hls = null;
+        let currentUrl = '';
+        
+        function showLoader() {
+            loader.style.display = 'block';
+            bigPlay.classList.add('hidden');
+            errorMsg.style.display = 'none';
+            overlay.classList.add('active');
+        }
+        
+        function hideLoader() {
+            loader.style.display = 'none';
+            overlay.classList.remove('active');
+        }
+        
+        function showError(msg) {
+            loader.style.display = 'none';
+            bigPlay.classList.add('hidden');
+            errorMsg.textContent = msg;
+            errorMsg.style.display = 'block';
+            overlay.classList.add('active');
+        }
+        
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        async function cargarStream() {
+            showLoader();
+            
+            try {
+                const response = await fetch(`${WORKER_URL}/api/stream`);
+                if (!response.ok) throw new Error('Error en el worker');
+                
+                const data = await response.json();
+                currentUrl = data.url;
+                
+                if (Hls.isSupported()) {
+                    if (hls) {
+                        hls.destroy();
+                    }
+                    
+                    hls = new Hls({
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                        backBufferLength: 90,
+                        maxBufferLength: 30,
+                        maxMaxBufferLength: 600,
+                        liveSyncDurationCount: 3,
+                        liveMaxLatencyDurationCount: 10,
+                        debug: false,
+                        xhrSetup: function(xhr, url) {
+                            // Forzar que los segmentos pasen por el worker
+                            if (url.includes('.ts')) {
+                                const proxyUrl = `${WORKER_URL}/proxy?url=${encodeURIComponent(url)}`;
+                                xhr.open('GET', proxyUrl, true);
+                            }
+                        }
+                    });
+                    
+                    hls.loadSource(currentUrl);
+                    hls.attachMedia(video);
+                    
+                    hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+                        hideLoader();
+                        bigPlay.classList.remove('hidden');
+                        
+                        // Poblar selector de calidad
+                        qualitySelector.innerHTML = '<option value="auto">AUTO</option>';
+                        data.levels.forEach((level, index) => {
+                            const height = level.height || level.name;
+                            qualitySelector.innerHTML += `<option value="${index}">${height}p</option>`;
+                        });
+                        
+                        video.play().catch(() => {
+                            // Autoplay bloqueado, mostrar botón grande
+                        });
+                    });
+                    
+                    hls.on(Hls.Events.ERROR, (event, data) => {
+                        if (data.fatal) {
+                            switch(data.type) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    console.log('Error de red, intentando recuperar...');
+                                    hls.startLoad();
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    console.log('Error de media, intentando recuperar...');
+                                    hls.recoverMediaError();
+                                    break;
+                                default:
+                                    showError('Error al cargar el stream. Recargando...');
+                                    setTimeout(cargarStream, 3000);
+                                    break;
+                            }
+                        }
+                    });
+                    
+                    hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
+                        const level = hls.levels[data.level];
+                        if (level) {
+                            console.log('Calidad cambiada a:', level.height + 'p');
+                        }
+                    });
+                    
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Safari nativo
+                    video.src = currentUrl;
+                    video.addEventListener('loadedmetadata', () => {
+                        hideLoader();
+                        video.play();
+                    });
+                } else {
+                    showError('Tu navegador no soporta HLS');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('No se pudo cargar el stream. Intenta de nuevo.');
+            }
+        }
+        
+        // Controles
+        playBtn.onclick = () => {
+            if (video.paused) {
+                video.play();
+                playBtn.innerHTML = '❚❚';
+                bigPlay.classList.add('hidden');
+            } else {
+                video.pause();
+                playBtn.innerHTML = '▶';
+                bigPlay.classList.remove('hidden');
+            }
+        };
+        
+        bigPlay.onclick = () => {
+            video.play();
+            playBtn.innerHTML = '❚❚';
+            bigPlay.classList.add('hidden');
+        };
+        
+        muteBtn.onclick = () => {
+            video.muted = !video.muted;
+            muteBtn.innerHTML = video.muted ? '🔇' : '🔊';
+            volume.value = video.muted ? 0 : video.volume;
+        };
+        
+        volume.oninput = () => {
+            video.volume = volume.value;
+            video.muted = volume.value == 0;
+            muteBtn.innerHTML = video.muted ? '🔇' : '🔊';
+        };
+        
+        fullscreen.onclick = () => {
+            const elem = document.getElementById('playerContainer');
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen?.() || elem.webkitRequestFullscreen?.() || elem.msRequestFullscreen?.();
+            } else {
+                document.exitFullscreen?.() || document.webkitExitFullscreen?.() || document.msExitFullscreen?.();
+            }
+        };
+        
+        // Barra de progreso
+        video.ontimeupdate = () => {
+            if (video.duration) {
+                const percent = (video.currentTime / video.duration) * 100;
+                progressBar.style.width = percent + '%';
+                timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+            } else if (video.currentTime) {
+                // Stream en vivo
+                timeDisplay.textContent = `LIVE • ${formatTime(video.currentTime)}`;
+                progressBar.style.width = '100%';
+            }
+        };
+        
+        progressContainer.onclick = (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            if (video.duration) {
+                video.currentTime = pos * video.duration;
+            }
+        };
+        
+        // Cambio de calidad
+        qualitySelector.onchange = () => {
+            if (!hls) return;
+            const quality = qualitySelector.value;
+            hls.currentLevel = quality === 'auto' ? -1 : parseInt(quality);
+        };
+        
+        // Eventos del video
+        video.addEventListener('waiting', () => {
+            loader.style.display = 'block';
+            overlay.classList.add('active');
+        });
+        
+        video.addEventListener('playing', () => {
+            hideLoader();
+            playBtn.innerHTML = '❚❚';
+        });
+        
+        video.addEventListener('pause', () => {
+            playBtn.innerHTML = '▶';
+            bigPlay.classList.remove('hidden');
+        });
+        
+        video.addEventListener('ended', () => {
+            playBtn.innerHTML = '▶';
+            bigPlay.classList.remove('hidden');
+            // Reconectar si es stream en vivo
+            setTimeout(cargarStream, 2000);
+        });
+        
+        // Iniciar
+        cargarStream();
+        
+        // Recargar cada 4 horas para renovar token
+        setInterval(cargarStream, 14400000);
+    </script>
 </body>
 </html>
