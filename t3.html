@@ -1,25 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor DASH</title>
+    
+    <!-- Shaka Player -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
+    
     <style>
-        body { margin: 0; background: #000; }
-        video { width: 100%; height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #000; 
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 1280px;
+        }
+        video { 
+            width: 100%; 
+            height: auto;
+            max-height: 100vh;
+            background: #000;
+        }
+        .error {
+            color: #ff4444;
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        .loading {
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body>
-    <video id="video" controls autoplay></video>
-    
+    <div class="container">
+        <div id="loading" class="loading">Cargando stream...</div>
+        <video id="video" controls autoplay playsinline></video>
+        <div id="error" class="error"></div>
+    </div>
+
     <script>
-        var url = "https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/qubxnja5rl/out/v1/4ef0db80aa3341e2babb58314541f1e0/cenc.mpd?m=1745870435";
+        async function initPlayer() {
+            const video = document.getElementById('video');
+            const errorDiv = document.getElementById('error');
+            const loadingDiv = document.getElementById('loading');
+            
+            // Verificar soporte de DRM
+            if (!shaka.Player.isBrowserSupported()) {
+                showError('Tu navegador no soporta la reproducción de este contenido.');
+                return;
+            }
+
+            // Crear instancia del player
+            const player = new shaka.Player(video);
+            
+            // Configuración del player
+            player.configure({
+                drm: {
+                    servers: {
+                        'com.widevine.alpha': 'https://prls.atv-ps.amazon.com/cdp',
+                        'com.microsoft.playready': 'https://prls.atv-ps.amazon.com/cdp'
+                    },
+                    // Configurar headers si son necesarios para la autenticación
+                    advanced: {
+                        'com.widevine.alpha': {
+                            'persistentStateRequired': false,
+                            'distinctiveIdentifierRequired': false
+                        }
+                    }
+                },
+                streaming: {
+                    bufferingGoal: 30,
+                    rebufferingGoal: 15,
+                    bufferBehind: 30,
+                    lowLatencyMode: false,
+                    jumpLargeGaps: true,
+                    smallGapLimit: 0.5
+                },
+                manifest: {
+                    dash: {
+                        ignoreMinBufferTime: false,
+                        autoCorrectDrift: true
+                    }
+                }
+            });
+
+            // Manejar errores
+            player.addEventListener('error', (event) => {
+                const error = event.detail;
+                console.error('Error code', error.code, 'object', error);
+                showError(`Error: ${error.message} (Code: ${error.code})`);
+            });
+
+            // URL del MPD - REEMPLAZA CON TU URL COMPLETA
+            // Ejemplo basado en tu captura: https://otte.live.fly.ww.aiv-cdn.net/...
+            const mpdUrl = 'https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/cenc.mpd';
+            
+            // Si necesitas pasar headers específicos (token, referer, etc.)
+            // Descomenta y configura esto:
+            /*
+            player.getNetworkingEngine().registerRequestFilter((type, request) => {
+                // Añadir headers personalizados si son necesarios
+                if (type === shaka.net.NetworkingEngine.RequestType.LICENSE) {
+                    request.headers['Authorization'] = 'Bearer TU_TOKEN_AQUI';
+                    request.headers['Origin'] = 'https://latamvidzfy.org';
+                    request.headers['Referer'] = 'https://latamvidzfy.org/';
+                }
+            });
+            */
+
+            try {
+                await player.load(mpdUrl);
+                console.log('Stream cargado correctamente');
+                loadingDiv.style.display = 'none';
+                
+                // Intentar reproducir
+                try {
+                    await video.play();
+                } catch (e) {
+                    console.log('Autoplay bloqueado, esperando interacción del usuario');
+                }
+                
+            } catch (error) {
+                console.error('Error cargando el stream:', error);
+                showError(`Error al cargar: ${error.message}`);
+                loadingDiv.style.display = 'none';
+            }
+            
+            // Guardar referencia global para debug
+            window.player = player;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            console.error(message);
+        }
+
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', initPlayer);
         
-        var player = dashjs.MediaPlayer().create();
-        
-        // Configurar para enviar el referer correcto
-        player.setXHRWithCredentialsForType('GET', true);
-        
-        player.initialize(document.querySelector("#video"), url, true);
+        // Limpiar al cerrar
+        window.addEventListener('beforeunload', () => {
+            if (window.player) {
+                window.player.destroy();
+            }
+        });
     </script>
 </body>
 </html>
