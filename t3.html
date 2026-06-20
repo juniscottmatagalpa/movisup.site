@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
     <style>
         body { margin: 0; background: #000; }
         video { width: 100%; height: 100vh; }
@@ -12,32 +12,14 @@
     <video id="video" controls autoplay></video>
     
     <script>
-        async function initPlayer() {
-            const video = document.getElementById('video');
-            const player = new shaka.Player(video);
-            
-            // Configurar DRM - Servidor de licencias extraído del PSSH
-            player.configure({
-                drm: {
-                    servers: {
-                        'com.widevine.alpha': 'https://prls.atv-ps.amazon.com/cdp',
-                        'com.microsoft.playready': 'https://prls.atv-ps.amazon.com/cdp'
-                    }
-                }
-            });
-            
-            // URL del MPD (ajústala a la tuya completa)
-            const mpdUrl = 'https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/.../cenc.mpd';
-            
-            try {
-                await player.load(mpdUrl);
-                console.log('Stream cargado');
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
+        var url = "https://otte.live.fly.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/qubxnja5rl/out/v1/4ef0db80aa3341e2babb58314541f1e0/cenc.mpd?m=1745870435";
         
-        document.addEventListener('DOMContentLoaded', initPlayer);
+        var player = dashjs.MediaPlayer().create();
+        
+        // Configurar para enviar el referer correcto
+        player.setXHRWithCredentialsForType('GET', true);
+        
+        player.initialize(document.querySelector("#video"), url, true);
     </script>
 </body>
 </html>
