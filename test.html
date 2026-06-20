@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor DSports</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@8.5.2/dist/video-js.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .player-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* Aspect ratio 16:9 */
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .video-js {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        input, button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        
+        button {
+            background-color: #e50914;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #c40812;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #2a2a2a;
+            text-align: center;
+        }
+        
+        .error {
+            background-color: rgba(229, 9, 20, 0.2);
+            border: 1px solid #e50914;
+        }
+        
+        .success {
+            background-color: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+        }
+        
+        .info-box {
+            margin-top: 20px;
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #e50914;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reproductor DSports</h1>
+        
+        <div class="player-container">
+            <video
+                id="player"
+                class="video-js vjs-default-skin"
+                controls
+                preload="auto"
+                data-setup='{"fluid": true}'>
+                <p class="vjs-no-js">
+                    Para ver este video, por favor habilita JavaScript y considera actualizar tu navegador a una versión que soporte HTML5 video.
+                </p>
+            </video>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="ip-input">Dirección IP:</label>
+                <input type="text" id="ip-input" value="186.1.63.67" placeholder="Introduce la IP">
+            </div>
+            
+            <div class="control-group">
+                <label for="token-input">Token:</label>
+                <input type="text" id="token-input" value="97647686af80dfa6a76e8cc8c030e2326ebfc5e6-46-1782019284-1781965284" placeholder="Introduce el token">
+            </div>
+            
+            <button id="load-stream">Cargar Stream</button>
+            
+            <div id="status" class="status">Listo para cargar el stream</div>
+        </div>
+        
+        <div class="info-box">
+            <h3>Información:</h3>
+            <p>Este reproductor está diseñado para funcionar con streams protegidos que requieren parámetros específicos como IP y token.</p>
+            <p>Si el stream no carga, es posible que necesites actualizar el token o la IP desde la fuente original.</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/video.js@8.5.2/dist/video.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const player = videojs('player');
+            const loadButton = document.getElementById('load-stream');
+            const ipInput = document.getElementById('ip-input');
+            const tokenInput = document.getElementById('token-input');
+            const statusDiv = document.getElementById('status');
+            
+            loadButton.addEventListener('click', function() {
+                const ip = ipInput.value.trim();
+                const token = tokenInput.value.trim();
+                
+                if (!ip || !token) {
+                    updateStatus('Por favor introduce tanto la IP como el token', 'error');
+                    return;
+                }
+                
+                const baseUrl = 'https://xrpma.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8';
+                const streamUrl = `${baseUrl}?ip=${ip}&token=${token}`;
+                
+                updateStatus('Cargando stream...', 'success');
+                
+                player.src({
+                    src: streamUrl,
+                    type: 'application/x-mpegURL'
+                });
+                
+                player.ready(function() {
+                    player.play().catch(e => {
+                        updateStatus('Error al reproducir: ' + e.message, 'error');
+                    });
+                });
+                
+                player.on('error', function() {
+                    const error = player.error();
+                    updateStatus('Error del reproductor: ' + (error ? error.message : 'Desconocido'), 'error');
+                });
+                
+                player.on('loadedmetadata', function() {
+                    updateStatus('Stream cargado correctamente', 'success');
+                });
+            });
+            
+            function updateStatus(message, type) {
+                statusDiv.textContent = message;
+                statusDiv.className = 'status ' + type;
+            }
+            
+            // Intentar cargar automáticamente con los valores por defecto
+            setTimeout(() => {
+                loadButton.click();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
