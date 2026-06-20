@@ -1,218 +1,325 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reproductor Universal DSports</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@8.5.2/dist/video-js.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        .player-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            background-color: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-        }
-        
-        .video-js {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .controls {
-            margin-top: 20px;
-            background-color: #1e1e1e;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        
-        .control-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-        
-        input, button {
-            width: 100%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #333;
-            background-color: #2a2a2a;
-            color: #fff;
-        }
-        
-        button {
-            background-color: #e50914;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-        
-        button:hover {
-            background-color: #c40812;
-        }
-        
-        .status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
-            background-color: #2a2a2a;
-            text-align: center;
-        }
-        
-        .error {
-            background-color: rgba(229, 9, 20, 0.2);
-            border: 1px solid #e50914;
-        }
-        
-        .success {
-            background-color: rgba(76, 175, 80, 0.2);
-            border: 1px solid #4caf50;
-        }
-        
-        .info-box {
-            margin-top: 20px;
-            background-color: #1e1e1e;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #e50914;
-        }
-        
-        h1 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .alternative-methods {
-            margin-top: 20px;
-            background-color: #1e1e1e;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        
-        .alternative-methods h3 {
-            margin-bottom: 15px;
-            color: #e50914;
-        }
-        
-        .method {
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #2a2a2a;
-            border-radius: 4px;
-        }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Reproductor Universal DSports</h1>
-        
-        <div class="player-container">
-            <video
-                id="player"
-                class="video-js vjs-default-skin"
-                controls
-                preload="auto"
-                data-setup='{"fluid": true}'>
-                <p class="vjs-no-js">
-                    Para ver este video, por favor habilita JavaScript y considera actualizar tu navegador a una versión que soporte HTML5 video.
-                </p>
-            </video>
-        </div>
-        
-        <div class="controls">
-            <div class="control-group">
-                <label for="stream-url">URL del Stream:</label>
-                <input type="text" id="stream-url" value="https://xrpma.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8" placeholder="URL del stream">
-            </div>
-            
-            <div class="control-group">
-                <label for="ip-input">Dirección IP:</label>
-                <input type="text" id="ip-input" value="186.1.63.67" placeholder="Introduce la IP">
-            </div>
-            
-            <div class="control-group">
-                <label for="token-input">Token:</label>
-                <input type="text" id="token-input" value="97647686af80dfa6a76e8cc8c030e2326ebfc5e6-46-1782019284-1781965284" placeholder="Introduce el token">
-            </div>
-            
-            <button id="load-stream">Cargar Stream</button>
-            
-            <div id="status" class="status">Listo para cargar el stream</div>
-        </div>
-        
-        <div class="alternative-methods">
-            <h3>Métodos Alternativos:</h3>
-            
-            <div class="method">
-                <h4>Método 1: Usar un Proxy CORS</h4>
-                <p>Algunos proxies pueden ayudarte a eludir restricciones de origen.</p>
-                <button onclick="tryCorsProxy()">Intentar con Proxy CORS</button>
-            </div>
-            
-            <div class="method">
-                <h4>Método 2: Obtener nuevos parámetros</h4>
-                <p>Necesitas obtener nuevos valores de token e IP desde la fuente original (Futbol Libre).</p>
-                <p>Ve a la página que te dio el stream y genera uno nuevo.</p>
-            </div>
-            
-            <div class="method">
-                <h4>Método 3: Usar IFrame con CORS Proxy</h4>
-                <p>Para embeds, usa servicios como:</p>
-                <code style="display:block; background:#333; padding:10px; margin-top:10px;">
-                https://corsproxy.io/?https://xrpma.vivolatamz.org/dsports/tracks-v1a1/mono.m3u8?ip=TU_IP&token=TU_TOKEN
-                </code>
-            </div>
-        </div>
-        
-        <div class="info-box">
-            <h3>Información importante:</h3>
-            <p>El token que tienes probablemente está vinculado al dispositivo específico donde fue generado. Esto es una medida de seguridad del servidor.</p>
-            <p>Para que funcione en otros dispositivos, necesitas:</p>
-            <ul style="margin-left:20px; margin-top:10px;">
-                <li>Obtener un nuevo token desde la fuente original (Futbol Libre)</li>
-                <li>Usar un servicio que pueda generar tokens dinámicos</li>
-                <li>Implementar un backend que obtenga los tokens automáticamente</li>
-            </ul>
-        </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/video.js@8.5
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Mega Sport Player</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:#000;
+height:100vh;
+overflow:hidden;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.player{
+
+position:relative;
+width:100%;
+max-width:1400px;
+background:black;
+overflow:hidden;
+
+}
+
+video{
+
+width:100%;
+height:auto;
+display:block;
+background:black;
+
+}
+
+.overlay{
+
+position:absolute;
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+pointer-events:none;
+
+}
+
+.loader{
+
+width:60px;
+height:60px;
+
+border:5px solid rgba(255,255,255,.2);
+
+border-top:5px solid white;
+
+border-radius:50%;
+
+animation:spin 1s linear infinite;
+
+display:none;
+
+}
+
+@keyframes spin{
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+.controls{
+
+position:absolute;
+
+bottom:0;
+
+width:100%;
+
+padding:12px;
+
+background:linear-gradient(transparent,rgba(0,0,0,.9));
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+}
+
+button{
+
+background:none;
+
+border:none;
+
+color:white;
+
+font-size:22px;
+
+cursor:pointer;
+
+}
+
+input[type=range]{
+
+flex:1;
+
+}
+
+.title{
+
+position:absolute;
+
+top:15px;
+left:15px;
+
+background:rgba(0,0,0,.7);
+
+padding:8px 15px;
+
+border-radius:8px;
+
+color:white;
+
+font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="player">
+
+<div class="title">
+MEGA SPORT
+</div>
+
+<video id="video" playsinline></video>
+
+<div class="overlay">
+<div class="loader" id="loader"></div>
+</div>
+
+<div class="controls">
+
+<button id="playBtn">▶</button>
+
+<input type="range"
+id="volume"
+min="0"
+max="1"
+step="0.1"
+value="1">
+
+<button id="fullscreen">
+⛶
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+const video=document.getElementById("video");
+
+const loader=document.getElementById("loader");
+
+const playBtn=document.getElementById("playBtn");
+
+const volume=document.getElementById("volume");
+
+const fullscreen=document.getElementById("fullscreen");
+
+
+// Worker que devuelve JSON
+const API="https://TUWORKER.workers.dev";
+
+
+async function cargar(){
+
+
+loader.style.display="block";
+
+
+const r=await fetch(API);
+
+const data=await r.json();
+
+
+const url=data.url;
+
+
+if(Hls.isSupported()){
+
+
+const hls=new Hls({
+
+enableWorker:true,
+
+lowLatencyMode:true
+
+});
+
+
+hls.loadSource(url);
+
+hls.attachMedia(video);
+
+
+hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+
+loader.style.display="none";
+
+video.play();
+
+});
+
+
+}else{
+
+
+video.src=url;
+
+loader.style.display="none";
+
+video.play();
+
+}
+
+
+}
+
+
+cargar();
+
+
+
+playBtn.onclick=()=>{
+
+
+if(video.paused){
+
+video.play();
+
+playBtn.innerHTML='❚❚';
+
+}
+else{
+
+video.pause();
+
+playBtn.innerHTML='▶';
+
+}
+
+
+};
+
+
+
+volume.oninput=()=>{
+
+video.volume=volume.value;
+
+};
+
+
+
+fullscreen.onclick=()=>{
+
+
+if(video.requestFullscreen){
+
+video.requestFullscreen();
+
+}
+
+
+};
+
+
+video.addEventListener('waiting',()=>{
+
+loader.style.display='block';
+
+});
+
+
+video.addEventListener('playing',()=>{
+
+loader.style.display='none';
+
+});
+
+
+</script>
+
+</body>
+</html>
