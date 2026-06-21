@@ -1,405 +1,259 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mega Sport Player</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .player-container {
-            position: relative;
-            width: 100%;
-            max-width: 1400px;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-        }
-        
-        video {
-            width: 100%;
-            height: auto;
-            display: block;
-            background: #000;
-        }
-        
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-            background: rgba(0,0,0,0.5);
-            z-index: 10;
-        }
-        
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255,255,255,0.2);
-            border-top: 4px solid #00d4ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        .error-msg {
-            color: #ff4444;
-            font-size: 16px;
-            margin-top: 20px;
-            text-align: center;
-            padding: 0 20px;
-            display: none;
-        }
-        
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
-        }
-        
-        .controls {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 20;
-        }
-        
-        .player-container:hover .controls {
-            opacity: 1;
-        }
-        
-        button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        button:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .progress-container {
-            flex: 1;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: #00d4ff;
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.1s;
-        }
-        
-        .time {
-            color: white;
-            font-size: 12px;
-            min-width: 100px;
-            text-align: center;
-        }
-        
-        .title {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-            z-index: 20;
-        }
-        
-        .big-play {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: rgba(0,212,255,0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            pointer-events: auto;
-            transition: transform 0.2s;
-            z-index: 15;
-        }
-        
-        .big-play:hover {
-            transform: scale(1.1);
-        }
-        
-        .big-play::after {
-            content: '▶';
-            color: white;
-            font-size: 30px;
-            margin-left: 5px;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        @media (max-width: 768px) {
-            .controls {
-                opacity: 1;
-                padding: 10px;
-            }
-            .time {
-                min-width: 80px;
-                font-size: 11px;
-            }
-        }
-    </style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ver Mundial 2026 En Vivo</title>
+
+<link rel="icon" href="img/icon.png">
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-    <div class="player-container" id="playerContainer">
-        <div class="title">MEGA SPORT LIVE</div>
-        
-        <video id="video" playsinline preload="auto"></video>
-        
-        <div class="overlay" id="overlay">
-            <div class="loader" id="loader"></div>
-            <div class="big-play hidden" id="bigPlay"></div>
-            <div class="error-msg" id="errorMsg">Error al cargar el stream</div>
-        </div>
-        
-        <div class="controls">
-            <button id="playBtn">▶</button>
-            <span class="time" id="timeDisplay">LIVE</span>
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <button id="muteBtn">🔊</button>
-            <input type="range" id="volume" min="0" max="1" step="0.1" value="1" style="width: 80px;">
-            <button id="fullscreen">⛶</button>
-        </div>
+
+<!-- ========================= -->
+<!-- BANNER SUPERIOR -->
+<!-- PEGAR ANUNCIO AQUÍ -->
+<!-- ========================= -->
+
+<div class="banner-superior">
+
+    <!-- ANUNCIO SUPERIOR -->
+
+</div>
+
+
+<div class="container">
+
+    <h1 id="partidoActual">
+        Cargando partido...
+    </h1>
+
+    <p id="descripcionPartido" class="descripcion">
+        Cargando información...
+    </p>
+
+
+    <!-- BOTONES -->
+
+    <div class="botones">
+
+        <button onclick="cargar(0)">
+            📺 Canal 1
+        </button>
+
+        <button onclick="cargar(1)">
+            ⚽ Canal 2
+        </button>
+
+        <button onclick="cargar(2)">
+            🏆 Canal 3
+        </button>
+
+        <button onclick="cargar(3)">
+            🎥 Canal 4
+        </button>
+
+        <button onclick="cargar(4)">
+            🔥 Canal 5
+        </button>
+
+        <button onclick="cargar(5)">
+            🌎 Canal 6
+        </button>
+
+        <button onclick="cargar(6)">
+            ⭐ Canal 7
+        </button>
+
+        <button onclick="cargar(7)">
+            🎯 Canal 8
+        </button>
+
+        <button onclick="cargar(8)">
+            🚀 Canal 9
+        </button>
+
+        <button onclick="cargar(9)">
+            💎 Canal 10
+        </button>
+
     </div>
 
-    <script>
-        const video = document.getElementById('video');
-        const overlay = document.getElementById('overlay');
-        const loader = document.getElementById('loader');
-        const bigPlay = document.getElementById('bigPlay');
-        const errorMsg = document.getElementById('errorMsg');
-        const playBtn = document.getElementById('playBtn');
-        const muteBtn = document.getElementById('muteBtn');
-        const volume = document.getElementById('volume');
-        const fullscreen = document.getElementById('fullscreen');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const timeDisplay = document.getElementById('timeDisplay');
-        
-        const WORKER_URL = 'https://megasport-worker.juniscottmatagalpa.workers.dev';
-        const PROXY_PLAYLIST = `${WORKER_URL}/hls/dsports`;
-        
-        let hls = null;
-        
-        function showLoader() {
-            loader.style.display = 'block';
-            bigPlay.classList.add('hidden');
-            errorMsg.style.display = 'none';
-        }
-        
-        function hideLoader() {
-            loader.style.display = 'none';
-        }
-        
-        function showError(msg) {
-            loader.style.display = 'none';
-            bigPlay.classList.add('hidden');
-            errorMsg.textContent = msg;
-            errorMsg.style.display = 'block';
-            console.error(msg);
-        }
-        
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-        
-        async function cargarStream() {
-            showLoader();
-            
-            try {
-                if (Hls.isSupported()) {
-                    if (hls) {
-                        hls.destroy();
-                    }
-                    
-                    hls = new Hls({
-                        enableWorker: true,
-                        lowLatencyMode: true,
-                        backBufferLength: 90,
-                        maxBufferLength: 30,
-                        maxMaxBufferLength: 600,
-                        liveSyncDurationCount: 3,
-                        debug: false,
-                        xhrSetup: function(xhr, url) {
-                            if (url.includes('vivolatamz.org') && !url.includes('workers.dev')) {
-                                const workerUrl = `${WORKER_URL}/proxy?url=${encodeURIComponent(url)}`;
-                                xhr.open('GET', workerUrl, true);
-                            }
-                        }
-                    });
-                    
-                    hls.loadSource(PROXY_PLAYLIST);
-                    hls.attachMedia(video);
-                    
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        hideLoader();
-                        bigPlay.classList.remove('hidden');
-                        video.play().catch(e => {
-                            console.log('Autoplay bloqueado:', e);
-                        });
-                    });
-                    
-                    hls.on(Hls.Events.ERROR, (event, data) => {
-                        console.error('HLS Error:', data);
-                        if (data.fatal) {
-                            switch(data.type) {
-                                case Hls.ErrorTypes.NETWORK_ERROR:
-                                    console.log('Error de red, reintentando...');
-                                    hls.startLoad();
-                                    break;
-                                case Hls.ErrorTypes.MEDIA_ERROR:
-                                    console.log('Error de media, recuperando...');
-                                    hls.recoverMediaError();
-                                    break;
-                                default:
-                                    showError('Error en el stream. Recargando...');
-                                    setTimeout(cargarStream, 3000);
-                                    break;
-                            }
-                        }
-                    });
-                    
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = PROXY_PLAYLIST;
-                    video.addEventListener('loadedmetadata', () => {
-                        hideLoader();
-                        video.play();
-                    });
-                } else {
-                    showError('Tu navegador no soporta HLS');
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                showError('Error al iniciar: ' + error.message);
-            }
-        }
-        
-        playBtn.onclick = () => {
-            if (video.paused) {
-                video.play();
-                playBtn.innerHTML = '❚❚';
-                bigPlay.classList.add('hidden');
-            } else {
-                video.pause();
-                playBtn.innerHTML = '▶';
-                bigPlay.classList.remove('hidden');
-            }
-        };
-        
-        bigPlay.onclick = () => {
-            video.play();
-            playBtn.innerHTML = '❚❚';
-            bigPlay.classList.add('hidden');
-        };
-        
-        muteBtn.onclick = () => {
-            video.muted = !video.muted;
-            muteBtn.innerHTML = video.muted ? '🔇' : '🔊';
-            volume.value = video.muted ? 0 : video.volume;
-        };
-        
-        volume.oninput = () => {
-            video.volume = volume.value;
-            video.muted = volume.value == 0;
-            muteBtn.innerHTML = video.muted ? '🔇' : '🔊';
-        };
-        
-        fullscreen.onclick = () => {
-            const elem = document.getElementById('playerContainer');
-            if (!document.fullscreenElement) {
-                elem.requestFullscreen?.() || elem.webkitRequestFullscreen?.();
-            } else {
-                document.exitFullscreen?.();
-            }
-        };
-        
-        video.ontimeupdate = () => {
-            if (video.duration && !isNaN(video.duration)) {
-                const percent = (video.currentTime / video.duration) * 100;
-                progressBar.style.width = percent + '%';
-                timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
-            } else {
-                progressBar.style.width = '100%';
-                timeDisplay.textContent = `LIVE • ${formatTime(video.currentTime || 0)}`;
-            }
-        };
-        
-        video.addEventListener('waiting', () => {
-            loader.style.display = 'block';
-        });
-        
-        video.addEventListener('playing', () => {
-            hideLoader();
-            playBtn.innerHTML = '❚❚';
-            bigPlay.classList.add('hidden');
-        });
-        
-        video.addEventListener('pause', () => {
-            playBtn.innerHTML = '▶';
-            bigPlay.classList.remove('hidden');
-        });
-        
-        cargarStream();
-        
-        setInterval(cargarStream, 14400000);
-    </script>
+
+    <!-- VIDEO -->
+
+    <div class="video-wrapper">
+
+        <div class="video-box">
+
+            <iframe
+                id="player"
+                src="https://example.com"
+                allowfullscreen
+                allow="autoplay; encrypted-media">
+            </iframe>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ANUNCIO FLOTANTE -->
+        <!-- ========================= -->
+
+        <div id="popupAd" class="popup-ad">
+
+            <button class="cerrar-ad" onclick="cerrarAnuncio()">
+                ✕
+            </button>
+
+            <!-- PEGAR ANUNCIO AQUÍ -->
+
+            <div class="contenido-anuncio">
+
+                ESPACIO PARA ANUNCIO 300x250
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BANNER DEBAJO DEL VIDEO -->
+
+    <div class="banner-horizontal">
+
+        <!-- PEGAR ANUNCIO HORIZONTAL AQUÍ -->
+
+    </div>
+
+
+    <!-- DESCRIPCION -->
+
+    <div class="descripcion-box">
+
+        <p id="descripcionPartido2">
+
+            Cargando información del partido...
+
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<footer>
+
+    © 2026 Mi Sitio Web
+
+</footer>
+
+
+
+<!-- ===================== -->
+<!-- JS -->
+<!-- ===================== -->
+
+<script src="canales.js"></script>
+
+<script>
+
+function cargar(numero){
+
+    document.getElementById("player").src =
+    canales[numero];
+
+}
+
+</script>
+
+
+
+<!-- ===================== -->
+<!-- OBTENER PARTIDOS -->
+<!-- ===================== -->
+
+<script>
+
+async function partido(){
+
+    try{
+
+        let r = await fetch('partido.php');
+
+        let d = await r.json();
+
+        document.getElementById(
+        "partidoActual"
+        ).innerHTML = d.partido;
+
+        document.getElementById(
+        "descripcionPartido"
+        ).innerHTML = d.descripcion;
+
+        document.getElementById(
+        "descripcionPartido2"
+        ).innerHTML = d.descripcion;
+
+    }catch(e){
+
+        console.log(e);
+
+    }
+
+}
+
+partido();
+
+setInterval(partido,300000);
+
+</script>
+
+<script src="partido.js"></script>
+
+
+
+<!-- ===================== -->
+<!-- ANUNCIO TEMPORIZADO -->
+<!-- ===================== -->
+
+<script>
+
+const popup =
+document.getElementById('popupAd');
+
+
+setTimeout(()=>{
+
+    popup.style.display='block';
+
+},60000);
+
+
+
+setTimeout(()=>{
+
+    popup.style.display='none';
+
+},240000);
+
+
+
+function cerrarAnuncio(){
+
+    popup.style.display='none';
+
+}
+
+</script>
+
 </body>
 </html>
