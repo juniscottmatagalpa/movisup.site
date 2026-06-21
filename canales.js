@@ -12,6 +12,7 @@ const canales = [
 'https://latamvidzfy.org/m6.php',
 'https://latamvidzfy.org/daserstepr.php',
 'https://latamvidzfye.org/zdfpr.php',
-'https://latamvidzfye.org/tvela1.php'
+'https://latamvidzfye.org/tvela1.php',
+'https://latamvidzfy.org/trece.php'
 
 ];
