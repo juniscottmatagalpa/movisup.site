@@ -25,54 +25,30 @@
 <!-- ========================= -->
 
  <div id="contenedor-anuncio"></div>
+<div class="anuncio-pc">
 
 <script>
-function cargarAnuncio() {
-    const contenedor = document.getElementById("contenedor-anuncio");
+  atOptions = {
+    'key' : '5ffe627a307553559ec9272a792467ff',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+</script>
+<script src="//www.highperformanceformat.com/5ffe627a307553559ec9272a792467ff/invoke.js"></script>
 
-    // Limpiar contenido anterior
-    contenedor.innerHTML = "";
+</div>
 
-    const opciones = document.createElement("script");
-
-    if (window.innerWidth <= 768) {
-        opciones.text = `
-            atOptions = {
-                'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
-                'format' : 'iframe',
-                'height' : 60,
-                'width' : 468,
-                'params' : {}
-            };
-        `;
-
-        const invoke = document.createElement("script");
-        invoke.src = "https://www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js";
-
-        contenedor.appendChild(opciones);
-        contenedor.appendChild(invoke);
-
-    } else {
-        opciones.text = `
-            atOptions = {
-                'key' : '5ffe627a307553559ec9272a792467ff',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-            };
-        `;
-
-        const invoke = document.createElement("script");
-        invoke.src = "https://www.highperformanceformat.com/5ffe627a307553559ec9272a792467ff/invoke.js";
-
-        contenedor.appendChild(opciones);
-        contenedor.appendChild(invoke);
+<style>
+/* Ocultar en móviles */
+@media (max-width: 768px) {
+    .anuncio-pc {
+        display: none;
     }
 }
+</style>
 
-cargarAnuncio();
-</script>
 
 <div class="banner-superior">
 
