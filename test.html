@@ -24,6 +24,52 @@
 <!-- PEGAR ANUNCIO AQUÍ -->
 <!-- ========================= -->
 
+    <div id="contenedor-anuncio"></div>
+
+<script>
+const anuncioPC = `
+<!-- Código de anuncio para PC -->
+<script>
+  atOptions = {
+    'key' : '5ffe627a307553559ec9272a792467ff',
+    'format' : 'iframe',
+    'height' : 90,
+    'width' : 728,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/5ffe627a307553559ec9272a792467ff/invoke.js"></script>
+
+`;
+
+const anuncioMovil = `
+<!-- Código de anuncio para móvil -->
+ <script>
+  atOptions = {
+    'key' : '1b6a4d98e265a62e6233303b3d4dbca3',
+    'format' : 'iframe',
+    'height' : 60,
+    'width' : 468,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/1b6a4d98e265a62e6233303b3d4dbca3/invoke.js"></script>
+`;
+
+function cargarAnuncio() {
+    const contenedor = document.getElementById("contenedor-anuncio");
+
+    if (window.innerWidth <= 768) {
+        contenedor.innerHTML = anuncioMovil;
+    } else {
+        contenedor.innerHTML = anuncioPC;
+    }
+}
+
+cargarAnuncio();
+window.addEventListener("resize", cargarAnuncio);
+</script>
+
 <div class="banner-superior">
 
     <!-- ANUNCIO SUPERIOR -->
@@ -40,7 +86,7 @@
 
 
 </div>
-
+<!-- fin anuncios========================= -->
 
 <div class="container">
 
