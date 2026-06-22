@@ -266,112 +266,110 @@ function cargar(numero){
 
 <script>
 async function partido() {
-  try {
-    // Fuente pública de partidos
-    const url = 'https://raw.githubusercontent.com/openfootball/world-cup.json/master/2026--world-cup/matches.json';
+  const titulo = document.getElementById("partidoActual");
+  const desc1 = document.getElementById("descripcionPartido");
+  const desc2 = document.getElementById("descripcionPartido2");
 
-    const r = await fetch(url, { cache: 'no-store' });
-    if (!r.ok) throw new Error('No se pudo cargar el JSON');
+  function ponerDescripcion(texto) {
+    if (desc1) desc1.innerHTML = texto;
+    if (desc2) desc2.innerHTML = texto;
+  }
+
+  function formatearFecha(fecha) {
+    return fecha.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  }
+
+  try {
+    // Cargamos el JSON del mundial usando un proxy CORS
+    const api = "https://api.allorigins.win/raw?url=" +
+      encodeURIComponent("https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json");
+
+    const r = await fetch(api, { cache: "no-store" });
+    if (!r.ok) throw new Error("No se pudo descargar el JSON");
 
     const json = await r.json();
     if (!json.matches || !Array.isArray(json.matches)) {
-      throw new Error('Formato de partidos inválido');
+      throw new Error("El JSON no trae matches");
     }
 
     const ahora = new Date();
-
     let partidoEnVivo = null;
     let proximoPartido = null;
 
     for (const p of json.matches) {
       if (!p.date) continue;
 
-      // fecha base
       let fechaTexto = p.date;
 
-      // si el JSON trae hora, la unimos
+      // ejemplo: "13:00 UTC-6"
       if (p.time) {
-        fechaTexto += ' ' + p.time;
+        fechaTexto += " " + p.time;
       }
 
       const inicio = new Date(fechaTexto);
       if (isNaN(inicio.getTime())) continue;
 
-      // duración estimada 2 horas
       const fin = new Date(inicio.getTime() + 2 * 60 * 60 * 1000);
 
-      const equipo1 = p.team1?.name || 'Equipo 1';
-      const equipo2 = p.team2?.name || 'Equipo 2';
+      let equipo1 = "Equipo 1";
+      let equipo2 = "Equipo 2";
+
+      if (typeof p.team1 === "string") {
+        equipo1 = p.team1;
+      } else if (p.team1 && p.team1.name) {
+        equipo1 = p.team1.name;
+      }
+
+      if (typeof p.team2 === "string") {
+        equipo2 = p.team2;
+      } else if (p.team2 && p.team2.name) {
+        equipo2 = p.team2.name;
+      }
 
       // partido en vivo
       if (ahora >= inicio && ahora <= fin) {
-        partidoEnVivo = {
-          equipo1,
-          equipo2,
-          inicio
-        };
+        partidoEnVivo = { equipo1, equipo2, inicio };
         break;
       }
 
       // próximo partido
       if (inicio > ahora) {
         if (!proximoPartido || inicio < proximoPartido.inicio) {
-          proximoPartido = {
-            equipo1,
-            equipo2,
-            inicio
-          };
+          proximoPartido = { equipo1, equipo2, inicio };
         }
       }
     }
 
-    const titulo = document.getElementById("partidoActual");
-    const desc1 = document.getElementById("descripcionPartido");
-    const desc2 = document.getElementById("descripcionPartido2");
-
-    function ponerDescripcion(texto) {
-      if (desc1) desc1.innerHTML = texto;
-      if (desc2) desc2.innerHTML = texto;
-    }
-
-    function formatearFecha(fecha) {
-      return fecha.toLocaleString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-    }
-
     if (partidoEnVivo) {
-      titulo.innerHTML = `${partidoEnVivo.equipo1} vs ${partidoEnVivo.equipo2} EN VIVO`;
+      titulo.innerHTML = `🔴 ${partidoEnVivo.equipo1} vs ${partidoEnVivo.equipo2} EN VIVO`;
       ponerDescripcion(
-        `Aquí podrás ver el partido de ${partidoEnVivo.equipo1} vs ${partidoEnVivo.equipo2} EN VIVO, completamente gratis.`
+        `Aquí podrás ver el partido de ${partidoEnVivo.equipo1} vs ${partidoEnVivo.equipo2} EN VIVO completamente gratis.`
       );
-    } else if (proximoPartido) {
+      return;
+    }
+
+    if (proximoPartido) {
       titulo.innerHTML = `Próximo partido: ${proximoPartido.equipo1} vs ${proximoPartido.equipo2}`;
       ponerDescripcion(
-        `El próximo partido será ${proximoPartido.equipo1} vs ${proximoPartido.equipo2} el ${formatearFecha(proximoPartido.inicio)}. Aquí podrás verlo en vivo y gratis.`
+        `El próximo partido será ${proximoPartido.equipo1} vs ${proximoPartido.equipo2} el ${formatearFecha(proximoPartido.inicio)}.`
       );
-    } else {
-      titulo.innerHTML = 'Mundial FIFA 2026 EN VIVO';
-      ponerDescripcion('Aquí podrás ver partidos del Mundial FIFA 2026 en vivo y gratis.');
+      return;
     }
 
+    titulo.innerHTML = "Mundial FIFA 2026 EN VIVO";
+    ponerDescripcion("Aquí podrás ver partidos del Mundial FIFA 2026 en vivo y gratis.");
+
   } catch (e) {
-    console.error('Error cargando partido:', e);
-
-    const titulo = document.getElementById("partidoActual");
-    const desc1 = document.getElementById("descripcionPartido");
-    const desc2 = document.getElementById("descripcionPartido2");
-
-    if (titulo) titulo.innerHTML = 'Mundial FIFA 2026 EN VIVO';
-
-    const msg = 'No se pudo cargar la información del partido en este momento.';
-    if (desc1) desc1.innerHTML = msg;
-    if (desc2) desc2.innerHTML = msg;
+    console.error("Error cargando partido:", e);
+    titulo.innerHTML = "Mundial FIFA 2026 EN VIVO";
+    ponerDescripcion("No se pudo cargar la información del partido en este momento.");
   }
 }
 
