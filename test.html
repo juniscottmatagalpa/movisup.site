@@ -439,5 +439,106 @@ document.addEventListener("click", function(e){
 });
 </script>
 
+
+
+
+
+
+
+
+
+     <!-- estadistiscas de pagina-->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  update,
+  onDisconnect
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBZi2SC14v0Nu5mN4c-1KAUoZ0296Y2bf8",
+  authDomain: "movisupjs.firebaseapp.com",
+  databaseURL: "https://movisupjs-default-rtdb.firebaseio.com",
+  projectId: "movisupjs",
+  storageBucket: "movisupjs.firebasestorage.app",
+  messagingSenderId: "299820640341",
+  appId: "1:299820640341:web:1aa2172ea96ff9fc384cdc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* ID único por dispositivo */
+let visitorId = localStorage.getItem("movisup_visitor");
+
+if (!visitorId) {
+  visitorId = crypto.randomUUID();
+  localStorage.setItem("movisup_visitor", visitorId);
+}
+
+/* Referencia del usuario */
+const userRef = ref(db, "users/" + visitorId);
+
+/* Comprobar si es nuevo */
+const userSnap = await get(userRef);
+
+if (!userSnap.exists()) {
+
+  const statsRef = ref(db, "stats");
+  const statsSnap = await get(statsRef);
+
+  const uniqueUsers = statsSnap.exists()
+    ? (statsSnap.val().uniqueUsers || 0)
+    : 0;
+
+  await update(statsRef, {
+    uniqueUsers: uniqueUsers + 1
+  });
+
+  await set(userRef, {
+    firstVisit: Date.now(),
+    lastVisit: Date.now()
+  });
+
+} else {
+
+  const oldData = userSnap.val();
+
+  await set(userRef, {
+    firstVisit: oldData.firstVisit,
+    lastVisit: Date.now()
+  });
+
+}
+
+/* Contador de visitas */
+const statsRef = ref(db, "stats");
+const statsSnap = await get(statsRef);
+
+const visits = statsSnap.exists()
+  ? (statsSnap.val().visits || 0)
+  : 0;
+
+await update(statsRef, {
+  visits: visits + 1
+});
+
+/* Usuarios online */
+const onlineRef = ref(db, "online/" + visitorId);
+
+await set(onlineRef, {
+  connected: true,
+  lastSeen: Date.now()
+});
+
+onDisconnect(onlineRef).remove();
+
+</script>
+ <!-- fin estadisticas-->
+
 </body>
 </html>
