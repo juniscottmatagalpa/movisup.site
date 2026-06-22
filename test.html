@@ -198,6 +198,9 @@
 
         <!-- PEGAR ANUNCIO HORIZONTAL AQUÍ -->
 
+
+</div>
+
     </div>
 
 
@@ -320,6 +323,33 @@ function cerrarAnuncio(){
 
 }
 
+</script>
+
+
+
+
+<!-- Smartlink -->
+    <script>
+let ultimoSmartlink = 0;
+const cooldown = 3 * 60 * 1000; // 3 minutos
+
+const urlSmartlink =
+"https://www.effectivecpmnetwork.com/zx5ayvtg?key=c06a15805c85a193bd2e71b582b1db66";
+
+function abrirSmartlink(){
+    const ahora = Date.now();
+
+    if (ahora - ultimoSmartlink > cooldown) {
+        ultimoSmartlink = ahora;
+
+        window.open(urlSmartlink, "_blank");
+    }
+}
+
+// Detecta clic en toda la página
+document.addEventListener("click", function(e){
+    abrirSmartlink();
+});
 </script>
 
 </body>
