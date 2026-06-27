@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>MoviSup Analytics</title>
 
 <style>
+
 body{
     background:#0f172a;
     color:white;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     margin:0;
     padding:20px;
 }
@@ -54,8 +57,11 @@ th,td{
 th{
     background:#0f172a;
 }
+
 </style>
+
 </head>
+
 <body>
 
 <h1>📊 MoviSup Analytics</h1>
@@ -82,12 +88,15 @@ th{
 <h2>Visitantes Registrados</h2>
 
 <table>
+
 <thead>
+
 <tr>
 <th>ID</th>
 <th>Primera Visita</th>
 <th>Última Visita</th>
 </tr>
+
 </thead>
 
 <tbody id="usersTable"></tbody>
@@ -99,70 +108,101 @@ th{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
- getDatabase,
- ref,
- onValue
+
+getDatabase,
+ref,
+onValue
+
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBZi2SC14v0Nu5mN4c-1KAUoZ0296Y2bf8",
-  authDomain: "movisupjs.firebaseapp.com",
-  databaseURL: "https://movisupjs-default-rtdb.firebaseio.com",
-  projectId: "movisupjs",
-  storageBucket: "movisupjs.firebasestorage.app",
-  messagingSenderId: "299820640341",
-  appId: "1:299820640341:web:1aa2172ea96ff9fc384cdc"
+const firebaseConfig={
+
+apiKey:"AIzaSyBZi2SC14v0Nu5mN4c-1KAUoZ0296Y2bf8",
+authDomain:"movisupjs.firebaseapp.com",
+databaseURL:"https://movisupjs-default-rtdb.firebaseio.com",
+projectId:"movisupjs",
+storageBucket:"movisupjs.firebasestorage.app",
+messagingSenderId:"299820640341",
+appId:"1:299820640341:web:1aa2172ea96ff9fc384cdc"
+
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+
+/* ======================
+   Usuarios Online
+====================== */
 
 onValue(ref(db,"online"),(snap)=>{
 
-   const data = snap.val() || {};
+    const data=snap.val()||{};
 
-   document.getElementById("online").innerText =
-   Object.keys(data).length;
+    const ahora=Date.now();
+
+    let online=0;
+
+    Object.values(data).forEach(user=>{
+
+        if(!user.lastSeen) return;
+
+        const tiempo=user.lastSeen;
+
+        if(ahora-tiempo<60000){
+            online++;
+        }
+
+    });
+
+    document.getElementById("online").innerText=online;
 
 });
+
+/* ======================
+   Estadísticas
+====================== */
 
 onValue(ref(db,"stats"),(snap)=>{
 
-   const data = snap.val() || {};
+    const data=snap.val()||{};
 
-   document.getElementById("unique").innerText =
-   data.uniqueUsers || 0;
+    document.getElementById("unique").innerText=data.uniqueUsers||0;
 
-   document.getElementById("visits").innerText =
-   data.visits || 0;
+    document.getElementById("visits").innerText=data.visits||0;
 
 });
 
+/* ======================
+   Usuarios
+====================== */
+
 onValue(ref(db,"users"),(snap)=>{
 
-   const data = snap.val() || {};
+    const data=snap.val()||{};
 
-   let html="";
+    let html="";
 
-   Object.entries(data).forEach(([id,user])=>{
+    Object.entries(data).forEach(([id,user])=>{
 
-      const first =
-      new Date(user.firstVisit).toLocaleString();
+        const first=user.firstVisit
+            ? new Date(user.firstVisit).toLocaleString()
+            : "-";
 
-      const last =
-      new Date(user.lastVisit).toLocaleString();
+        const last=user.lastVisit
+            ? new Date(user.lastVisit).toLocaleString()
+            : "-";
 
-      html += `
-      <tr>
-        <td>${id.substring(0,8)}...</td>
-        <td>${first}</td>
-        <td>${last}</td>
-      </tr>
-      `;
+        html+=`
+        <tr>
+            <td>${id.substring(0,8)}...</td>
+            <td>${first}</td>
+            <td>${last}</td>
+        </tr>
+        `;
 
-   });
+    });
 
-   document.getElementById("usersTable").innerHTML = html;
+    document.getElementById("usersTable").innerHTML=html;
 
 });
 
