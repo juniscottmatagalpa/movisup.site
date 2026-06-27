@@ -455,15 +455,20 @@ document.addEventListener("click", function(e){
 
 
      <!-- estadistiscas de pagina-->
+<!-- estadisticas de pagina-->
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
 import {
   getDatabase,
   ref,
   set,
   get,
   update,
-  onDisconnect
+  onDisconnect,
+  runTransaction,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -479,72 +484,82 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ID único por dispositivo */
+/* ===========================
+   ID único por dispositivo
+=========================== */
+
 let visitorId = localStorage.getItem("movisup_visitor");
 
 if (!visitorId) {
-  visitorId = crypto.randomUUID();
-  localStorage.setItem("movisup_visitor", visitorId);
+    visitorId = crypto.randomUUID();
+    localStorage.setItem("movisup_visitor", visitorId);
 }
 
-/* Referencia del usuario */
+/* ===========================
+   Usuario
+=========================== */
+
 const userRef = ref(db, "users/" + visitorId);
 
-/* Comprobar si es nuevo */
 const userSnap = await get(userRef);
 
 if (!userSnap.exists()) {
 
-  const statsRef = ref(db, "stats");
-  const statsSnap = await get(statsRef);
+    await runTransaction(ref(db, "stats/uniqueUsers"), current => {
+        return (current || 0) + 1;
+    });
 
-  const uniqueUsers = statsSnap.exists()
-    ? (statsSnap.val().uniqueUsers || 0)
-    : 0;
-
-  await update(statsRef, {
-    uniqueUsers: uniqueUsers + 1
-  });
-
-  await set(userRef, {
-    firstVisit: Date.now(),
-    lastVisit: Date.now()
-  });
+    await set(userRef, {
+        firstVisit: serverTimestamp(),
+        lastVisit: serverTimestamp()
+    });
 
 } else {
 
-  const oldData = userSnap.val();
+    const old = userSnap.val();
 
-  await set(userRef, {
-    firstVisit: oldData.firstVisit,
-    lastVisit: Date.now()
-  });
+    await update(userRef, {
+        firstVisit: old.firstVisit,
+        lastVisit: serverTimestamp()
+    });
 
 }
 
-/* Contador de visitas */
-const statsRef = ref(db, "stats");
-const statsSnap = await get(statsRef);
+/* ===========================
+   Visitas
+=========================== */
 
-const visits = statsSnap.exists()
-  ? (statsSnap.val().visits || 0)
-  : 0;
-
-await update(statsRef, {
-  visits: visits + 1
+await runTransaction(ref(db, "stats/visits"), current => {
+    return (current || 0) + 1;
 });
 
-/* Usuarios online */
+/* ===========================
+   Usuarios Online
+=========================== */
+
 const onlineRef = ref(db, "online/" + visitorId);
 
 await set(onlineRef, {
-  connected: true,
-  lastSeen: Date.now()
+    connected: true,
+    lastSeen: serverTimestamp()
 });
+
+/* eliminar al desconectarse */
 
 onDisconnect(onlineRef).remove();
 
+/* heartbeat cada 30 segundos */
+
+setInterval(() => {
+
+    update(onlineRef, {
+        lastSeen: serverTimestamp()
+    });
+
+}, 30000);
+
 </script>
+<!-- fin estadisticas-->
  <!-- fin estadisticas-->
 
 </body>
