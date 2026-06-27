@@ -1,12 +1,12 @@
 const canales = [
-
-'https://latamvidzfy.org/dsportsar.php',
+'https://latamvidzfy.org/trece.php',
+'https://latamvidzfy.org/rpc.php',
+  'https://latamvidzfy.org/dsportsar.php',
 'https://latamvidzfy.org/caze2.php',
 'https://latamvidzfy.org/m6.php',
 'https://latamvidzfy.org/daserstepr.php',
 'https://latamvidzfye.org/zdfpr.php',
 'https://latamvidzfye.org/tvela1.php',
-'https://latamvidzfy.org/trece.php',
 'https://latamvidzfy.org/unicanal.php',
 'https://latamvidzfy.org/sportvbr.php',
 'https://latamvidzfy.org/dsportsplus.php',
