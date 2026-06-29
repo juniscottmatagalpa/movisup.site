@@ -1,4 +1,5 @@
 const canales = [
+'https://latamvidzfy.org/caze1.php',
 'https://latamvidzfy.org/trece.php',
 'https://latamvidzfy.org/rpc.php',
   'https://latamvidzfy.org/dsportsar.php',
