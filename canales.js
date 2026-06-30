@@ -1,6 +1,6 @@
 const canales = [
+  'https://latamvidzfy.org/caze1.php',
   'https://sudamericaplay.sbs/canal_41/trecepy.php',
-'https://latamvidzfy.org/caze1.php',
 'https://latamvidzfy.org/trece.php',
 'https://latamvidzfy.org/rpc.php',
 'https://latamvidzfy.org/tvela1.php',
