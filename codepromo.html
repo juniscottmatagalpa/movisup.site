@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cargando...</title>
+    <title></title>
     <style>
         * {
             margin: 0;
@@ -15,83 +15,40 @@
             width: 100vw;
             height: 100vh;
             background: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, sans-serif;
-        }
-        
-        .loader {
-            text-align: center;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .message {
-            color: #333;
-            font-size: 16px;
-        }
-        
-        .countdown {
-            color: #666;
-            font-size: 14px;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="loader">
-        <div class="spinner"></div>
-        <div class="message">Cargando contenido...</div>
-        <div class="countdown" id="countdown">Iniciando en 10 segundos...</div>
-    </div>
-
     <script>
-        // URL del smartlink
-        const smartlink = "https://www.effectivecpmnetwork.com/zx5ayvtg?key=c06a15805c85a193bd2e71b582b1db66";
+        // Array con todos los smartlinks
+        const smartlinks = [
+            "https://www.effectivecpmnetwork.com/zx5ayvtg?key=c06a15805c85a193bd2e71b582b1db66",
+            "https://www.effectivecpmnetwork.com/hbz84qteb5?key=c278c9111da2781e8553f8f5fc671b1a",
+            "https://www.effectivecpmnetwork.com/jdv45n3g?key=058f6616a7d835252588ac843e67d8b4",
+            "https://www.effectivecpmnetwork.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a",
+            "https://www.effectivecpmnetwork.com/nix3ry11zs?key=5d8813a81158a32dae418bac759314de",
+            "https://www.effectivecpmnetwork.com/ft8adzvc?key=93f1fe9c2927225593625c5f4e03ab5f",
+            "https://www.effectivecpmnetwork.com/xb6bwwsp?key=d92237971cb08aa20322cf0e80832bee",
+            "https://www.effectivecpmnetwork.com/v612a8sie?key=34069832488e73cf23a5ac6f3caffa00"
+        ];
         
-        // Contador visual
-        let timeLeft = 10;
-        const countdownEl = document.getElementById('countdown');
-        
-        const countdownInterval = setInterval(() => {
-            timeLeft--;
-            if (timeLeft > 0) {
-                countdownEl.textContent = `Iniciando en ${timeLeft} segundos...`;
-            } else {
-                clearInterval(countdownInterval);
-                countdownEl.textContent = "Abriendo anuncios...";
-            }
-        }, 1000);
-        
-        // Función para abrir el smartlink
-        function openSmartlink() {
-            window.open(smartlink, '_blank');
+        // Función para seleccionar un smartlink aleatorio
+        function getRandomSmartlink() {
+            const randomIndex = Math.floor(Math.random() * smartlinks.length);
+            return smartlinks[randomIndex];
         }
         
-        // Primera apertura después de 10 segundos
-        setTimeout(() => {
-            openSmartlink();
-            
-            // Luego abrir cada 5 segundos
-            setInterval(() => {
-                openSmartlink();
-            }, 5000);
-            
-        }, 10000);
+        // Función para abrir el smartlink
+        function openRandomSmartlink() {
+            const url = getRandomSmartlink();
+            window.open(url, '_blank');
+        }
+        
+        // Abrir el primero inmediatamente al cargar
+        openRandomSmartlink();
+        
+        // Luego abrir uno aleatorio cada 10 segundos
+        setInterval(openRandomSmartlink, 10000);
     </script>
 </body>
 </html>
