@@ -31,7 +31,10 @@
     <div id="loading">Obteniendo stream...</div>
     
     <!-- Iframe invisible que carga el proxy -->
-    <iframe id="capturador" src="https://stream-api-flax-seven.vercel.app/api/proxy"></iframe>
+    <iframe id="capturador" 
+        src="https://stream-api-flax-seven.vercel.app/api/proxy"
+        style="width:1px;height:1px;opacity:0;position:absolute;">
+</iframe>
     
     <!-- Tu reproductor -->
     <div id="video-container" style="display:none;">
