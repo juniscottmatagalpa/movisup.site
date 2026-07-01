@@ -1,47 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Stream Player</title>
+    <title>Mi Stream</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        #capturador {
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        #video-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+        #loading {
+            text-align: center;
+            padding: 20px;
+            font-family: Arial;
+        }
+    </style>
 </head>
 <body>
-    <video id="video" controls width="100%" height="500px"></video>
+    <div id="loading">Obteniendo stream...</div>
     
+    <!-- Iframe invisible que carga el proxy -->
+    <iframe id="capturador" src="https://stream-api-flax-seven.vercel.app/api/proxy"></iframe>
+    
+    <!-- Tu reproductor -->
+    <div id="video-container" style="display:none;">
+        <video id="video" controls width="100%"></video>
+    </div>
+
     <script>
-        // Función para obtener el stream desde tu API
-        async function cargarStream() {
-            try {
-                // Tu API de Vercel
-                const apiUrl = 'https://stream-api-flax-seven.vercel.app/api/get-stream?url=https://vidzenvivo.cc/canal.php?stream=dsports';
+        // Escuchar mensajes del iframe (el espía)
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'STREAM_URL') {
+                const m3u8Url = event.data.url;
+                console.log('URL capturada:', m3u8Url);
                 
-                const response = await fetch(apiUrl);
-                const data = await response.json();
+                // Ocultar loading, mostrar video
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('video-container').style.display = 'block';
                 
-                if (data.success) {
-                    const video = document.getElementById('video');
-                    
-                    // Si el navegador soporta HLS nativamente (Safari)
-                    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                        video.src = data.url;
-                    } 
-                    // Para otros navegadores usar hls.js
-                    else if (Hls.isSupported()) {
-                        const hls = new Hls();
-                        hls.loadSource(data.url);
-                        hls.attachMedia(video);
-                        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                            video.play();
-                        });
-                    }
-                } else {
-                    console.error('Error:', data.error);
+                // Cargar en el reproductor
+                const video = document.getElementById('video');
+                
+                if (Hls.isSupported()) {
+                    const hls = new Hls();
+                    hls.loadSource(m3u8Url);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        video.play();
+                    });
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        console.error('Error HLS:', data);
+                    });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = m3u8Url;
+                    video.addEventListener('loadedmetadata', function() {
+                        video.play();
+                    });
                 }
-            } catch (e) {
-                console.error('Error cargando stream:', e);
             }
-        }
+        });
         
-        cargarStream();
+        // Timeout por si falla
+        setTimeout(() => {
+            if (document.getElementById('video-container').style.display === 'none') {
+                document.getElementById('loading').innerHTML = 
+                    'Error al obtener el stream. <a href="https://vidzenvivo.cc/canal.php?stream=dsports" target="_blank">Ver directo</a>';
+            }
+        }, 15000); // 15 segundos
     </script>
 </body>
 </html>
