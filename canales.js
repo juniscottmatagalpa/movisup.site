@@ -1,4 +1,5 @@
 const canales = [
+  'https://latamvidzfy.org/dsportsplus.php',
   'https://latamvidzfy.org/caze1.php',
   'https://latamvidzfy.org/tudnmx.php',
   'https://sudamericaplay.sbs/canal_41/trecepy.php',
@@ -12,7 +13,6 @@ const canales = [
 'https://latamvidzfye.org/zdfpr.php',
 'https://latamvidzfy.org/unicanal.php',
 'https://latamvidzfy.org/sportvbr.php',
-'https://latamvidzfy.org/dsportsplus.php',
 'https://esvidzy99.co/caracoltv.php',
 'https://latamvidzs.org/canal.php?stream=tycsports',
 'https://latamvidzfy.org/fox1us.php',
