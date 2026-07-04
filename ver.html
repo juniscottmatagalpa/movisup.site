@@ -1,175 +1,384 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stream Player</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background: #0f0f0f;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1000px;
-        }
-        
-        .video-wrapper {
-            position: relative;
-            width: 100%;
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        
-        video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 18px;
-            display: none;
-        }
-        
-        .error {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ff4444;
-            text-align: center;
-            padding: 20px;
-            display: none;
-        }
-        
-        h1 {
-            color: white;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        
-        .status {
-            color: #888;
-            text-align: center;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stream de Fútbol</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      text-align: center;
+      color: white;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+    
+    .loading {
+      text-align: center;
+      color: white;
+      font-size: 1.2em;
+      padding: 40px;
+    }
+    
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .match-info {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      color: white;
+      text-align: center;
+    }
+    
+    .match-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .channel-btn {
+      background: linear-gradient(145deg, #28a745, #20c997);
+      border: none;
+      border-radius: 12px;
+      padding: 20px;
+      color: white;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .channel-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    
+    .channel-btn:active {
+      transform: translateY(0);
+    }
+    
+    .channel-btn::before {
+      content: '▶';
+      font-size: 1.5em;
+      margin-right: 10px;
+    }
+    
+    .channel-btn .quality {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 0.7em;
+      background: rgba(255,255,255,0.3);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    
+    .channel-btn .source {
+      display: block;
+      font-size: 0.75em;
+      margin-top: 8px;
+      opacity: 0.8;
+      font-weight: normal;
+    }
+    
+    .error-message {
+      background: rgba(255,0,0,0.2);
+      color: #ffcccc;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .no-streams {
+      text-align: center;
+      color: white;
+      padding: 40px;
+      font-size: 1.2em;
+    }
+    
+    .refresh-btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1em;
+      margin-top: 20px;
+      transition: all 0.3s;
+    }
+    
+    .refresh-btn:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+    
+    /* Modal para el reproductor */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+    }
+    
+    .modal-content {
+      position: relative;
+      margin: 5% auto;
+      width: 90%;
+      max-width: 900px;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .close {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+    
+    .video-container iframe,
+    .video-container video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      margin-top: 10px;
+    }
+    
+    .status-online {
+      background: #28a745;
+    }
+    
+    .status-offline {
+      background: #dc3545;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📺 Stream Player</h1>
-        
-        <div class="video-wrapper">
-            <video id="video" controls autoplay playsinline></video>
-            <div class="loading" id="loading">Cargando...</div>
-            <div class="error" id="error">
-                Error al cargar el stream.<br>
-                Intenta recargar la página.
-            </div>
-        </div>
-        
-        <div class="status" id="status">Conectando...</div>
+  <div class="container">
+    <h1>⚽ Stream de Fútbol</h1>
+    <p class="subtitle">Canales disponibles en vivo</p>
+    
+    <div id="content">
+      <div class="loading">Buscando transmisiones disponibles</div>
     </div>
+  </div>
 
-    <script>
-        const video = document.getElementById('video');
-        const loading = document.getElementById('loading');
-        const error = document.getElementById('error');
-        const status = document.getElementById('status');
+  <!-- Modal para reproducir streams -->
+  <div id="playerModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <div class="video-container" id="videoContainer">
+        <!-- El reproductor se inserta aquí -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // URL de tu API en Vercel
+    const API_URL = 'https://stream-nc1v4fbqd-jsinfos-projects.vercel.app/api/scrape';
+    
+    let currentStreams = [];
+    
+    // Cargar streams al iniciar
+    async function loadStreams() {
+      const contentDiv = document.getElementById('content');
+      contentDiv.innerHTML = '<div class="loading">Buscando transmisiones disponibles</div>';
+      
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
         
-        // URL de tu API en Vercel
-        const STREAM_URL = 'https://stream-kaceurp5n-jsinfos-projects.vercel.app/api/playlist';
-        
-        function loadStream() {
-            loading.style.display = 'block';
-            status.textContent = 'Conectando al stream...';
-            
-            if (Hls.isSupported()) {
-                const hls = new Hls({
-                    debug: false,
-                    enableWorker: true,
-                    lowLatencyMode: true,
-                    backBufferLength: 90
-                });
-                
-                hls.loadSource(STREAM_URL);
-                hls.attachMedia(video);
-                
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    loading.style.display = 'none';
-                    status.textContent = 'Reproduciendo';
-                    video.play().catch(e => {
-                        console.log('Autoplay bloqueado:', e);
-                    });
-                });
-                
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    if (data.fatal) {
-                        loading.style.display = 'none';
-                        error.style.display = 'block';
-                        status.textContent = 'Error de conexión';
-                        
-                        switch(data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                console.error('Error de red:', data);
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                console.error('Error de media:', data);
-                                break;
-                            default:
-                                console.error('Error:', data);
-                        }
-                    }
-                });
-                
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Safari nativo
-                video.src = STREAM_URL;
-                video.addEventListener('loadedmetadata', function() {
-                    loading.style.display = 'none';
-                    video.play();
-                });
-            } else {
-                error.style.display = 'block';
-                error.innerHTML = 'Tu navegador no soporta HLS.<br>Usa Chrome, Firefox o Safari.';
-            }
+        if (!data.success || data.streams.length === 0) {
+          contentDiv.innerHTML = `
+            <div class="no-streams">
+              <p>No se encontraron transmisiones activas en este momento.</p>
+              <button class="refresh-btn" onclick="loadStreams()">🔄 Intentar de nuevo</button>
+            </div>
+          `;
+          return;
         }
         
-        // Cargar al iniciar
-        loadStream();
+        currentStreams = data.streams;
+        displayStreams(data.streams);
         
-        // Recargar si hay error de red cada 5 segundos
-        let retryCount = 0;
-        video.addEventListener('error', function() {
-            if (retryCount < 3) {
-                retryCount++;
-                status.textContent = `Reintentando (${retryCount}/3)...`;
-                setTimeout(loadStream, 5000);
-            }
-        });
-    </script>
+      } catch (error) {
+        console.error('Error:', error);
+        contentDiv.innerHTML = `
+          <div class="error-message">
+            <p>Error al cargar los streams. Intenta de nuevo.</p>
+            <button class="refresh-btn" onclick="loadStreams()">🔄 Reintentar</button>
+          </div>
+        `;
+      }
+    }
+    
+    // Mostrar los streams como botones
+    function displayStreams(streams) {
+      const contentDiv = document.getElementById('content');
+      
+      // Obtener título del primer stream (asumiendo que todos son del mismo partido)
+      const matchTitle = streams[0]?.matchTitle || 'Partido en vivo';
+      
+      let html = `
+        <div class="match-info">
+          <div class="match-title">${matchTitle}</div>
+          <span class="status-badge status-online">● EN VIVO</span>
+          <p style="margin-top: 10px;">${streams.length} canal${streams.length > 1 ? 'es' : ''} disponible${streams.length > 1 ? 's' : ''}</p>
+        </div>
+        <div class="channels-grid">
+      `;
+      
+      // Crear un botón por cada stream
+      streams.forEach((stream, index) => {
+        html += `
+          <button class="channel-btn" onclick="playStream(${index})">
+            <span class="quality">${stream.quality}</span>
+            📺 Canal ${index + 1}
+            <span class="source">Fuente: ${new URL(stream.source).hostname}</span>
+          </button>
+        `;
+      });
+      
+      html += `
+        </div>
+        <div style="text-align: center; margin-top: 30px;">
+          <button class="refresh-btn" onclick="loadStreams()">🔄 Actualizar canales</button>
+        </div>
+      `;
+      
+      contentDiv.innerHTML = html;
+    }
+    
+    // Reproducir un stream
+    function playStream(index) {
+      const stream = currentStreams[index];
+      if (!stream) return;
+      
+      const modal = document.getElementById('playerModal');
+      const container = document.getElementById('videoContainer');
+      
+      let playerHtml = '';
+      
+      if (stream.type === 'iframe') {
+        playerHtml = `<iframe src="${stream.url}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+      } else if (stream.type === 'm3u8') {
+        // Para m3u8 necesitarías un reproductor como Video.js o hls.js
+        playerHtml = `
+          <video id="videoPlayer" controls autoplay style="width:100%; height:100%;">
+            <source src="${stream.url}" type="application/x-mpegURL">
+            Tu navegador no soporta este formato.
+          </video>
+        `;
+      } else {
+        playerHtml = `
+          <video controls autoplay style="width:100%; height:100%;">
+            <source src="${stream.url}" type="video/mp4">
+            Tu navegador no soporta este formato.
+          </video>
+        `;
+      }
+      
+      container.innerHTML = playerHtml;
+      modal.style.display = 'block';
+    }
+    
+    // Cerrar modal
+    function closeModal() {
+      const modal = document.getElementById('playerModal');
+      const container = document.getElementById('videoContainer');
+      modal.style.display = 'none';
+      container.innerHTML = ''; // Detener reproducción
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    window.onclick = function(event) {
+      const modal = document.getElementById('playerModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+    
+    // Cargar al iniciar
+    loadStreams();
+    
+    // Actualizar cada 5 minutos
+    setInterval(loadStreams, 300000);
+  </script>
 </body>
 </html>
