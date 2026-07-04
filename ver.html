@@ -1,86 +1,175 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Mi Stream</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Player</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        #capturador {
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            position: absolute;
-            pointer-events: none;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        #video-container {
+        
+        body {
+            background: #0f0f0f;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
             width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 1000px;
         }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        
         video {
             width: 100%;
             height: auto;
+            display: block;
         }
-        #loading {
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            display: none;
+        }
+        
+        .error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff4444;
             text-align: center;
             padding: 20px;
-            font-family: Arial;
+            display: none;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .status {
+            color: #888;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <div id="loading">Obteniendo stream...</div>
-    
-    <!-- Iframe invisible que carga el proxy -->
-    <iframe id="capturador" 
-        src="https://stream-api-flax-seven.vercel.app/api/proxy"
-        style="width:1px;height:1px;opacity:0;position:absolute;">
-</iframe>
-    
-    <!-- Tu reproductor -->
-    <div id="video-container" style="display:none;">
-        <video id="video" controls width="100%"></video>
+    <div class="container">
+        <h1>📺 Stream Player</h1>
+        
+        <div class="video-wrapper">
+            <video id="video" controls autoplay playsinline></video>
+            <div class="loading" id="loading">Cargando...</div>
+            <div class="error" id="error">
+                Error al cargar el stream.<br>
+                Intenta recargar la página.
+            </div>
+        </div>
+        
+        <div class="status" id="status">Conectando...</div>
     </div>
 
     <script>
-        // Escuchar mensajes del iframe (el espía)
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'STREAM_URL') {
-                const m3u8Url = event.data.url;
-                console.log('URL capturada:', m3u8Url);
+        const video = document.getElementById('video');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const status = document.getElementById('status');
+        
+        // URL de tu API en Vercel
+        const STREAM_URL = 'https://stream-api-flax-seven.vercel.app/api/playlist';
+        
+        function loadStream() {
+            loading.style.display = 'block';
+            status.textContent = 'Conectando al stream...';
+            
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    debug: false,
+                    enableWorker: true,
+                    lowLatencyMode: true,
+                    backBufferLength: 90
+                });
                 
-                // Ocultar loading, mostrar video
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('video-container').style.display = 'block';
+                hls.loadSource(STREAM_URL);
+                hls.attachMedia(video);
                 
-                // Cargar en el reproductor
-                const video = document.getElementById('video');
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    loading.style.display = 'none';
+                    status.textContent = 'Reproduciendo';
+                    video.play().catch(e => {
+                        console.log('Autoplay bloqueado:', e);
+                    });
+                });
                 
-                if (Hls.isSupported()) {
-                    const hls = new Hls();
-                    hls.loadSource(m3u8Url);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                        video.play();
-                    });
-                    hls.on(Hls.Events.ERROR, function(event, data) {
-                        console.error('Error HLS:', data);
-                    });
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = m3u8Url;
-                    video.addEventListener('loadedmetadata', function() {
-                        video.play();
-                    });
-                }
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    if (data.fatal) {
+                        loading.style.display = 'none';
+                        error.style.display = 'block';
+                        status.textContent = 'Error de conexión';
+                        
+                        switch(data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                console.error('Error de red:', data);
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                console.error('Error de media:', data);
+                                break;
+                            default:
+                                console.error('Error:', data);
+                        }
+                    }
+                });
+                
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Safari nativo
+                video.src = STREAM_URL;
+                video.addEventListener('loadedmetadata', function() {
+                    loading.style.display = 'none';
+                    video.play();
+                });
+            } else {
+                error.style.display = 'block';
+                error.innerHTML = 'Tu navegador no soporta HLS.<br>Usa Chrome, Firefox o Safari.';
+            }
+        }
+        
+        // Cargar al iniciar
+        loadStream();
+        
+        // Recargar si hay error de red cada 5 segundos
+        let retryCount = 0;
+        video.addEventListener('error', function() {
+            if (retryCount < 3) {
+                retryCount++;
+                status.textContent = `Reintentando (${retryCount}/3)...`;
+                setTimeout(loadStream, 5000);
             }
         });
-        
-        // Timeout por si falla
-        setTimeout(() => {
-            if (document.getElementById('video-container').style.display === 'none') {
-                document.getElementById('loading').innerHTML = 
-                    'Error al obtener el stream. <a href="https://vidzenvivo.cc/canal.php?stream=dsports" target="_blank">Ver directo</a>';
-            }
-        }, 15000); // 15 segundos
     </script>
 </body>
 </html>
