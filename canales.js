@@ -1,4 +1,5 @@
 const canales = [
+  'https://esvidzypro.sbs/dsportsar.php',
   'https://latamvidzfy.org/dsportsplus.php',
   'https://latamvidzfy.org/caze1.php',
   'https://latamvidzfy.org/tudnmx.php',
