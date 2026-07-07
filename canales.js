@@ -6,6 +6,7 @@ const canales = [
   'https://esvidzypro.sbs/tvela1.php',
   'https://esvidzy99.co/caracoltv.php',
   'https://latamvidzfy.org/tudnmx.php',
+  'https://esvidzy99.co/caracoltv.php',
   'https://sudamericaplay.sbs/canal_41/trecepy.php',
 'https://latamvidzfy.org/trece.php',
 'https://latamvidzfy.org/rpc.php',
