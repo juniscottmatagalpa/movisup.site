@@ -48,6 +48,15 @@
             border-radius: 8px;
         }
         
+        .hora-badge {
+            background: #e94560;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
         .botones-canales {
             display: flex;
             flex-wrap: wrap;
@@ -60,30 +69,34 @@
             background: #e94560;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-weight: 500;
         }
         
         .btn-canal:hover {
             background: #ff6b6b;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
         }
         
         .btn-canal.activo {
             background: #16c79a;
+            box-shadow: 0 4px 12px rgba(22, 199, 154, 0.4);
         }
         
         .calidad-badge {
             background: rgba(255,255,255,0.2);
-            padding: 2px 8px;
+            padding: 3px 10px;
             border-radius: 12px;
             font-size: 0.75rem;
+            font-weight: bold;
         }
         
         .iframe-container {
@@ -93,6 +106,7 @@
             overflow: hidden;
             background: #000;
             border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
         
         .iframe-container iframe {
@@ -137,6 +151,17 @@
         .evento-titulo {
             font-weight: bold;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .evento-hora {
+            background: #e94560;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: auto;
         }
         
         .evento-canales {
@@ -157,12 +182,47 @@
             color: #16c79a;
         }
         
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+        
         .error {
             background: #e94560;
             color: white;
             padding: 20px;
             border-radius: 8px;
             text-align: center;
+        }
+        
+        .recargar-btn {
+            background: #16c79a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        
+        .recargar-btn:hover {
+            background: #13b386;
+        }
+        
+        .info-canales {
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            padding: 10px;
         }
     </style>
 </head>
@@ -171,7 +231,7 @@
         <h1>⚽ Fútbol Libre - Eventos en Vivo</h1>
         
         <div id="contenido">
-            <div class="loading">Cargando eventos...</div>
+            <div class="loading">Cargando eventos</div>
         </div>
         
         <div class="lista-eventos" id="listaEventos" style="display: none;">
@@ -181,34 +241,42 @@
     </div>
 
     <script>
-        // URL de tu API en Vercel (cambiar después del deploy)
-        const API_URL = window.location.hostname.includes('localhost') 
-            ? 'http://localhost:3000/api/scrape'
-            : 'https://stream-55dpxbb3a-jsinfos-projects.vercel.app/api/scrape';
+        // URL de tu API en Vercel - REEMPLAZAR con tu URL real
+        const API_URL = 'https://TU-PROYECTO.vercel.app/api/scrape';
         
         let eventosData = [];
         let eventoSeleccionado = 0;
         let canalSeleccionado = 0;
         
         async function cargarEventos() {
+            const contenidoDiv = document.getElementById('contenido');
+            contenidoDiv.innerHTML = '<div class="loading">Cargando eventos</div>';
+            
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 
-                if (!data.success || data.eventos.length === 0) {
+                if (!data.success) {
+                    throw new Error(data.error || 'Error en la API');
+                }
+                
+                if (data.eventos.length === 0) {
                     mostrarSinEventos();
                     return;
                 }
                 
                 eventosData = data.eventos;
+                eventoSeleccionado = 0;
+                canalSeleccionado = 0;
                 renderizar();
                 
             } catch (error) {
-                document.getElementById('contenido').innerHTML = `
+                console.error('Error:', error);
+                contenidoDiv.innerHTML = `
                     <div class="error">
-                        Error al cargar eventos: ${error.message}<br>
-                        <button onclick="cargarEventos()" style="margin-top: 10px; padding: 10px 20px;">
-                            Reintentar
+                        ❌ Error al cargar eventos: ${error.message}<br>
+                        <button class="recargar-btn" onclick="cargarEventos()">
+                            🔄 Reintentar
                         </button>
                     </div>
                 `;
@@ -218,19 +286,40 @@
         function mostrarSinEventos() {
             document.getElementById('contenido').innerHTML = `
                 <div class="no-eventos">
-                    📭 No hay eventos en este momento
+                    📭 No hay eventos disponibles en este momento.<br>
+                    <button class="recargar-btn" onclick="cargarEventos()" style="margin-top: 15px;">
+                        🔄 Recargar
+                    </button>
                 </div>
             `;
+            document.getElementById('listaEventos').style.display = 'none';
         }
         
         function renderizar() {
+            if (eventosData.length === 0) {
+                mostrarSinEventos();
+                return;
+            }
+            
             const evento = eventosData[eventoSeleccionado];
+            
+            // Verificar que el evento tenga canales
+            if (!evento.canales || evento.canales.length === 0) {
+                document.getElementById('contenido').innerHTML = `
+                    <div class="error">
+                        ⚠️ El evento no tiene canales disponibles
+                    </div>
+                `;
+                return;
+            }
+            
             const canal = evento.canales[canalSeleccionado];
             
-            // Generar botones de canales
+            // Generar botones de canales dinámicamente según la cantidad de canales
             const botonesHTML = evento.canales.map((c, index) => `
                 <button class="btn-canal ${index === canalSeleccionado ? 'activo' : ''}" 
-                        onclick="cambiarCanal(${index})">
+                        onclick="cambiarCanal(${index})"
+                        title="${c.nombre}">
                     ${c.nombre}
                     <span class="calidad-badge">${c.calidad}</span>
                 </button>
@@ -239,16 +328,25 @@
             // HTML del reproductor
             const contenidoHTML = `
                 <div class="evento-actual">
-                    <div class="titulo-partido">${evento.titulo}</div>
+                    <div class="titulo-partido">
+                        ${evento.titulo}
+                        ${evento.hora ? `<span class="hora-badge">⏰ ${evento.hora}</span>` : ''}
+                    </div>
                     
                     <div class="botones-canales">
                         ${botonesHTML}
                     </div>
                     
+                    <div class="info-canales">
+                        📺 ${evento.canales.length} canal(es) disponible(s) | 
+                        Canal actual: <strong>${canal.nombre}</strong> (${canal.calidad})
+                    </div>
+                    
                     <div class="iframe-container">
                         <iframe src="${canal.url}" 
                                 allowfullscreen 
-                                sandbox="allow-same-origin allow-scripts allow-popups">
+                                allow="autoplay; encrypted-media"
+                                sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
                         </iframe>
                     </div>
                 </div>
@@ -261,13 +359,18 @@
                 const eventosListaHTML = eventosData.map((e, index) => `
                     <div class="evento-item ${index === eventoSeleccionado ? 'activo' : ''}" 
                          onclick="cambiarEvento(${index})">
-                        <div class="evento-titulo">${e.titulo}</div>
+                        <div class="evento-titulo">
+                            ${e.titulo}
+                            ${e.hora ? `<span class="evento-hora">${e.hora}</span>` : ''}
+                        </div>
                         <div class="evento-canales">${e.canales.length} canal(es) disponible(s)</div>
                     </div>
                 `).join('');
                 
                 document.getElementById('eventosContainer').innerHTML = eventosListaHTML;
                 document.getElementById('listaEventos').style.display = 'block';
+            } else {
+                document.getElementById('listaEventos').style.display = 'none';
             }
         }
         
