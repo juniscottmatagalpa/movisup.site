@@ -4,13 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fútbol Libre TV</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -30,10 +25,8 @@
             color: #00d084;
             margin-bottom: 20px;
             font-size: 2rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         
-        /* REPRODUCTOR */
         .player-section {
             background: #161b22;
             border-radius: 12px;
@@ -78,7 +71,6 @@
             color: #8b949e;
             font-size: 0.85rem;
             margin-bottom: 10px;
-            text-transform: uppercase;
         }
         
         .channels-buttons {
@@ -97,9 +89,6 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         
         .btn-channel:hover {
@@ -109,7 +98,6 @@
         
         .btn-channel.active {
             background: #00d084;
-            box-shadow: 0 0 10px rgba(0,208,132,0.4);
         }
         
         .quality-tag {
@@ -117,6 +105,7 @@
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 0.75rem;
+            margin-left: 5px;
         }
         
         .video-wrapper {
@@ -127,8 +116,7 @@
             background: #000;
         }
         
-        .video-wrapper iframe,
-        .video-wrapper video {
+        .video-wrapper iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -142,10 +130,8 @@
             padding: 10px;
             text-align: center;
             color: #8b949e;
-            font-size: 0.9rem;
         }
         
-        /* LISTA DE EVENTOS */
         .events-section {
             margin-top: 30px;
         }
@@ -157,7 +143,6 @@
             border-radius: 8px 8px 0 0;
             font-weight: bold;
             text-align: center;
-            font-size: 1.1rem;
         }
         
         .event-card {
@@ -202,7 +187,6 @@
         .event-title {
             font-size: 1.1rem;
             font-weight: bold;
-            margin-bottom: 5px;
         }
         
         .event-meta {
@@ -210,12 +194,6 @@
             font-size: 0.85rem;
         }
         
-        .event-arrow {
-            color: #00d084;
-            font-size: 1.2rem;
-        }
-        
-        /* ESTADOS */
         .loading {
             text-align: center;
             padding: 50px;
@@ -241,78 +219,54 @@
             margin-top: 15px;
             font-weight: bold;
         }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #8b949e;
-        }
-        
-        .initial-message {
-            text-align: center;
-            padding: 30px;
-            color: #8b949e;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⚽ Fútbol Libre TV</h1>
         
-        <!-- REPRODUCTOR -->
         <div class="player-section" id="playerSection" style="display: none;">
             <div class="match-title-bar">
                 <div class="match-title" id="matchTitle">
-                    <span>Selecciona un partido de la lista</span>
+                    <span>Cargando...</span>
                 </div>
             </div>
             
             <div class="channels-bar">
-                <div class="channels-label">Canales Disponibles</div>
-                <div class="channels-buttons" id="channelsButtons">
-                    <div class="initial-message">Selecciona un partido para ver los canales</div>
-                </div>
+                <div class="channels-label">Selecciona un canal</div>
+                <div class="channels-buttons" id="channelsButtons"></div>
             </div>
             
             <div class="video-wrapper" id="videoWrapper">
-                <!-- El reproductor se carga aquí -->
+                <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
             
-            <div class="channel-info" id="channelInfo">
-                Esperando selección...
-            </div>
+            <div class="channel-info" id="channelInfo">Selecciona un partido</div>
         </div>
         
-        <!-- LOADING -->
         <div id="loadingSection">
             <div class="loading">Cargando agenda...</div>
         </div>
         
-        <!-- ERROR -->
         <div id="errorSection" style="display: none;">
             <div class="error-box">
-                ❌ Error al cargar los eventos<br>
+                ❌ Error al cargar<br>
                 <button class="btn-retry" onclick="loadEvents()">🔄 Reintentar</button>
             </div>
         </div>
         
-        <!-- LISTA DE EVENTOS -->
         <div class="events-section" id="eventsSection" style="display: none;">
-            <div class="section-header">
-                📅 Partidos Disponibles
-            </div>
+            <div class="section-header">📅 Partidos Disponibles</div>
             <div id="eventsList"></div>
         </div>
     </div>
 
     <script>
         const API_URL = 'https://stream-api-flax-seven.vercel.app/api/scrape';
-        const PROXY_URL = 'https://stream-api-flax-seven.vercel.app/api/proxy-page?url=';
         
         let eventsData = [];
         let selectedEvent = null;
         let selectedChannel = 0;
-        let hls = null;
         
         async function loadEvents() {
             document.getElementById('loadingSection').style.display = 'block';
@@ -326,25 +280,14 @@
                 
                 if (!data.success) throw new Error(data.error);
                 
-                if (data.eventos.length === 0) {
-                    document.getElementById('loadingSection').innerHTML = `
-                        <div class="empty-state">
-                            📭 No hay eventos disponibles<br>
-                            <button class="btn-retry" onclick="loadEvents()">🔄 Recargar</button>
-                        </div>
-                    `;
-                    return;
-                }
-                
                 eventsData = data.eventos;
                 
                 document.getElementById('loadingSection').style.display = 'none';
                 document.getElementById('playerSection').style.display = 'block';
                 document.getElementById('eventsSection').style.display = 'block';
                 
-                renderEventsList();
+                renderEvents();
                 
-                // Cargar primer evento automáticamente
                 if (eventsData.length > 0) {
                     selectEvent(0);
                 }
@@ -356,7 +299,7 @@
             }
         }
         
-        function renderEventsList() {
+        function renderEvents() {
             const container = document.getElementById('eventsList');
             
             const html = eventsData.map((event, index) => `
@@ -368,7 +311,6 @@
                             <div class="event-title">${event.titulo}</div>
                             <div class="event-meta">📺 ${event.canales.length} canal(es)</div>
                         </div>
-                        <div class="event-arrow">▶</div>
                     </div>
                 </div>
             `).join('');
@@ -382,13 +324,11 @@
             
             const event = eventsData[index];
             
-            // Actualizar título
             document.getElementById('matchTitle').innerHTML = `
                 <span>${event.titulo}</span>
                 ${event.hora ? `<span class="time-badge">⏰ ${event.hora}</span>` : ''}
             `;
             
-            // Generar botones de canales
             const buttonsHtml = event.canales.map((channel, idx) => `
                 <button class="btn-channel ${idx === selectedChannel ? 'active' : ''}" 
                         onclick="selectChannel(${idx})">
@@ -399,17 +339,13 @@
             
             document.getElementById('channelsButtons').innerHTML = buttonsHtml;
             
-            // Actualizar lista
-            renderEventsList();
-            
-            // Cargar primer canal
+            renderEvents();
             loadChannel(0);
         }
         
         function selectChannel(index) {
             selectedChannel = index;
             
-            // Actualizar botones
             const buttons = document.querySelectorAll('.btn-channel');
             buttons.forEach((btn, idx) => {
                 btn.classList.toggle('active', idx === index);
@@ -425,37 +361,13 @@
             const channel = event.canales[index];
             
             document.getElementById('channelInfo').innerHTML = 
-                `▶️ ${event.titulo} | ${channel.nombre} (${channel.calidad})`;
+                `▶️ ${event.titulo} | ${channel.nombre}`;
             
-            const wrapper = document.getElementById('videoWrapper');
-            
-            // Limpiar reproductor anterior
-            if (hls) {
-                hls.destroy();
-                hls = null;
-            }
-            wrapper.innerHTML = '';
-            
-            // USAR EL PROXY para cargar el canal
-            // Esto pasa el referer correcto
-            const proxyUrl = PROXY_URL + encodeURIComponent(channel.url);
-            
-            // Crear iframe con el proxy
-            const iframe = document.createElement('iframe');
-            iframe.src = proxyUrl;
-            iframe.allowFullscreen = true;
-            iframe.allow = 'autoplay; encrypted-media; fullscreen';
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.border = 'none';
-            
-            wrapper.appendChild(iframe);
+            // USAR EL PROXY - esto evita el bloqueo de referer
+            document.getElementById('videoFrame').src = channel.proxyUrl;
         }
         
-        // Iniciar
         loadEvents();
-        
-        // Recargar cada 5 minutos
         setInterval(loadEvents, 300000);
     </script>
 </body>
