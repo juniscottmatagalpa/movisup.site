@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fútbol Libre TV</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -35,7 +36,7 @@
             border: 1px solid #30363d;
         }
         
-        .match-title-bar {
+        .match-header {
             background: #21262d;
             padding: 15px 20px;
             text-align: center;
@@ -71,6 +72,7 @@
             color: #8b949e;
             font-size: 0.85rem;
             margin-bottom: 10px;
+            text-transform: uppercase;
         }
         
         .channels-buttons {
@@ -89,6 +91,9 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn-channel:hover {
@@ -98,6 +103,7 @@
         
         .btn-channel.active {
             background: #00d084;
+            box-shadow: 0 0 10px rgba(0,208,132,0.4);
         }
         
         .quality-tag {
@@ -105,10 +111,9 @@
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 0.75rem;
-            margin-left: 5px;
         }
         
-        .video-wrapper {
+        .video-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
@@ -116,7 +121,8 @@
             background: #000;
         }
         
-        .video-wrapper iframe {
+        .video-container video,
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -125,11 +131,12 @@
             border: none;
         }
         
-        .channel-info {
+        .status-bar {
             background: #21262d;
             padding: 10px;
             text-align: center;
             color: #8b949e;
+            font-size: 0.9rem;
         }
         
         .events-section {
@@ -143,6 +150,7 @@
             border-radius: 8px 8px 0 0;
             font-weight: bold;
             text-align: center;
+            font-size: 1.1rem;
         }
         
         .event-card {
@@ -178,15 +186,17 @@
             font-weight: bold;
             min-width: 70px;
             text-align: center;
+            font-size: 1rem;
         }
         
-        .event-details {
+        .event-info {
             flex: 1;
         }
         
         .event-title {
             font-size: 1.1rem;
             font-weight: bold;
+            margin-bottom: 4px;
         }
         
         .event-meta {
@@ -226,37 +236,37 @@
         <h1>⚽ Fútbol Libre TV</h1>
         
         <div class="player-section" id="playerSection" style="display: none;">
-            <div class="match-title-bar">
+            <div class="match-header">
                 <div class="match-title" id="matchTitle">
-                    <span>Cargando...</span>
+                    <span>Selecciona un partido</span>
                 </div>
             </div>
             
             <div class="channels-bar">
-                <div class="channels-label">Selecciona un canal</div>
+                <div class="channels-label">Canales Disponibles</div>
                 <div class="channels-buttons" id="channelsButtons"></div>
             </div>
             
-            <div class="video-wrapper" id="videoWrapper">
-                <iframe id="videoFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            <div class="video-container" id="videoContainer">
+                <!-- Video se carga aquí -->
             </div>
             
-            <div class="channel-info" id="channelInfo">Selecciona un partido</div>
+            <div class="status-bar" id="statusBar">Cargando...</div>
         </div>
         
         <div id="loadingSection">
-            <div class="loading">Cargando agenda...</div>
+            <div class="loading">Cargando agenda de partidos...</div>
         </div>
         
         <div id="errorSection" style="display: none;">
             <div class="error-box">
-                ❌ Error al cargar<br>
+                ❌ Error al cargar los eventos<br>
                 <button class="btn-retry" onclick="loadEvents()">🔄 Reintentar</button>
             </div>
         </div>
         
         <div class="events-section" id="eventsSection" style="display: none;">
-            <div class="section-header">📅 Partidos Disponibles</div>
+            <div class="section-header">📅 Agenda de Partidos</div>
             <div id="eventsList"></div>
         </div>
     </div>
@@ -267,6 +277,7 @@
         let eventsData = [];
         let selectedEvent = null;
         let selectedChannel = 0;
+        let hls = null;
         
         async function loadEvents() {
             document.getElementById('loadingSection').style.display = 'block';
@@ -302,14 +313,19 @@
         function renderEvents() {
             const container = document.getElementById('eventsList');
             
+            if (eventsData.length === 0) {
+                container.innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">No hay eventos disponibles</div>';
+                return;
+            }
+            
             const html = eventsData.map((event, index) => `
                 <div class="event-card ${selectedEvent === index ? 'active' : ''}" 
                      onclick="selectEvent(${index})">
                     <div class="event-content">
                         <div class="event-time">${event.hora || '--:--'}</div>
-                        <div class="event-details">
+                        <div class="event-info">
                             <div class="event-title">${event.titulo}</div>
-                            <div class="event-meta">📺 ${event.canales.length} canal(es)</div>
+                            <div class="event-meta">📺 ${event.canales.length} canal(es) disponible(s)</div>
                         </div>
                     </div>
                 </div>
@@ -324,11 +340,13 @@
             
             const event = eventsData[index];
             
+            // Actualizar título con hora
             document.getElementById('matchTitle').innerHTML = `
                 <span>${event.titulo}</span>
                 ${event.hora ? `<span class="time-badge">⏰ ${event.hora}</span>` : ''}
             `;
             
+            // Generar botones de canales
             const buttonsHtml = event.canales.map((channel, idx) => `
                 <button class="btn-channel ${idx === selectedChannel ? 'active' : ''}" 
                         onclick="selectChannel(${idx})">
@@ -339,7 +357,10 @@
             
             document.getElementById('channelsButtons').innerHTML = buttonsHtml;
             
+            // Actualizar lista visual
             renderEvents();
+            
+            // Cargar primer canal
             loadChannel(0);
         }
         
@@ -360,14 +381,74 @@
             const event = eventsData[selectedEvent];
             const channel = event.canales[index];
             
-            document.getElementById('channelInfo').innerHTML = 
-                `▶️ ${event.titulo} | ${channel.nombre}`;
+            document.getElementById('statusBar').innerHTML = 
+                `▶️ ${event.titulo} | ${channel.nombre} (${channel.calidad})`;
             
-            // USAR EL PROXY - esto evita el bloqueo de referer
-            document.getElementById('videoFrame').src = channel.proxyUrl;
+            const container = document.getElementById('videoContainer');
+            
+            // Limpiar reproductor anterior
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+            container.innerHTML = '';
+            
+            // Si es m3u8, usar hls.js con proxy
+            if (channel.tipo === 'm3u8') {
+                const video = document.createElement('video');
+                video.controls = true;
+                video.autoplay = true;
+                video.style.width = '100%';
+                video.style.height = '100%';
+                container.appendChild(video);
+                
+                if (Hls.isSupported()) {
+                    hls = new Hls({
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                        xhrSetup: function(xhr, url) {
+                            // Añadir headers a las peticiones de segmentos
+                            xhr.setRequestHeader('Referer', 'https://vidzenvivo.cc/');
+                            xhr.setRequestHeader('Origin', 'https://vidzenvivo.cc');
+                        }
+                    });
+                    
+                    hls.loadSource(channel.proxyUrl);
+                    hls.attachMedia(video);
+                    
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        video.play();
+                    });
+                    
+                    hls.on(Hls.Events.ERROR, function(event, data) {
+                        console.error('HLS Error:', data);
+                        if (data.fatal) {
+                            document.getElementById('statusBar').innerHTML = 
+                                '❌ Error al cargar el stream. Intenta otro canal.';
+                        }
+                    });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = channel.proxyUrl;
+                    video.addEventListener('canplay', function() {
+                        video.play();
+                    });
+                }
+            } else {
+                // Para iframes, usar el iframe directo
+                const iframe = document.createElement('iframe');
+                iframe.src = channel.url;
+                iframe.allowFullscreen = true;
+                iframe.allow = 'autoplay; encrypted-media; fullscreen';
+                iframe.style.width = '100%';
+                iframe.style.height = '100%';
+                container.appendChild(iframe);
+            }
         }
         
+        // Iniciar
         loadEvents();
+        
+        // Recargar cada 5 minutos
         setInterval(loadEvents, 300000);
     </script>
 </body>
