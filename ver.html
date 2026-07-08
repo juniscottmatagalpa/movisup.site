@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ver Partidos de Fútbol Gratis en Vivo</title>
-    <!-- hls.js para reproducir streams m3u8 -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * {
             margin: 0;
@@ -33,17 +31,25 @@
             font-size: 2rem;
         }
         
-        /* Título del partido actual - ARRIBA DEL REPRODUCTOR */
-        .titulo-partido-container {
+        /* SECCIÓN DEL REPRODUCTOR */
+        .reproductor-section {
+            background: #16213e;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        /* Título del partido actual */
+        .titulo-partido-box {
             background: #0f3460;
-            border-radius: 12px 12px 0 0;
             padding: 15px 20px;
             text-align: center;
-            border-bottom: 2px solid #16c79a;
+            border-bottom: 3px solid #16c79a;
         }
         
         .titulo-partido {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #fff;
             display: flex;
@@ -56,16 +62,26 @@
         .hora-badge {
             background: #e94560;
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 5px 12px;
+            border-radius: 15px;
             font-size: 0.85rem;
+            font-weight: bold;
         }
         
-        /* Botones de canales - ARRIBA DEL REPRODUCTOR */
-        .botones-canales-container {
-            background: #16213e;
+        /* Botones de canales */
+        .canales-box {
+            background: #1a1a2e;
             padding: 15px;
             border-bottom: 1px solid #0f3460;
+        }
+        
+        .canales-titulo {
+            text-align: center;
+            color: #16c79a;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .botones-canales {
@@ -105,20 +121,11 @@
             background: rgba(255,255,255,0.2);
             padding: 2px 8px;
             border-radius: 10px;
-            font-size: 0.7rem;
-            font-weight: bold;
+            font-size: 0.75rem;
         }
         
-        /* Contenedor del reproductor */
-        .reproductor-container {
-            background: #16213e;
-            border-radius: 0 0 12px 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
-        }
-        
-        .video-wrapper {
+        /* Contenedor del video */
+        .video-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
@@ -126,8 +133,7 @@
             background: #000;
         }
         
-        .video-wrapper video,
-        .video-wrapper iframe {
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -136,42 +142,64 @@
             border: none;
         }
         
-        /* Lista de eventos - ABAJO */
-        .lista-eventos {
+        .info-canal-actual {
+            background: #0f3460;
+            padding: 10px;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* LISTA DE EVENTOS - Estilo similar a futbol-libres */
+        .lista-section {
             margin-top: 30px;
         }
         
-        .lista-eventos h2 {
-            color: #16c79a;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .lista-header {
+            background: #16c79a;
+            color: #1a1a2e;
+            padding: 12px 20px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
         }
         
-        .evento-item {
+        .evento-card {
             background: #16213e;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
             border-left: 4px solid transparent;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            border-bottom: 1px solid #0f3460;
+            padding: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
         
-        .evento-item:hover {
+        .evento-card:hover {
             background: #0f3460;
             border-left-color: #e94560;
-            transform: translateX(5px);
         }
         
-        .evento-item.activo {
-            border-left-color: #16c79a;
+        .evento-card.activo {
             background: #0f3460;
+            border-left-color: #16c79a;
+        }
+        
+        .evento-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            gap: 15px;
+        }
+        
+        .evento-hora-box {
+            background: #e94560;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            min-width: 70px;
+            text-align: center;
         }
         
         .evento-info {
@@ -179,36 +207,28 @@
         }
         
         .evento-titulo {
+            font-size: 1.1rem;
             font-weight: bold;
+            color: #fff;
             margin-bottom: 5px;
-            font-size: 1rem;
         }
         
-        .evento-canales {
+        .evento-canales-count {
+            color: #16c79a;
             font-size: 0.85rem;
-            color: #aaa;
         }
         
-        .evento-hora {
-            background: #e94560;
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-        
-        .no-eventos {
-            text-align: center;
-            padding: 40px;
-            color: #888;
+        .evento-flecha {
+            color: #16c79a;
             font-size: 1.2rem;
         }
         
+        /* Loading y errores */
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 50px;
             color: #16c79a;
+            font-size: 1.2rem;
         }
         
         .loading::after {
@@ -223,113 +243,111 @@
             80%, 100% { content: '...'; }
         }
         
-        .error {
+        .error-box {
             background: #e94560;
             color: white;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 30px;
+            border-radius: 12px;
             text-align: center;
         }
         
-        .recargar-btn {
+        .btn-recargar {
             background: #16c79a;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 25px;
+            border-radius: 25px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 1rem;
         }
         
-        .recargar-btn:hover {
+        .btn-recargar:hover {
             background: #13b386;
         }
         
-        .info-stream {
+        .no-eventos {
             text-align: center;
+            padding: 40px;
             color: #888;
-            font-size: 0.85rem;
-            padding: 10px;
-            background: #0f3460;
         }
         
-        .mensaje-vacio {
+        .mensaje-inicial {
             text-align: center;
+            padding: 30px;
             color: #888;
-            padding: 20px;
-            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>⚽ Ver Fútbol Gratis en Vivo</h1>
+        <h1>⚽ Ver Fútbol Libre en Vivo</h1>
         
-        <!-- SECCIÓN SUPERIOR: Título + Botones + Reproductor -->
-        <div id="seccion-superior" style="display: none;">
+        <!-- SECCIÓN SUPERIOR: Reproductor -->
+        <div class="reproductor-section" id="reproductorSection" style="display: none;">
             <!-- 1. Título del partido -->
-            <div class="titulo-partido-container">
+            <div class="titulo-partido-box">
                 <div class="titulo-partido" id="tituloPartido">
-                    <span>Cargando...</span>
+                    <span>Selecciona un partido de la lista</span>
                 </div>
             </div>
             
             <!-- 2. Botones de canales -->
-            <div class="botones-canales-container">
+            <div class="canales-box">
+                <div class="canales-titulo">Canales Disponibles</div>
                 <div class="botones-canales" id="botonesCanales">
-                    <!-- Se generan dinámicamente -->
+                    <div class="mensaje-inicial">Selecciona un partido para ver los canales</div>
                 </div>
             </div>
             
-            <!-- 3. Reproductor -->
-            <div class="reproductor-container">
-                <div class="video-wrapper" id="videoWrapper">
-                    <!-- Aquí va el video o iframe -->
-                </div>
-                <div class="info-stream" id="infoStream">
-                    Selecciona un canal para comenzar
-                </div>
+            <!-- 3. Video -->
+            <div class="video-container" id="videoContainer">
+                <iframe id="videoIframe" src="https://latamvidzfy.org/caze2.php" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            </div>
+            
+            <div class="info-canal-actual" id="infoCanal">
+                Cargando reproductor inicial...
             </div>
         </div>
         
-        <!-- Loading inicial -->
-        <div id="loading-inicial">
-            <div class="loading">Cargando eventos disponibles</div>
+        <!-- Loading -->
+        <div id="loadingSection">
+            <div class="loading">Cargando agenda de partidos</div>
         </div>
         
         <!-- Error -->
-        <div id="error-container" style="display: none;">
-            <div class="error">
-                ❌ Error al cargar eventos<br>
-                <button class="recargar-btn" onclick="cargarEventos()">
+        <div id="errorSection" style="display: none;">
+            <div class="error-box">
+                ❌ Error al cargar los eventos<br>
+                <button class="btn-recargar" onclick="cargarEventos()">
                     🔄 Reintentar
                 </button>
             </div>
         </div>
         
         <!-- SECCIÓN INFERIOR: Lista de eventos -->
-        <div class="lista-eventos" id="listaEventos" style="display: none;">
-            <h2>📅 Partidos Disponibles</h2>
-            <div id="eventosContainer"></div>
+        <div class="lista-section" id="listaSection" style="display: none;">
+            <div class="lista-header">
+                📅 Agenda de Partidos
+            </div>
+            <div id="eventosContainer">
+                <!-- Se genera dinámicamente -->
+            </div>
         </div>
     </div>
 
     <script>
         const API_URL = 'https://stream-api-flax-seven.vercel.app/api/scrape';
-        const PROXY_URL = 'https://stream-api-flax-seven.vercel.app/api/stream?url=';
-        const URL_INICIAL = 'https://latamvidzfy.org/caze2.php';
         
         let eventosData = [];
         let eventoSeleccionado = null;
         let canalSeleccionado = 0;
-        let hls = null;
         
-        // Cargar eventos al iniciar
         async function cargarEventos() {
-            document.getElementById('loading-inicial').style.display = 'block';
-            document.getElementById('seccion-superior').style.display = 'none';
-            document.getElementById('error-container').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('reproductorSection').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('listaSection').style.display = 'none';
             
             try {
                 const response = await fetch(API_URL);
@@ -340,55 +358,51 @@
                 }
                 
                 if (data.eventos.length === 0) {
-                    mostrarSinEventos();
+                    document.getElementById('loadingSection').innerHTML = `
+                        <div class="no-eventos">
+                            📭 No hay eventos disponibles en este momento.<br>
+                            <button class="btn-recargar" onclick="cargarEventos()">🔄 Recargar</button>
+                        </div>
+                    `;
                     return;
                 }
                 
                 eventosData = data.eventos;
                 
-                // Mostrar sección superior con URL inicial
-                document.getElementById('loading-inicial').style.display = 'none';
-                document.getElementById('seccion-superior').style.display = 'block';
-                document.getElementById('listaEventos').style.display = 'block';
-                
-                // Cargar URL inicial en el reproductor
-                cargarReproductor(URL_INICIAL, 'iframe');
-                document.getElementById('tituloPartido').innerHTML = '<span>📺 Selecciona un partido de la lista</span>';
-                document.getElementById('botonesCanales').innerHTML = '<div class="mensaje-vacio">Selecciona un partido para ver los canales disponibles</div>';
-                document.getElementById('infoStream').textContent = 'Esperando selección...';
+                // Mostrar secciones
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('reproductorSection').style.display = 'block';
+                document.getElementById('listaSection').style.display = 'block';
                 
                 // Renderizar lista de eventos
-                renderizarListaEventos();
+                renderizarLista();
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('loading-inicial').style.display = 'none';
-                document.getElementById('error-container').style.display = 'block';
+                document.getElementById('loadingSection').style.display = 'none';
+                document.getElementById('errorSection').style.display = 'block';
             }
         }
         
-        function mostrarSinEventos() {
-            document.getElementById('loading-inicial').innerHTML = `
-                <div class="no-eventos">
-                    📭 No hay eventos disponibles en este momento.<br>
-                    <button class="recargar-btn" onclick="cargarEventos()" style="margin-top: 15px;">
-                        🔄 Recargar
-                    </button>
-                </div>
-            `;
-        }
-        
-        function renderizarListaEventos() {
+        function renderizarLista() {
             const container = document.getElementById('eventosContainer');
             
+            if (eventosData.length === 0) {
+                container.innerHTML = '<div class="no-eventos">No hay eventos disponibles</div>';
+                return;
+            }
+            
             const html = eventosData.map((evento, index) => `
-                <div class="evento-item ${eventoSeleccionado === index ? 'activo' : ''}" 
+                <div class="evento-card ${eventoSeleccionado === index ? 'activo' : ''}" 
                      onclick="seleccionarEvento(${index})">
-                    <div class="evento-info">
-                        <div class="evento-titulo">${evento.titulo}</div>
-                        <div class="evento-canales">📺 ${evento.canales.length} canal(es) disponible(s)</div>
+                    <div class="evento-header">
+                        <div class="evento-hora-box">${evento.hora || '--:--'}</div>
+                        <div class="evento-info">
+                            <div class="evento-titulo">${evento.titulo}</div>
+                            <div class="evento-canales-count">📺 ${evento.canales.length} canal(es) disponible(s)</div>
+                        </div>
+                        <div class="evento-flecha">▶</div>
                     </div>
-                    ${evento.hora ? `<div class="evento-hora">⏰ ${evento.hora}</div>` : ''}
                 </div>
             `).join('');
             
@@ -401,17 +415,17 @@
             
             const evento = eventosData[index];
             
-            // Actualizar título
+            // Actualizar título arriba del reproductor
             const tituloHTML = `
                 <span>${evento.titulo}</span>
                 ${evento.hora ? `<span class="hora-badge">⏰ ${evento.hora}</span>` : ''}
             `;
             document.getElementById('tituloPartido').innerHTML = tituloHTML;
             
-            // Generar botones de canales
+            // Generar botones de canales para ESTE evento
             const botonesHTML = evento.canales.map((canal, idx) => `
                 <button class="btn-canal ${idx === canalSeleccionado ? 'activo' : ''}" 
-                        onclick="seleccionarCanal(${idx})">
+                        onclick="cambiarCanal(${idx})">
                     ${canal.nombre}
                     <span class="calidad-badge">${canal.calidad}</span>
                 </button>
@@ -419,13 +433,13 @@
             document.getElementById('botonesCanales').innerHTML = botonesHTML;
             
             // Actualizar lista visualmente
-            renderizarListaEventos();
+            renderizarLista();
             
             // Cargar primer canal automáticamente
-            cargarCanalActual();
+            cargarCanal(0);
         }
         
-        function seleccionarCanal(index) {
+        function cambiarCanal(index) {
             canalSeleccionado = index;
             
             // Actualizar botones visualmente
@@ -434,87 +448,26 @@
                 btn.classList.toggle('activo', idx === index);
             });
             
-            cargarCanalActual();
+            cargarCanal(index);
         }
         
-        function cargarCanalActual() {
+        function cargarCanal(index) {
             if (eventoSeleccionado === null) return;
             
             const evento = eventosData[eventoSeleccionado];
-            const canal = evento.canales[canalSeleccionado];
+            const canal = evento.canales[index];
             
-            document.getElementById('infoStream').innerHTML = 
-                `Reproduciendo: <strong>${evento.titulo}</strong> - Canal: ${canal.nombre} (${canal.calidad})`;
+            // Actualizar info
+            document.getElementById('infoCanal').innerHTML = 
+                `Reproduciendo: <strong>${evento.titulo}</strong> | Canal: ${canal.nombre} (${canal.calidad})`;
             
-            // Determinar tipo de stream
-            if (canal.tipo === 'm3u8' || canal.url.includes('.m3u8') || canal.url.includes('tracks-v')) {
-                // Usar proxy para m3u8
-                const proxyUrl = PROXY_URL + encodeURIComponent(canal.url);
-                cargarReproductor(proxyUrl, 'hls');
-            } else if (canal.tipo === 'iframe' || canal.url.includes('.php') || canal.url.includes('embed')) {
-                cargarReproductor(canal.url, 'iframe');
-            } else {
-                cargarReproductor(canal.url, 'iframe');
-            }
+            // CARGAR EL IFRAME CON LA URL DEL CANAL
+            // Usamos la URL completa (vidzenvivo.cc/canal.php) no el m3u8 directo
+            const iframe = document.getElementById('videoIframe');
+            iframe.src = canal.url;
         }
         
-        function cargarReproductor(url, tipo) {
-            const wrapper = document.getElementById('videoWrapper');
-            
-            // Limpiar reproductor anterior
-            if (hls) {
-                hls.destroy();
-                hls = null;
-            }
-            wrapper.innerHTML = '';
-            
-            if (tipo === 'hls') {
-                // Crear elemento video para HLS
-                const video = document.createElement('video');
-                video.id = 'videoPlayer';
-                video.controls = true;
-                video.autoplay = true;
-                video.style.width = '100%';
-                video.style.height = '100%';
-                wrapper.appendChild(video);
-                
-                if (Hls.isSupported()) {
-                    hls = new Hls({
-                        enableWorker: true,
-                        lowLatencyMode: true,
-                    });
-                    hls.loadSource(url);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                        video.play();
-                    });
-                    hls.on(Hls.Events.ERROR, function(event, data) {
-                        console.error('HLS Error:', data);
-                        if (data.fatal) {
-                            // Intentar con iframe como fallback
-                            cargarReproductor(url.replace(PROXY_URL, ''), 'iframe');
-                        }
-                    });
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = url;
-                    video.addEventListener('canplay', function() {
-                        video.play();
-                    });
-                }
-            } else {
-                // Usar iframe para otros tipos
-                const iframe = document.createElement('iframe');
-                iframe.src = url;
-                iframe.allowFullscreen = true;
-                iframe.allow = 'autoplay; encrypted-media; fullscreen';
-                iframe.style.width = '100%';
-                iframe.style.height = '100%';
-                iframe.style.border = 'none';
-                wrapper.appendChild(iframe);
-            }
-        }
-        
-        // Iniciar
+        // Iniciar carga
         cargarEventos();
         
         // Recargar cada 5 minutos
