@@ -27,7 +27,7 @@
             margin-bottom: 20px;
         }
         
-        .player-section {
+        .player-box {
             background: #161b22;
             border-radius: 12px;
             overflow: hidden;
@@ -35,7 +35,7 @@
             border: 1px solid #30363d;
         }
         
-        .match-header {
+        .match-info {
             background: #21262d;
             padding: 15px;
             text-align: center;
@@ -43,11 +43,11 @@
         }
         
         .match-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
         }
         
-        .time-badge {
+        .match-time {
             background: #ff4757;
             color: white;
             padding: 5px 12px;
@@ -56,20 +56,17 @@
             margin-left: 10px;
         }
         
-        .channels-bar {
+        .channels-row {
             background: #1c2128;
             padding: 15px;
-            border-bottom: 1px solid #30363d;
-        }
-        
-        .channels-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
+            border-bottom: 1px solid #30363d;
         }
         
-        .btn-channel {
+        .channel-btn {
             background: #ff4757;
             color: white;
             border: none;
@@ -77,13 +74,20 @@
             border-radius: 25px;
             cursor: pointer;
             font-size: 0.9rem;
+            transition: all 0.3s;
         }
         
-        .btn-channel.active {
+        .channel-btn:hover {
+            background: #ff6b81;
+            transform: translateY(-2px);
+        }
+        
+        .channel-btn.active {
             background: #00d084;
+            box-shadow: 0 0 10px rgba(0,208,132,0.4);
         }
         
-        .quality-tag {
+        .quality {
             background: rgba(255,255,255,0.2);
             padding: 2px 8px;
             border-radius: 10px;
@@ -91,7 +95,7 @@
             margin-left: 5px;
         }
         
-        .video-container {
+        .video-box {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
@@ -99,8 +103,7 @@
             background: #000;
         }
         
-        .video-container video,
-        .video-container iframe {
+        .video-box video {
             position: absolute;
             top: 0;
             left: 0;
@@ -109,18 +112,18 @@
             border: none;
         }
         
-        .status-bar {
+        .status {
             background: #21262d;
             padding: 10px;
             text-align: center;
             color: #8b949e;
         }
         
-        .events-section {
+        .events-list {
             margin-top: 30px;
         }
         
-        .section-header {
+        .section-title {
             background: #00d084;
             color: #0d1117;
             padding: 12px;
@@ -129,32 +132,29 @@
             text-align: center;
         }
         
-        .event-card {
+        .event-item {
             background: #161b22;
             border-left: 4px solid transparent;
             border-bottom: 1px solid #30363d;
             cursor: pointer;
             transition: all 0.3s;
-        }
-        
-        .event-card:hover {
-            background: #21262d;
-            border-left-color: #ff4757;
-        }
-        
-        .event-card.active {
-            background: #21262d;
-            border-left-color: #00d084;
-        }
-        
-        .event-content {
             display: flex;
             align-items: center;
             padding: 15px;
             gap: 15px;
         }
         
-        .event-time {
+        .event-item:hover {
+            background: #21262d;
+            border-left-color: #ff4757;
+        }
+        
+        .event-item.active {
+            background: #21262d;
+            border-left-color: #00d084;
+        }
+        
+        .event-time-box {
             background: #ff4757;
             color: white;
             padding: 8px 15px;
@@ -164,33 +164,34 @@
             text-align: center;
         }
         
-        .event-info {
+        .event-details {
             flex: 1;
         }
         
-        .event-title {
+        .event-name {
             font-size: 1.1rem;
             font-weight: bold;
+            margin-bottom: 4px;
         }
         
-        .event-meta {
+        .event-count {
             color: #8b949e;
             font-size: 0.85rem;
         }
         
-        .loading, .error-box {
+        .loading, .error {
             text-align: center;
             padding: 50px;
         }
         
-        .error-box {
+        .error {
             background: #ff4757;
             color: white;
             border-radius: 12px;
             margin: 20px 0;
         }
         
-        .btn-retry {
+        .retry-btn {
             background: #00d084;
             color: #0d1117;
             border: none;
@@ -206,51 +207,50 @@
     <div class="container">
         <h1>⚽ Fútbol Libre TV</h1>
         
-        <div class="player-section" id="playerSection" style="display: none;">
-            <div class="match-header">
-                <div class="match-title" id="matchTitle">
-                    <span>Selecciona un partido</span>
-                </div>
+        <div class="player-box" id="playerBox" style="display: none;">
+            <div class="match-info">
+                <div class="match-title" id="matchTitle">Selecciona un partido</div>
             </div>
             
-            <div class="channels-bar">
-                <div class="channels-buttons" id="channelsButtons"></div>
+            <div class="channels-row" id="channelsRow"></div>
+            
+            <div class="video-box" id="videoBox">
+                <video id="videoPlayer" controls autoplay></video>
             </div>
             
-            <div class="video-container" id="videoContainer"></div>
-            
-            <div class="status-bar" id="statusBar">Cargando...</div>
+            <div class="status" id="status">Cargando...</div>
         </div>
         
-        <div id="loadingSection">
-            <div class="loading" style="color: #00d084;">Cargando agenda...</div>
+        <div id="loadingBox">
+            <div class="loading" style="color: #00d084;">Cargando agenda deportiva...</div>
         </div>
         
-        <div id="errorSection" style="display: none;">
-            <div class="error-box">
-                ❌ Error al cargar<br>
-                <button class="btn-retry" onclick="loadEvents()">🔄 Reintentar</button>
+        <div id="errorBox" style="display: none;">
+            <div class="error">
+                ❌ Error al cargar los eventos<br>
+                <button class="retry-btn" onclick="loadData()">🔄 Reintentar</button>
             </div>
         </div>
         
-        <div class="events-section" id="eventsSection" style="display: none;">
-            <div class="section-header">📅 Partidos Disponibles</div>
-            <div id="eventsList"></div>
+        <div class="events-list" id="eventsList" style="display: none;">
+            <div class="section-title">📅 Partidos Disponibles</div>
+            <div id="eventsContainer"></div>
         </div>
     </div>
 
     <script>
+        // URL de tu API en Vercel
         const API_URL = 'https://stream-api-flax-seven.vercel.app/api/scrape';
         
-        let eventsData = [];
-        let selectedEvent = null;
-        let selectedChannel = 0;
+        let events = [];
+        let currentEvent = null;
+        let currentChannel = 0;
         let hls = null;
-        
-        async function loadEvents() {
-            document.getElementById('loadingSection').style.display = 'block';
-            document.getElementById('playerSection').style.display = 'none';
-            document.getElementById('errorSection').style.display = 'none';
+
+        async function loadData() {
+            document.getElementById('loadingBox').style.display = 'block';
+            document.getElementById('playerBox').style.display = 'none';
+            document.getElementById('errorBox').style.display = 'none';
             
             try {
                 const response = await fetch(API_URL);
@@ -258,153 +258,140 @@
                 
                 if (!data.success) throw new Error(data.error);
                 
-                eventsData = data.eventos;
-                console.log('Eventos cargados:', eventsData);
+                events = data.eventos;
+                console.log('Eventos cargados:', events);
                 
-                document.getElementById('loadingSection').style.display = 'none';
-                document.getElementById('playerSection').style.display = 'block';
-                document.getElementById('eventsSection').style.display = 'block';
+                if (events.length === 0) {
+                    throw new Error('No se encontraron eventos');
+                }
+                
+                document.getElementById('loadingBox').style.display = 'none';
+                document.getElementById('playerBox').style.display = 'block';
+                document.getElementById('eventsList').style.display = 'block';
                 
                 renderEvents();
-                
-                if (eventsData.length > 0) {
-                    selectEvent(0);
-                }
+                selectEvent(0);
                 
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('loadingSection').style.display = 'none';
-                document.getElementById('errorSection').style.display = 'block';
+                document.getElementById('loadingBox').style.display = 'none';
+                document.getElementById('errorBox').style.display = 'block';
             }
         }
-        
+
         function renderEvents() {
-            const container = document.getElementById('eventsList');
+            const container = document.getElementById('eventsContainer');
             
-            if (eventsData.length === 0) {
-                container.innerHTML = '<div style="padding: 40px; text-align: center; color: #888;">No hay eventos disponibles</div>';
-                return;
-            }
-            
-            const html = eventsData.map((event, index) => `
-                <div class="event-card ${selectedEvent === index ? 'active' : ''}" 
+            const html = events.map((event, index) => `
+                <div class="event-item ${currentEvent === index ? 'active' : ''}" 
                      onclick="selectEvent(${index})">
-                    <div class="event-content">
-                        <div class="event-time">${event.hora || '--:--'}</div>
-                        <div class="event-info">
-                            <div class="event-title">${event.titulo}</div>
-                            <div class="event-meta">📺 ${event.canales.length} canal(es)</div>
-                        </div>
+                    <div class="event-time-box">${event.hora || '--:--'}</div>
+                    <div class="event-details">
+                        <div class="event-name">${event.titulo}</div>
+                        <div class="event-count">📺 ${event.canales.length} canal(es)</div>
                     </div>
                 </div>
             `).join('');
             
             container.innerHTML = html;
         }
-        
+
         function selectEvent(index) {
-            selectedEvent = index;
-            selectedChannel = 0;
+            currentEvent = index;
+            currentChannel = 0;
             
-            const event = eventsData[index];
+            const event = events[index];
             
             // Actualizar título
             const titleHtml = event.hora 
-                ? `${event.titulo} <span class="time-badge">${event.hora}</span>`
+                ? `${event.titulo} <span class="match-time">${event.hora}</span>`
                 : event.titulo;
-            
             document.getElementById('matchTitle').innerHTML = titleHtml;
             
             // Generar botones de canales
-            const buttonsHtml = event.canales.map((channel, idx) => `
-                <button class="btn-channel ${idx === selectedChannel ? 'active' : ''}" 
+            const channelsHtml = event.canales.map((ch, idx) => `
+                <button class="channel-btn ${idx === currentChannel ? 'active' : ''}" 
                         onclick="selectChannel(${idx})">
-                    ${channel.nombre}
-                    <span class="quality-tag">${channel.calidad}</span>
+                    ${ch.nombre}
+                    <span class="quality">${ch.calidad}</span>
                 </button>
             `).join('');
             
-            document.getElementById('channelsButtons').innerHTML = buttonsHtml;
+            document.getElementById('channelsRow').innerHTML = channelsHtml;
             
             renderEvents();
             loadChannel(0);
         }
-        
+
         function selectChannel(index) {
-            selectedChannel = index;
+            currentChannel = index;
             
-            const buttons = document.querySelectorAll('.btn-channel');
-            buttons.forEach((btn, idx) => {
+            document.querySelectorAll('.channel-btn').forEach((btn, idx) => {
                 btn.classList.toggle('active', idx === index);
             });
             
             loadChannel(index);
         }
-        
+
         function loadChannel(index) {
-            if (selectedEvent === null) return;
+            if (currentEvent === null) return;
             
-            const event = eventsData[selectedEvent];
+            const event = events[currentEvent];
             const channel = event.canales[index];
             
-            document.getElementById('statusBar').innerHTML = 
-                `▶️ ${event.titulo} | ${channel.nombre} (${channel.calidad})`;
+            document.getElementById('status').textContent = 
+                `▶️ ${event.titulo} - ${channel.nombre} (${channel.calidad})`;
             
-            const container = document.getElementById('videoContainer');
+            const video = document.getElementById('videoPlayer');
             
-            // Limpiar
+            // Limpiar HLS anterior
             if (hls) {
                 hls.destroy();
                 hls = null;
             }
-            container.innerHTML = '';
             
-            // Verificar si es m3u8
-            const isM3U8 = channel.url.includes('.m3u8') || channel.url.includes('mono.m3u8');
+            // Usar el proxy URL
+            const streamUrl = channel.proxyUrl;
             
-            if (isM3U8 && Hls.isSupported()) {
-                // Usar HLS.js
-                const video = document.createElement('video');
-                video.controls = true;
-                video.autoplay = true;
-                video.style.width = '100%';
-                video.style.height = '100%';
-                container.appendChild(video);
-                
+            console.log('Cargando stream:', streamUrl);
+            
+            if (Hls.isSupported()) {
                 hls = new Hls({
                     enableWorker: true,
-                    lowLatencyMode: true
+                    lowLatencyMode: true,
+                    debug: false
                 });
                 
-                hls.loadSource(channel.proxyUrl);
+                hls.loadSource(streamUrl);
                 hls.attachMedia(video);
                 
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
                     video.play();
                 });
                 
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    console.error('HLS Error:', data);
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    console.error('HLS error:', data);
                     if (data.fatal) {
-                        document.getElementById('statusBar').innerHTML = 
-                            '❌ Error al cargar. Intenta otro canal.';
+                        document.getElementById('status').textContent = 
+                            '❌ Error al cargar el stream. Intenta otro canal.';
                     }
                 });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = streamUrl;
+                video.addEventListener('canplay', () => {
+                    video.play();
+                });
             } else {
-                // Usar iframe
-                const iframe = document.createElement('iframe');
-                iframe.src = channel.url;
-                iframe.allowFullscreen = true;
-                iframe.allow = 'autoplay; encrypted-media; fullscreen';
-                iframe.style.width = '100%';
-                iframe.style.height = '100%';
-                container.appendChild(iframe);
+                document.getElementById('status').textContent = 
+                    '❌ Tu navegador no soporta HLS';
             }
         }
-        
+
         // Iniciar
-        loadEvents();
-        setInterval(loadEvents, 300000);
+        loadData();
+        
+        // Recargar cada 5 minutos
+        setInterval(loadData, 300000);
     </script>
 </body>
 </html>
