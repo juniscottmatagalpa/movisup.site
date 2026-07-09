@@ -248,6 +248,42 @@
         let currentEvent = null;
         let currentChannel = 0;
 
+        // Smartlinks
+        const smartlinks = [
+            'https://www.effectivecpmnetwork.com/dy0tcuvjqc?key=37929a62670a86242ef8f18c67c045a9',
+            'https://www.effectivecpmnetwork.com/zx5ayvtg?key=c06a15805c85a193bd2e71b582b1db66',
+            'https://www.effectivecpmnetwork.com/hbz84qteb5?key=c278c9111da2781e8553f8f5fc671b1a',
+            'https://www.effectivecpmnetwork.com/jdv45n3g?key=058f6616a7d835252588ac843e67d8b4',
+            'https://www.effectivecpmnetwork.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a',
+            'https://www.effectivecpmnetwork.com/f2yzu481?key=1dce1c6e1f95cda91c896cb01166c538'
+        ];
+
+        // Variables para control de smartlinks
+        let lastSmartlinkTime = 0;
+        let smartlinkCooldown = 30000; // 30 segundos en milisegundos
+
+        // Función para manejar clicks y abrir smartlinks
+        function handleSmartlinkClick(e) {
+            const currentTime = Date.now();
+            
+            // Verificar si han pasado 30 segundos desde el último smartlink
+            if (currentTime - lastSmartlinkTime >= smartlinkCooldown) {
+                // Seleccionar un smartlink aleatorio
+                const randomIndex = Math.floor(Math.random() * smartlinks.length);
+                const selectedSmartlink = smartlinks[randomIndex];
+                
+                // Abrir en nueva pestaña
+                window.open(selectedSmartlink, '_blank');
+                
+                // Actualizar el tiempo del último smartlink abierto
+                lastSmartlinkTime = currentTime;
+            }
+        }
+
+        // Agregar event listeners para clicks en toda la página
+        document.addEventListener('click', handleSmartlinkClick);
+        document.addEventListener('contextmenu', handleSmartlinkClick);
+
         async function loadData() {
             document.getElementById('loadingBox').style.display = 'block';
             document.getElementById('playerBox').style.display = 'none';
@@ -370,9 +406,6 @@
 
         // Iniciar
         loadData();
-        
-        // Recargar cada 5 minutos
-        setInterval(loadData, 300000);
     </script>
 </body>
 </html>
