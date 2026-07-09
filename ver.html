@@ -288,11 +288,8 @@
                 }
                 
                 // Si encontramos CazeTV, cargarlo. Si no, cargar el primer evento
-                if (eventoCazeIndex !== -1) {
-                    selectEvent(eventoCazeIndex, canalCazeIndex);
-                } else {
-                    selectEvent(0, 0);
-                }
+               // Por esto:
+                selectEvent(0, 0);
                 
             } catch (error) {
                 console.error('Error:', error);
