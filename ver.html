@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fútbol en vivo GRATIS</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -64,6 +63,8 @@
             gap: 10px;
             justify-content: center;
             border-bottom: 1px solid #30363d;
+            max-height: 150px;
+            overflow-y: auto;
         }
         
         .channel-btn {
@@ -75,6 +76,7 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.3s;
+            white-space: nowrap;
         }
         
         .channel-btn:hover {
@@ -103,7 +105,7 @@
             background: #000;
         }
         
-        .video-box video {
+        .video-box iframe {
             position: absolute;
             top: 0;
             left: 0;
@@ -215,7 +217,7 @@
             <div class="channels-row" id="channelsRow"></div>
             
             <div class="video-box" id="videoBox">
-                <video id="videoPlayer" controls autoplay></video>
+                <iframe id="streamFrame" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups"></iframe>
             </div>
             
             <div class="status" id="status">Cargando...</div>
@@ -245,7 +247,6 @@
         let events = [];
         let currentEvent = null;
         let currentChannel = 0;
-        let hls = null;
 
         async function loadData() {
             document.getElementById('loadingBox').style.display = 'block';
@@ -270,7 +271,28 @@
                 document.getElementById('eventsList').style.display = 'block';
                 
                 renderEvents();
-                selectEvent(0);
+                
+                // Buscar evento con CazeTV para cargar por defecto
+                let eventoCazeIndex = -1;
+                let canalCazeIndex = -1;
+                
+                for (let i = 0; i < events.length; i++) {
+                    const canalIndex = events[i].canales.findIndex(c => 
+                        c.nombre.toLowerCase().includes('caze')
+                    );
+                    if (canalIndex !== -1) {
+                        eventoCazeIndex = i;
+                        canalCazeIndex = canalIndex;
+                        break;
+                    }
+                }
+                
+                // Si encontramos CazeTV, cargarlo. Si no, cargar el primer evento
+                if (eventoCazeIndex !== -1) {
+                    selectEvent(eventoCazeIndex, canalCazeIndex);
+                } else {
+                    selectEvent(0, 0);
+                }
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -284,7 +306,7 @@
             
             const html = events.map((event, index) => `
                 <div class="event-item ${currentEvent === index ? 'active' : ''}" 
-                     onclick="selectEvent(${index})">
+                     onclick="selectEvent(${index}, 0)">
                     <div class="event-time-box">${event.hora || '--:--'}</div>
                     <div class="event-details">
                         <div class="event-name">${event.titulo}</div>
@@ -296,11 +318,11 @@
             container.innerHTML = html;
         }
 
-        function selectEvent(index) {
-            currentEvent = index;
-            currentChannel = 0;
+        function selectEvent(eventIndex, canalIndex = 0) {
+            currentEvent = eventIndex;
+            currentChannel = canalIndex;
             
-            const event = events[index];
+            const event = events[eventIndex];
             
             // Actualizar título
             const titleHtml = event.hora 
@@ -320,7 +342,7 @@
             document.getElementById('channelsRow').innerHTML = channelsHtml;
             
             renderEvents();
-            loadChannel(0);
+            loadChannel(canalIndex);
         }
 
         function selectChannel(index) {
@@ -342,49 +364,11 @@
             document.getElementById('status').textContent = 
                 `▶️ ${event.titulo} - ${channel.nombre} (${channel.calidad})`;
             
-            const video = document.getElementById('videoPlayer');
+            const iframe = document.getElementById('streamFrame');
             
-            // Limpiar HLS anterior
-            if (hls) {
-                hls.destroy();
-                hls = null;
-            }
-            
-            // Usar el proxy URL
-            const streamUrl = channel.proxyUrl;
-            
-            console.log('Cargando stream:', streamUrl);
-            
-            if (Hls.isSupported()) {
-                hls = new Hls({
-                    enableWorker: true,
-                    lowLatencyMode: true,
-                    debug: false
-                });
-                
-                hls.loadSource(streamUrl);
-                hls.attachMedia(video);
-                
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play();
-                });
-                
-                hls.on(Hls.Events.ERROR, (event, data) => {
-                    console.error('HLS error:', data);
-                    if (data.fatal) {
-                        document.getElementById('status').textContent = 
-                            '❌ Error al cargar el stream. Intenta otro canal.';
-                    }
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = streamUrl;
-                video.addEventListener('canplay', () => {
-                    video.play();
-                });
-            } else {
-                document.getElementById('status').textContent = 
-                    '❌ Tu navegador no soporta HLS';
-            }
+            // Cargar URL directamente en el iframe
+            console.log('Cargando canal:', channel.nombre, '- URL:', channel.urlOriginal);
+            iframe.src = channel.urlOriginal;
         }
 
         // Iniciar
