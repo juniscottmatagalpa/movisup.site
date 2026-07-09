@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fútbol en vivo GRATIS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00d084;
+            margin-bottom: 20px;
+        }
+        
+        .player-box {
+            background: #161b22;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: 1px solid #30363d;
+        }
+        
+        .match-info {
+            background: #21262d;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 3px solid #00d084;
+        }
+        
+        .match-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .match-time {
+            background: #ff4757;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        
+        .channels-row {
+            background: #1c2128;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            border-bottom: 1px solid #30363d;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .channel-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .channel-btn:hover {
+            background: #ff6b81;
+            transform: translateY(-2px);
+        }
+        
+        .channel-btn.active {
+            background: #00d084;
+            box-shadow: 0 0 10px rgba(0,208,132,0.4);
+        }
+        
+        .quality {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+        }
+        
+        .video-box {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .video-box iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .status {
+            background: #21262d;
+            padding: 10px;
+            text-align: center;
+            color: #8b949e;
+        }
+        
+        .events-list {
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            background: #00d084;
+            color: #0d1117;
+            padding: 12px;
+            border-radius: 8px 8px 0 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .event-item {
+            background: #161b22;
+            border-left: 4px solid transparent;
+            border-bottom: 1px solid #30363d;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            gap: 15px;
+        }
+        
+        .event-item:hover {
+            background: #21262d;
+            border-left-color: #ff4757;
+        }
+        
+        .event-item.active {
+            background: #21262d;
+            border-left-color: #00d084;
+        }
+        
+        .event-time-box {
+            background: #ff4757;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        .event-details {
+            flex: 1;
+        }
+        
+        .event-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .event-count {
+            color: #8b949e;
+            font-size: 0.85rem;
+        }
+        
+        .loading, .error {
+            text-align: center;
+            padding: 50px;
+        }
+        
+        .error {
+            background: #ff4757;
+            color: white;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .retry-btn {
+            background: #00d084;
+            color: #0d1117;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ver Fútbol online Gratis⚽ </h1>
+        
+        <div class="player-box" id="playerBox" style="display: none;">
+            <div class="match-info">
+                <div class="match-title" id="matchTitle">Selecciona un partido</div>
+            </div>
+            
+            <div class="channels-row" id="channelsRow"></div>
+            
+            <div class="video-box" id="videoBox">
+               <iframe id="streamFrame" allowfullscreen allow="autoplay; fullscreen; encrypted-media"></iframe>
+            </div>
+            
+            <div class="status" id="status">Cargando...</div>
+        </div>
+        
+        <div id="loadingBox">
+            <div class="loading" style="color: #00d084;">Cargando agenda deportiva...</div>
+        </div>
+        
+        <div id="errorBox" style="display: none;">
+            <div class="error">
+                ❌ Error al cargar los eventos<br>
+                <button class="retry-btn" onclick="loadData()">🔄 Reintentar</button>
+            </div>
+        </div>
+        
+        <div class="events-list" id="eventsList" style="display: none;">
+            <div class="section-title">📅 Partidos Disponibles</div>
+            <div id="eventsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // URL de tu API en Vercel
+        const API_URL = 'https://stream-api-flax-seven.vercel.app/api/scrape';
+        
+        let events = [];
+        let currentEvent = null;
+        let currentChannel = 0;
+
+        // Smartlinks
+        const smartlinks = [
+            'https://www.effectivecpmnetwork.com/dy0tcuvjqc?key=37929a62670a86242ef8f18c67c045a9',
+            'https://www.effectivecpmnetwork.com/zx5ayvtg?key=c06a15805c85a193bd2e71b582b1db66',
+            'https://www.effectivecpmnetwork.com/hbz84qteb5?key=c278c9111da2781e8553f8f5fc671b1a',
+            'https://www.effectivecpmnetwork.com/jdv45n3g?key=058f6616a7d835252588ac843e67d8b4',
+            'https://www.effectivecpmnetwork.com/mk7dpx1y9n?key=fdcc569f41598ea5f5c60950c55e207a',
+            'https://www.effectivecpmnetwork.com/f2yzu481?key=1dce1c6e1f95cda91c896cb01166c538'
+        ];
+
+        // Variables para control de smartlinks
+        let lastSmartlinkTime = 0;
+        let smartlinkCooldown = 30000; // 30 segundos en milisegundos
+
+        // Función para manejar clicks y abrir smartlinks
+        function handleSmartlinkClick(e) {
+            const currentTime = Date.now();
+            
+            // Verificar si han pasado 30 segundos desde el último smartlink
+            if (currentTime - lastSmartlinkTime >= smartlinkCooldown) {
+                // Seleccionar un smartlink aleatorio
+                const randomIndex = Math.floor(Math.random() * smartlinks.length);
+                const selectedSmartlink = smartlinks[randomIndex];
+                
+                // Abrir en nueva pestaña
+                window.open(selectedSmartlink, '_blank');
+                
+                // Actualizar el tiempo del último smartlink abierto
+                lastSmartlinkTime = currentTime;
+            }
+        }
+
+        // Agregar event listeners para clicks en toda la página
+        document.addEventListener('click', handleSmartlinkClick);
+        document.addEventListener('contextmenu', handleSmartlinkClick);
+
+        async function loadData() {
+            document.getElementById('loadingBox').style.display = 'block';
+            document.getElementById('playerBox').style.display = 'none';
+            document.getElementById('errorBox').style.display = 'none';
+            
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                if (!data.success) throw new Error(data.error);
+                
+                events = data.eventos;
+                console.log('Eventos cargados:', events);
+                
+                if (events.length === 0) {
+                    throw new Error('No se encontraron eventos');
+                }
+                
+                document.getElementById('loadingBox').style.display = 'none';
+                document.getElementById('playerBox').style.display = 'block';
+                document.getElementById('eventsList').style.display = 'block';
+                
+                renderEvents();
+                
+                // Buscar evento con CazeTV para cargar por defecto
+                let eventoCazeIndex = -1;
+                let canalCazeIndex = -1;
+                
+                for (let i = 0; i < events.length; i++) {
+                    const canalIndex = events[i].canales.findIndex(c => 
+                        c.nombre.toLowerCase().includes('caze')
+                    );
+                    if (canalIndex !== -1) {
+                        eventoCazeIndex = i;
+                        canalCazeIndex = canalIndex;
+                        break;
+                    }
+                }
+                
+                // Si encontramos CazeTV, cargarlo. Si no, cargar el primer evento
+               // Por esto:
+                selectEvent(0, 0);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingBox').style.display = 'none';
+                document.getElementById('errorBox').style.display = 'block';
+            }
+        }
+
+        function renderEvents() {
+            const container = document.getElementById('eventsContainer');
+            
+            const html = events.map((event, index) => `
+                <div class="event-item ${currentEvent === index ? 'active' : ''}" 
+                     onclick="selectEvent(${index}, 0)">
+                    <div class="event-time-box">${event.hora || '--:--'}</div>
+                    <div class="event-details">
+                        <div class="event-name">${event.titulo}</div>
+                        <div class="event-count">📺 ${event.canales.length} canal(es)</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+        }
+
+        function selectEvent(eventIndex, canalIndex = 0) {
+            currentEvent = eventIndex;
+            currentChannel = canalIndex;
+            
+            const event = events[eventIndex];
+            
+            // Actualizar título
+            const titleHtml = event.hora 
+                ? `${event.titulo} <span class="match-time">${event.hora}</span>`
+                : event.titulo;
+            document.getElementById('matchTitle').innerHTML = titleHtml;
+            
+            // Generar botones de canales
+            const channelsHtml = event.canales.map((ch, idx) => `
+                <button class="channel-btn ${idx === currentChannel ? 'active' : ''}" 
+                        onclick="selectChannel(${idx})">
+                    ${ch.nombre}
+                    <span class="quality">${ch.calidad}</span>
+                </button>
+            `).join('');
+            
+            document.getElementById('channelsRow').innerHTML = channelsHtml;
+            
+            renderEvents();
+            loadChannel(canalIndex);
+        }
+
+        function selectChannel(index) {
+            currentChannel = index;
+            
+            document.querySelectorAll('.channel-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === index);
+            });
+            
+            loadChannel(index);
+        }
+
+        function loadChannel(index) {
+            if (currentEvent === null) return;
+            
+            const event = events[currentEvent];
+            const channel = event.canales[index];
+            
+            document.getElementById('status').textContent = 
+                `▶️ ${event.titulo} - ${channel.nombre} (${channel.calidad})`;
+            
+            const iframe = document.getElementById('streamFrame');
+            
+            // Cargar URL directamente en el iframe
+            console.log('Cargando canal:', channel.nombre, '- URL:', channel.urlOriginal);
+            iframe.src = channel.urlOriginal;
+        }
+
+        // Iniciar
+        loadData();
+    </script>
+</body>
+</html>
