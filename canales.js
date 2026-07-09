@@ -1,6 +1,7 @@
 const canales = [
   'https://esvidzypro.sbs/dsportsar.php',
   'https://latamvidzfy.org/caze2.php',
+  'https://la20hd.com/vivo/canal.php?stream=telemundo',
   'https://latamvidzfy.org/caze1.php',
   'https://esvidzypro.sbs/dsportsar.php',
   'https://esvidzypro.sbs/caze2.php',
