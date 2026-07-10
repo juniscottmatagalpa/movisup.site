@@ -407,5 +407,118 @@
         // Iniciar
         loadData();
     </script>
+
+
+
+
+<!-- estadistiscas de pagina-->
+<!-- estadisticas de pagina-->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  update,
+  onDisconnect,
+  runTransaction,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBZi2SC14v0Nu5mN4c-1KAUoZ0296Y2bf8",
+  authDomain: "movisupjs.firebaseapp.com",
+  databaseURL: "https://movisupjs-default-rtdb.firebaseio.com",
+  projectId: "movisupjs",
+  storageBucket: "movisupjs.firebasestorage.app",
+  messagingSenderId: "299820640341",
+  appId: "1:299820640341:web:1aa2172ea96ff9fc384cdc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* ===========================
+   ID único por dispositivo
+=========================== */
+
+let visitorId = localStorage.getItem("movisup_visitor");
+
+if (!visitorId) {
+    visitorId = crypto.randomUUID();
+    localStorage.setItem("movisup_visitor", visitorId);
+}
+
+/* ===========================
+   Usuario
+=========================== */
+
+const userRef = ref(db, "users/" + visitorId);
+
+const userSnap = await get(userRef);
+
+if (!userSnap.exists()) {
+
+    await runTransaction(ref(db, "stats/uniqueUsers"), current => {
+        return (current || 0) + 1;
+    });
+
+    await set(userRef, {
+        firstVisit: serverTimestamp(),
+        lastVisit: serverTimestamp()
+    });
+
+} else {
+
+    const old = userSnap.val();
+
+    await update(userRef, {
+        firstVisit: old.firstVisit,
+        lastVisit: serverTimestamp()
+    });
+
+}
+
+/* ===========================
+   Visitas
+=========================== */
+
+await runTransaction(ref(db, "stats/visits"), current => {
+    return (current || 0) + 1;
+});
+
+/* ===========================
+   Usuarios Online
+=========================== */
+
+const onlineRef = ref(db, "online/" + visitorId);
+
+await set(onlineRef, {
+    connected: true,
+    lastSeen: serverTimestamp()
+});
+
+/* eliminar al desconectarse */
+
+onDisconnect(onlineRef).remove();
+
+/* heartbeat cada 30 segundos */
+
+setInterval(() => {
+
+    update(onlineRef, {
+        lastSeen: serverTimestamp()
+    });
+
+}, 30000);
+
+</script>
+<!-- fin estadisticas-->
+ <!-- fin estadisticas-->
+    
+    
 </body>
 </html>
